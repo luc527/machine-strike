@@ -1,23 +1,24 @@
 package utils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import logic.Machine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 public class FileUtils
 {
-    public static Collection<Machine> readMachines(String filename) throws FileNotFoundException
+    public static <K> Collection readAll(String filename, Function<JsonElement, K> cons) throws IOException
     {
-        var reader = new FileReader(new File(filename));
-        var arr = JsonParser.parseReader(reader).getAsJsonArray();
-        var machines = new ArrayList<Machine>(arr.size());
-        for (var elem : arr)
-            machines.add(Machine.from(elem));
-        return machines;
+        try (var reader = new FileReader(filename)) {
+            var arr = JsonParser.parseReader(reader).getAsJsonArray();
+            var ks = new ArrayList<K>(arr.size());
+            for (var elem : arr)
+                ks.add(cons.apply(elem));
+            return ks;
+        }
     }
 }

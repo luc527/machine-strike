@@ -63,7 +63,7 @@ public class Machine
     public int health() { return this.health; }
     public Point point(Direction dir) { return this.points[dir.idx()]; }
 
-    public static Machine from(JsonElement json)
+    public static Machine fromJsonElement(JsonElement json)
     {
         var obj = json.getAsJsonObject();
         var name = obj.get("name").getAsJsonPrimitive().getAsString();
