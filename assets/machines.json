@@ -1,0 +1,32 @@
+[
+  {
+    "type": "melee",
+    "name": "Peon",
+    "attackPower": 2,
+    "attackRange": 1,
+    "movementRange": 2,
+    "victoryPoints": 1,
+    "health": 2,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  },
+  {
+    "type": "gunner",
+    "name": "Bishop",
+    "attackPower": 2,
+    "attackRange": 2,
+    "movementRange": 3,
+    "victoryPoints": 2,
+    "health": 1,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  }
+]
