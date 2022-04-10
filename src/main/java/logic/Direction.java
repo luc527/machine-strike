@@ -9,15 +9,18 @@ public enum Direction
 
     private int idx;
 
-    Direction(int idx) {
+    Direction(int idx)
+    {
         this.idx = idx;
     }
 
-    public int idx() {
+    public int idx()
+    {
         return this.idx;
     }
 
-    public static Direction from(int idx) {
+    public static Direction from(int idx)
+    {
         switch (idx) {
             case 0: return EAST;
             case 1: return NORTH;

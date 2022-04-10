@@ -11,11 +11,13 @@ public enum Terrain
 
     private int combatPowerOffset;
 
-    Terrain(int combatPowerOffset) {
+    Terrain(int combatPowerOffset)
+    {
         this.combatPowerOffset = combatPowerOffset;
     }
 
-    public int combatPowerOffset() {
+    public int combatPowerOffset()
+    {
         return this.combatPowerOffset;
     }
 }

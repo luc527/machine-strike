@@ -84,7 +84,8 @@ public class Machine
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "logic.Machine{" +
                 "name='" + name + '\'' +
                 ", attackPower=" + attackPower +
