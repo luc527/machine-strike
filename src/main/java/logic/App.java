@@ -1,8 +1,12 @@
 package logic;
 
+import gameconfig.GameConfigurationController;
+import gameconfig.GameConfigurationView;
 import utils.FileUtils;
 
 import java.io.IOException;
+
+// TODO use better look-and-feel
 
 public class App
 {
@@ -22,5 +26,10 @@ public class App
             System.out.println(b);
             System.out.println();
         });
+        
+
+        var controller = new GameConfigurationController();
+        var view = new GameConfigurationView(controller, boards);
+        view.show();
     }
 }

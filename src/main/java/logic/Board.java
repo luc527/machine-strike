@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 
 public class Board
 {
-    private static final int HEIGHT = 8;
-    private static final int WIDTH = 8;
+    private static final int HEIGHT = Constants.BOARD_HEIGHT;
+    private static final int WIDTH = Constants.BOARD_WIDTH;
 
     private final Terrain[][] board = new Terrain[HEIGHT][WIDTH];
 
@@ -15,9 +15,6 @@ public class Board
             for (var j = 0; j < WIDTH; j++)
                 this.board[i][j] = board[i][j];
     }
-
-    public int height() { return HEIGHT; }
-    public int width() { return WIDTH; }
     public Terrain get(int row, int col) { return board[row][col]; }
 
     public static Board fromJsonElement(JsonElement json)

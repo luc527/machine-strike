@@ -7,12 +7,14 @@ public class Piece
 {
     private final Machine machine;
     private Direction direction;
+    private Player player;
     private int currentHealth;
 
-    public Piece(Machine machine, Direction direction)
+    public Piece(Machine machine, Direction direction, Player player)
     {
         this.machine = machine;
         this.direction = direction;
+        this.player = player;
         this.currentHealth = machine.health();
     }
 
