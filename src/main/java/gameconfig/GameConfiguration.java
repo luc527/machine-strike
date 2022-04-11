@@ -7,7 +7,6 @@ import java.util.List;
 
 // Pattern: Builder
 // Builds an initial game state
-// Also Model for the game configuration screen
 
 public class GameConfiguration
 {

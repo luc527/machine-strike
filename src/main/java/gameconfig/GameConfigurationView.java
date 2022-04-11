@@ -70,6 +70,7 @@ public class GameConfigurationView implements GameConfigurationObserver
         controller.selectBoard(availableBoards.get(0));
         panel.add(boardForm);
 
+
         // TODO button for opening the piece placement screen
         //  and make the piece placement screen
 
@@ -81,27 +82,20 @@ public class GameConfigurationView implements GameConfigurationObserver
         frame.setVisible(true);
     }
 
-    public void startingPlayerSetTo(Player p)
+    public void selectedStartingPlayer(Player p)
     {
         if (p == Player.PLAYER1) player1radio.setSelected(true);
         else                     player2radio.setSelected(true);
     }
 
-    @Override
     public void selectedBoard(Board b)
     {
         boardRadios.get(b).setSelected(true);
     }
 
-    @Override
-    public void piecePlaced(Piece p, int row, int col)
+    public void startingPlayerAndBoardConfirmed()
     {
 
     }
 
-    @Override
-    public void placingPlayerSetTo(Player p)
-    {
-
-    }
 }
