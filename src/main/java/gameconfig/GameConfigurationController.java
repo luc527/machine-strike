@@ -25,9 +25,9 @@ public class GameConfigurationController
         observers.forEach(o -> o.selectedBoard(b));
     }
 
-    public void confirmStartingPlayerAndBoard()
+    public void confirmSelections()
     {
-        observers.forEach(o -> o.startingPlayerAndBoardConfirmed());
+        observers.forEach(o -> o.selectionsConfirmed());
     }
 
 

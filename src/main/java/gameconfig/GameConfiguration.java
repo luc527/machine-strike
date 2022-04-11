@@ -1,11 +1,9 @@
 package gameconfig;
 
 import logic.*;
+import utils.Constants;
 
-import java.util.EnumMap;
-import java.util.List;
-
-// Pattern: Builder
+// :PatternUsed Builder
 // Builds an initial game state
 
 public class GameConfiguration
@@ -18,7 +16,7 @@ public class GameConfiguration
     {
         this.startingPlayer = null;
         this.board = null;
-        this.piecesByPosition = new Piece[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+        this.piecesByPosition = new Piece[Constants.BOARD_ROWS][Constants.BOARD_COLS];
     }
 
     public void setStartingPlayer(Player p) {this.startingPlayer = p;}

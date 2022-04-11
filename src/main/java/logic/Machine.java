@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 
 import java.util.Arrays;
 
+// :PatternUsed? Prototype (for Piece)
+
 public class Machine
 {
     public enum Point

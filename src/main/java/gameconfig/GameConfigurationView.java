@@ -93,7 +93,7 @@ public class GameConfigurationView implements GameConfigurationObserver
         boardRadios.get(b).setSelected(true);
     }
 
-    public void startingPlayerAndBoardConfirmed()
+    public void selectionsConfirmed()
     {
 
     }

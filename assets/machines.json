@@ -6,7 +6,22 @@
     "attackRange": 1,
     "movementRange": 2,
     "victoryPoints": 1,
-    "health": 2,
+    "health": 4,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  },
+  {
+    "type": "melee",
+    "name": "Spades",
+    "attackPower": 2,
+    "attackRange": 1,
+    "movementRange": 2,
+    "victoryPoints": 1,
+    "health": 5,
     "points": {
       "north": "armored",
       "east": "empty",
@@ -20,13 +35,118 @@
     "attackPower": 2,
     "attackRange": 2,
     "movementRange": 3,
-    "victoryPoints": 2,
+    "victoryPoints": 1,
     "health": 1,
+    "points": {
+      "north": "armored",
+      "east": "weak",
+      "west": "weak",
+      "south": "empty"
+    }
+  },
+  {
+    "type": "ram",
+    "name": "Knight",
+    "attackPower": 1,
+    "attackRange": 1,
+    "movementRange": 2,
+    "victoryPoints": 1,
+    "health": 4,
     "points": {
       "north": "armored",
       "east": "empty",
       "west": "empty",
       "south": "weak"
+    }
+  },
+  {
+    "type": "ram",
+    "name": "Hearts",
+    "attackPower": 2,
+    "attackRange": 1,
+    "movementRange": 2,
+    "victoryPoints": 2,
+    "health": 5,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  },
+  {
+    "type": "dash",
+    "name": "Tower",
+    "attackPower": 2,
+    "attackRange": 2,
+    "movementRange": 2,
+    "victoryPoints": 1,
+    "health": 4,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "empty"
+    }
+  },
+  {
+    "type": "dash",
+    "name": "Diamonds",
+    "attackPower": 3,
+    "attackRange": 2,
+    "movementRange": 2,
+    "victoryPoints": 3,
+    "health": 10,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "empty"
+    }
+  },
+  {
+    "type": "swoop",
+    "name": "Queen",
+    "attackPower": 2,
+    "attackRange": 3,
+    "movementRange": 2,
+    "victoryPoints": 2,
+    "health": 6,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  },
+  {
+    "type": "pull",
+    "name": "King",
+    "attackPower": 3,
+    "attackRange": 3,
+    "movementRange": 2,
+    "victoryPoints": 2,
+    "health": 7,
+    "points": {
+      "north": "armored",
+      "east": "empty",
+      "west": "empty",
+      "south": "weak"
+    }
+  },
+  {
+    "type": "clubs",
+    "name": "Clubs",
+    "attackPower": 3,
+    "attackRange": 3,
+    "movementRange": 2,
+    "victoryPoints": 3,
+    "health": 10,
+    "points": {
+      "north": "weak",
+      "east": "armored",
+      "west": "armored",
+      "south": "armored"
     }
   }
 ]

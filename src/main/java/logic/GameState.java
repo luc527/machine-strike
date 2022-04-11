@@ -1,5 +1,7 @@
 package logic;
 
+import utils.Constants;
+
 public class GameState
 {
     private Player currentPlayer;
@@ -10,8 +12,8 @@ public class GameState
     {
         this.currentPlayer = startingPlayer;
         this.board = board;
-        var height = Constants.BOARD_HEIGHT;
-        var width = Constants.BOARD_WIDTH;
+        var height = Constants.BOARD_ROWS;
+        var width = Constants.BOARD_COLS;
         this.pieces = new Piece[height][width];
         for (var i = 0; i < height; i++)
             for (var j = 0; j < width; j++)

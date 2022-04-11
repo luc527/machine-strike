@@ -3,6 +3,8 @@ package gameconfig;
 import logic.Piece;
 import logic.Player;
 
+// :PatternUsed Observer
+
 public interface PiecePlacementObserver
 {
     void placingPlayerChangedTo(Player p);

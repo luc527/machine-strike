@@ -1,11 +1,12 @@
 package logic;
 
 import com.google.gson.JsonElement;
+import utils.Constants;
 
 public class Board
 {
-    private static final int HEIGHT = Constants.BOARD_HEIGHT;
-    private static final int WIDTH = Constants.BOARD_WIDTH;
+    private static final int HEIGHT = Constants.BOARD_ROWS;
+    private static final int WIDTH = Constants.BOARD_COLS;
 
     private final Terrain[][] board = new Terrain[HEIGHT][WIDTH];
 
