@@ -26,7 +26,7 @@ public class Machines
     public static List<Machine> all()
     {
         if (instance == null) throw new RuntimeException("Machines not load()'ed yet!");
-        return Collections.unmodifiableList(instance.all);
+        return instance.all;
     }
 
     public static Machine get(String name)
@@ -48,6 +48,8 @@ public class Machines
                 byName.put(machine.name(), machine);
             }
         }
+
+        all = Collections.unmodifiableList(all);
     }
 
 

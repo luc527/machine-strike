@@ -24,7 +24,7 @@ public class Boards
     public static List<Board> all()
     {
         if (instance == null) throw new RuntimeException("Boards not load()'ed yet!");
-        return Collections.unmodifiableList(instance.all);
+        return instance.all;
     }
 
     private Boards() throws IOException
@@ -35,5 +35,7 @@ public class Boards
             for (var elem : arr)
                 all.add(Board.fromJsonElement(elem));
         }
+
+        all = Collections.unmodifiableList(all);
     }
 }
