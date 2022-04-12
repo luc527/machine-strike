@@ -1,5 +1,6 @@
 package gameconfig;
 
+import assets.Boards;
 import logic.Board;
 import logic.Piece;
 import logic.Player;
@@ -19,7 +20,7 @@ public class GameConfigurationView implements GameConfigurationObserver
     private JRadioButton player2radio;
     private Map<Board, JRadioButton> boardRadios;
 
-    public GameConfigurationView(GameConfigurationController controller, List<Board> availableBoards)
+    public GameConfigurationView(GameConfigurationController controller)
     {
         this.controller = controller;
         this.controller.attach(this);
@@ -60,14 +61,14 @@ public class GameConfigurationView implements GameConfigurationObserver
         var boardGroup = new ButtonGroup();
         boardRadios = new HashMap();
         boardForm.add(new JLabel("Board:"));
-        for (var board : availableBoards) {
+        for (var board : Boards.all()) {
             var boardRadio = new JRadioButton("<html>"+board.toString().replaceAll("\n", "<br>")+"</html>");
             boardRadio.addActionListener(e -> controller.selectBoard(board));
             boardForm.add(boardRadio);
             boardGroup.add(boardRadio);
             boardRadios.put(board, boardRadio);
         }
-        controller.selectBoard(availableBoards.get(0));
+        controller.selectBoard(Boards.all().get(0));
         panel.add(boardForm);
 
 

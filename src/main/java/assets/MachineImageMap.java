@@ -1,4 +1,4 @@
-package graphics;
+package assets;
 
 import com.google.gson.JsonParser;
 
@@ -18,18 +18,18 @@ public class MachineImageMap
     private static final String FILENAME = "./assets/machines-images.json";
     private static MachineImageMap instance;
 
+    private final Map<String, ImageIcon> map;
+
     public static void load() throws IOException
     {
         instance = new MachineImageMap();
     }
 
-    public static MachineImageMap the()
+    public static ImageIcon get(String name)
     {
-        if (instance == null) throw new RuntimeException("MachineImageMap not initialized yet!");
-        return instance;
+        if (instance == null) throw new RuntimeException("MachineImageMap not load()'ed yet!");
+        return instance.map.get(name);
     }
-
-    private final Map<String, ImageIcon> map;
 
     private MachineImageMap() throws IOException
     {
@@ -43,11 +43,5 @@ public class MachineImageMap
             }
         }
     }
-
-    public ImageIcon get(String machineName)
-    {
-        return map.get(machineName);
-    }
-
 
 }

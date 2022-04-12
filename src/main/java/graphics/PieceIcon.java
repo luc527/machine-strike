@@ -10,13 +10,13 @@ import java.awt.*;
 
 public class PieceIcon implements Icon
 {
-    private final ImageIcon imgIcon;
+    private final Icon ico;
     private final Piece piece;
 
-    public PieceIcon(Piece piece, ImageIcon imgIcon)
+    public PieceIcon(Piece piece, Icon ico)
     {
         this.piece = piece;
-        this.imgIcon = imgIcon;
+        this.ico = ico;
     }
 
     @Override
@@ -32,12 +32,12 @@ public class PieceIcon implements Icon
     @Override
     public int getIconWidth()
     {
-        return imgIcon.getIconWidth();
+        return ico.getIconWidth();
     }
 
     @Override
     public int getIconHeight()
     {
-        return imgIcon.getIconWidth();
+        return ico.getIconWidth();
     }
 }
