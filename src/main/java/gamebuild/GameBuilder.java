@@ -19,20 +19,15 @@ public class GameBuilder
         this.piecesByPosition = new Piece[Constants.BOARD_ROWS][Constants.BOARD_COLS];
     }
 
-    public void setStartingPlayer(Player p) {this.startingPlayer = p;}
-    public Player startingPlayer() {return this.startingPlayer;}
-
-    public void setBoard(Board b) {this.board = b;}
-    public Board board() {return this.board;}
-
-    public Piece addPiece(Player player, Machine machine, Direction dir, int row, int col)
+    public void setStartingPlayer(Player p)
     {
-        var piece = new Piece(machine, dir, player);
-        piecesByPosition[row][col] = piece;
-        return piece;
+        this.startingPlayer = p;
     }
 
-    public Piece pieceAt(int row, int col) {return this.piecesByPosition[row][col];}
+    public void setBoard(Board b)
+    {
+        this.board = b;
+    }
 
     public GameState initialGameState()
     {

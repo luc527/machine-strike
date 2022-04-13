@@ -1,8 +1,12 @@
 package assets;
 
 import com.google.gson.JsonParser;
+import utils.Constants;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,14 +22,14 @@ public class MachineImageMap
     private static final String FILENAME = "./assets/machines-images.json";
     private static MachineImageMap instance;
 
-    private final Map<String, ImageIcon> map;
+    private final Map<String, Image> map;
 
     public static void load() throws IOException
     {
         instance = new MachineImageMap();
     }
 
-    public static ImageIcon get(String name)
+    public static Image get(String name)
     {
         if (instance == null) throw new RuntimeException("MachineImageMap not load()'ed yet!");
         return instance.map.get(name);
@@ -37,9 +41,10 @@ public class MachineImageMap
         try (var reader = new FileReader(FILENAME)) {
             var obj = JsonParser.parseReader(reader).getAsJsonObject();
             for (var name : obj.keySet()) {
-                var imageFilename = obj.get(name).getAsJsonPrimitive().getAsString();
-                var icon = new ImageIcon(imageFilename);
-                map.put(name, icon);
+                var filename = obj.get(name).getAsJsonPrimitive().getAsString();
+                var image = ImageIO.read(new File(filename));
+                var resized = image.getScaledInstance(Constants.TILE_WIDTH_PX, Constants.TILE_HEIGHT_PX, Image.SCALE_DEFAULT);
+                map.put(name, resized);
             }
         }
     }

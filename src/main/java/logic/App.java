@@ -6,7 +6,9 @@ import assets.MachineImageMap;
 import assets.TerrainColorMap;
 import gamebuild.GameBuildingController;
 import gamebuild.GameSelectionView;
+import gamebuild.MachineSelectionPanel;
 
+import javax.swing.*;
 import java.io.IOException;
 
 // TODO use better look-and-feel
@@ -27,8 +29,15 @@ public class App
 
         // TODO use better colors (blue for marsh, gray for hill, brown for ?, blue-ish white for mountain)
 
-        var controller = new GameBuildingController();
+        /*var controller = new GameBuildingController();
         var view = new GameSelectionView(controller);
-        view.show();
+        view.show();*/
+
+        var frame = new JFrame();
+        var panel = new MachineSelectionPanel();
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setVisible(true);
+
     }
 }

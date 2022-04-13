@@ -1,12 +1,12 @@
 {
-  "peon": "./assets/peon.png",
-  "spades": "./assets/spades.png",
-  "bishop": "./assets/bishop.png",
-  "knight": "./assets/knight.png",
-  "hearts": "./assets/hearts.png",
-  "tower": "./assets/tower.png",
-  "diamonds": "./assets/diamonds.png",
-  "queen": "./assets/queen.png",
-  "king": "./assets/king.png",
-  "clubs": "./assets/clubs.png"
+  "Peon": "./assets/peon.png",
+  "Spades": "./assets/spades.png",
+  "Bishop": "./assets/bishop.png",
+  "Knight": "./assets/knight.png",
+  "Hearts": "./assets/hearts.png",
+  "Tower": "./assets/tower.png",
+  "Diamonds": "./assets/diamonds.png",
+  "Queen": "./assets/queen.png",
+  "King": "./assets/king.png",
+  "Clubs": "./assets/clubs.png"
 }
