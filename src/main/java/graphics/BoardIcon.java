@@ -38,9 +38,12 @@ public class BoardIcon implements Icon
     // Plus one for the outlines (drawRect)
 
     public int getIconWidth()
-    { return Constants.BOARD_COLS * TILE_WIDTH + 1; }
+    {
+        return Constants.BOARD_COLS * TILE_WIDTH + 1;
+    }
 
-    @Override
     public int getIconHeight()
-    { return Constants.BOARD_ROWS * TILE_HEIGHT + 1; }
+    {
+        return Constants.BOARD_ROWS * TILE_HEIGHT + 1;
+    }
 }
