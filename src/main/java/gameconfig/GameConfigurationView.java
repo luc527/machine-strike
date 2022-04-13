@@ -1,12 +1,13 @@
 package gameconfig;
 
 import assets.Boards;
+import graphics.BoardIcon;
 import logic.Board;
-import logic.Piece;
 import logic.Player;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class GameConfigurationView implements GameConfigurationObserver
     private JFrame frame;
     private JRadioButton player1radio;
     private JRadioButton player2radio;
-    private Map<Board, JRadioButton> boardRadios;
+    private Map<Board, JRadioButton> boardRadioMap;
 
     public GameConfigurationView(GameConfigurationController controller)
     {
@@ -55,21 +56,28 @@ public class GameConfigurationView implements GameConfigurationObserver
         //
         // Board selection
         //
-        // Let's ignore how the boards are going to be shown for now
-        var boardForm = new JPanel();
-        boardForm.setLayout(new FlowLayout());
-        var boardGroup = new ButtonGroup();
-        boardRadios = new HashMap();
-        boardForm.add(new JLabel("Board:"));
+
+        var boardSelectionPanel = new JPanel();
+        boardSelectionPanel.setLayout(new FlowLayout());
+        var boardButtonGroup = new ButtonGroup();
+        boardRadioMap = new HashMap();
+        boardSelectionPanel.add(new JLabel("Board:"));
         for (var board : Boards.all()) {
-            var boardRadio = new JRadioButton("<html>"+board.toString().replaceAll("\n", "<br>")+"</html>");
+            var boardRadio = new JRadioButton();
             boardRadio.addActionListener(e -> controller.selectBoard(board));
-            boardForm.add(boardRadio);
-            boardGroup.add(boardRadio);
-            boardRadios.put(board, boardRadio);
+
+            boardSelectionPanel.add(boardRadio);
+            var iconLabel = new JLabel(new BoardIcon(board));
+            boardSelectionPanel.add(iconLabel);
+            iconLabel.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) { boardRadio.doClick(); }
+            });
+
+            boardButtonGroup.add(boardRadio);
+            boardRadioMap.put(board, boardRadio);
         }
         controller.selectBoard(Boards.all().get(0));
-        panel.add(boardForm);
+        panel.add(boardSelectionPanel);
 
 
         // TODO button for opening the piece placement screen
@@ -91,7 +99,7 @@ public class GameConfigurationView implements GameConfigurationObserver
 
     public void selectedBoard(Board b)
     {
-        boardRadios.get(b).setSelected(true);
+        boardRadioMap.get(b).setSelected(true);
     }
 
     public void selectionsConfirmed()

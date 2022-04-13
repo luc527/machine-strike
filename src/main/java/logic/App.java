@@ -6,7 +6,9 @@ import assets.MachineImageMap;
 import assets.TerrainColorMap;
 import gameconfig.GameConfigurationController;
 import gameconfig.GameConfigurationView;
+import graphics.BoardIcon;
 
+import javax.swing.*;
 import java.io.IOException;
 
 // TODO use better look-and-feel
@@ -25,19 +27,7 @@ public class App
     {
         loadAssets();
 
-        // TODO make 5 boards
-        
-        for (var m : Machines.all())
-            System.out.println(m);
-
-        for (var b : Boards.all())
-            System.out.println(b);
-
-        for (var t : Terrain.values())
-            System.out.println(TerrainColorMap.get(t));
-
-        // TODO to display the boards in the game config screen,
-        //  make a SmallBoardIcon implements Icon
+        // TODO use better colors (blue for marsh, gray for hill, brown for ?, blue-ish white for mountain)
 
         var controller = new GameConfigurationController();
         var view = new GameConfigurationView(controller);
