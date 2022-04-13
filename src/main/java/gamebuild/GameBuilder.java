@@ -1,4 +1,4 @@
-package gameconfig;
+package gamebuild;
 
 import logic.*;
 import utils.Constants;
@@ -6,13 +6,13 @@ import utils.Constants;
 // :PatternUsed Builder
 // Builds an initial game state
 
-public class GameConfiguration
+public class GameBuilder
 {
     private Player startingPlayer;
     private Board board;
     private Piece[][] piecesByPosition;
 
-    public GameConfiguration()
+    public GameBuilder()
     {
         this.startingPlayer = null;
         this.board = null;

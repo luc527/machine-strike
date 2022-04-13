@@ -4,11 +4,9 @@ import assets.Boards;
 import assets.Machines;
 import assets.MachineImageMap;
 import assets.TerrainColorMap;
-import gameconfig.GameConfigurationController;
-import gameconfig.GameConfigurationView;
-import graphics.BoardIcon;
+import gamebuild.GameBuildingController;
+import gamebuild.GameSelectionView;
 
-import javax.swing.*;
 import java.io.IOException;
 
 // TODO use better look-and-feel
@@ -29,8 +27,8 @@ public class App
 
         // TODO use better colors (blue for marsh, gray for hill, brown for ?, blue-ish white for mountain)
 
-        var controller = new GameConfigurationController();
-        var view = new GameConfigurationView(controller);
+        var controller = new GameBuildingController();
+        var view = new GameSelectionView(controller);
         view.show();
     }
 }

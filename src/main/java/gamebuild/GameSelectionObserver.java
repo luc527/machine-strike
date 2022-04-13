@@ -1,11 +1,11 @@
-package gameconfig;
+package gamebuild;
 
 import logic.Board;
 import logic.Player;
 
 // :PatternUsed Observer
 
-public interface GameConfigurationObserver
+public interface GameSelectionObserver
 {
     void selectedStartingPlayer(Player p);
 

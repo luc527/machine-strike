@@ -1,4 +1,4 @@
-package gameconfig;
+package gamebuild;
 
 import assets.Boards;
 import graphics.BoardIcon;
@@ -12,16 +12,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class GameConfigurationView implements GameConfigurationObserver
+public class GameSelectionView implements GameSelectionObserver
 {
-    private GameConfigurationController controller;
+    private GameBuildingController controller;
 
     private JFrame frame;
     private JRadioButton player1radio;
     private JRadioButton player2radio;
     private Map<Board, JRadioButton> boardRadioMap;
+    private JButton nextButton;
 
-    public GameConfigurationView(GameConfigurationController controller)
+    public GameSelectionView(GameBuildingController controller)
     {
         this.controller = controller;
         this.controller.attach(this);
@@ -79,10 +80,13 @@ public class GameConfigurationView implements GameConfigurationObserver
         controller.selectBoard(Boards.all().get(0));
         panel.add(boardSelectionPanel);
 
+        //
+        // Next stage
+        //
 
-        // TODO button for opening the piece placement screen
-        //  and make the piece placement screen
-
+        nextButton = new JButton("Next");
+        nextButton.addActionListener(evt -> controller.confirmSelections());
+        panel.add(nextButton);
     }
 
     public void show()
@@ -102,9 +106,24 @@ public class GameConfigurationView implements GameConfigurationObserver
         boardRadioMap.get(b).setSelected(true);
     }
 
+    private void setEnabled(boolean b)
+    {
+        player1radio.setEnabled(b);
+        player2radio.setEnabled(b);
+
+        for (var radio : boardRadioMap.values()) {
+            radio.setEnabled(b);
+        }
+
+        nextButton.setEnabled(b);
+    }
+
     public void selectionsConfirmed()
     {
-
+        setEnabled(false);
+        var piecePlacementView = new PiecePlacementView(this.controller);
+        piecePlacementView.show();
+        piecePlacementView.onClose(() -> setEnabled(true));
     }
 
 }

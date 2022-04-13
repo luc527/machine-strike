@@ -1,6 +1,5 @@
-package gameconfig;
+package gamebuild;
 
-import logic.Piece;
 import logic.Player;
 
 // :PatternUsed Observer
