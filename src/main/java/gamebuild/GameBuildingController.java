@@ -8,9 +8,11 @@ import java.util.List;
 
 public class GameBuildingController
 {
-    private GameBuilder game = new GameBuilder();
-    private List<GameSelectionObserver> selecObservers = new ArrayList<>();
-    private List<PiecePlacementObserver> pieceObservers = new ArrayList<>();
+    private final GameBuilder game = new GameBuilder();
+    private final List<GameSelectionObserver> selecObservers = new ArrayList<>();
+    private final List<PiecePlacementObserver> pieceObservers = new ArrayList<>();
+
+    private Player placingPlayer;
 
     public void attach(GameSelectionObserver obs)
     {
@@ -20,11 +22,13 @@ public class GameBuildingController
     public void attach(PiecePlacementObserver obs)
     {
         pieceObservers.add(obs);
+        obs.setInitialPlacingPlayer(placingPlayer);
     }
 
     public void selectStartingPlayer(Player p)
     {
         game.setStartingPlayer(p);
+        placingPlayer = p;
         selecObservers.forEach(o -> o.selectedStartingPlayer(p));
     }
 
@@ -36,8 +40,25 @@ public class GameBuildingController
 
     public void confirmSelections()
     {
-        selecObservers.forEach(o -> o.selectionsConfirmed());
+        selecObservers.forEach(GameSelectionObserver::selectionsConfirmed);
     }
 
+    public void setMachineCursorOver(String machineName)
+    {
+        pieceObservers.forEach(o -> o.machineCursorSetTo(machineName));
+    }
 
+    // switchPlacingPlaye is probably temporary
+    // because we automatically switch players once a player places a piece on the board
+
+    public void switchPlacingPlayer()
+    {
+        this.placingPlayer = placingPlayer.next();
+        pieceObservers.forEach(o -> o.placingPlayerSwitchedTo(placingPlayer));
+    }
+
+    public void selectMachineUnderCursor()
+    {
+        pieceObservers.forEach(o -> o.machineUnderCursorSelected());
+    }
 }
