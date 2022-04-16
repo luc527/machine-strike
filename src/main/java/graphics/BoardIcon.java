@@ -9,8 +9,7 @@ import java.awt.*;
 
 public class BoardIcon implements Icon
 {
-    private static int TILE_WIDTH = 16;
-    private static int TILE_HEIGHT = 16;
+    private static int SIDE_PX = 16;
 
     private Board board;
 
@@ -26,11 +25,11 @@ public class BoardIcon implements Icon
             for (int col = 0; col < Constants.BOARD_COLS; col++) {
                 var color = TerrainColorMap.get(board.get(row, col));
                 g.setColor(color);
-                var y = by + row * TILE_HEIGHT;
-                var x = bx + col * TILE_WIDTH;
-                g.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                var y = by + row * SIDE_PX;
+                var x = bx + col * SIDE_PX;
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
                 g.setColor(color.darker());
-                g.drawRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                g.drawRect(x, y, SIDE_PX, SIDE_PX);
             }
         }
     }
@@ -39,11 +38,11 @@ public class BoardIcon implements Icon
 
     public int getIconWidth()
     {
-        return Constants.BOARD_COLS * TILE_WIDTH + 1;
+        return Constants.BOARD_COLS * SIDE_PX + 1;
     }
 
     public int getIconHeight()
     {
-        return Constants.BOARD_ROWS * TILE_HEIGHT + 1;
+        return Constants.BOARD_ROWS * SIDE_PX + 1;
     }
 }

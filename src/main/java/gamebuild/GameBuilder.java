@@ -33,4 +33,14 @@ public class GameBuilder
     {
         return new GameState(startingPlayer, board, piecesByPosition);
     }
+
+    public Board board()
+    {
+        return this.board;
+    }
+
+    public Player startingPlayer()
+    {
+        return this.startingPlayer;
+    }
 }

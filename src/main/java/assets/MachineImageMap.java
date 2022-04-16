@@ -4,7 +4,6 @@ import com.google.gson.JsonParser;
 import utils.Constants;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
@@ -43,7 +42,7 @@ public class MachineImageMap
             for (var name : obj.keySet()) {
                 var filename = obj.get(name).getAsJsonPrimitive().getAsString();
                 var image = ImageIO.read(new File(filename));
-                var resized = image.getScaledInstance(Constants.TILE_WIDTH_PX, Constants.TILE_HEIGHT_PX, Image.SCALE_DEFAULT);
+                var resized = image.getScaledInstance(Constants.BOARD_SIDE_PX, Constants.BOARD_SIDE_PX, Image.SCALE_DEFAULT);
                 map.put(name, resized);
             }
         }

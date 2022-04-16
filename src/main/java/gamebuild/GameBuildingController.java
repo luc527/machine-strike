@@ -1,6 +1,7 @@
 package gamebuild;
 
 import logic.Board;
+import logic.Coord;
 import logic.Player;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class GameBuildingController
 {
-    private final GameBuilder game = new GameBuilder();
+    private final GameBuilder gameBuilder = new GameBuilder();
     private final List<GameSelectionObserver> selecObservers = new ArrayList<>();
     private final List<PiecePlacementObserver> pieceObservers = new ArrayList<>();
 
@@ -22,20 +23,29 @@ public class GameBuildingController
     public void attach(PiecePlacementObserver obs)
     {
         pieceObservers.add(obs);
-        obs.setInitialPlacingPlayer(placingPlayer);
-    }
-
-    public void selectStartingPlayer(Player p)
-    {
-        game.setStartingPlayer(p);
-        placingPlayer = p;
-        selecObservers.forEach(o -> o.selectedStartingPlayer(p));
     }
 
     public void selectBoard(Board b)
     {
-        game.setBoard(b);
+        gameBuilder.setBoard(b);
         selecObservers.forEach(o -> o.selectedBoard(b));
+    }
+
+    public Board getBoard()
+    {
+        return gameBuilder.board();
+    }
+
+    public void selectStartingPlayer(Player p)
+    {
+        gameBuilder.setStartingPlayer(p);
+        placingPlayer = p;
+        selecObservers.forEach(o -> o.selectedStartingPlayer(p));
+    }
+
+    public Player getStartingPlayer()
+    {
+        return gameBuilder.startingPlayer();
     }
 
     public void confirmSelections()
@@ -43,22 +53,35 @@ public class GameBuildingController
         selecObservers.forEach(GameSelectionObserver::selectionsConfirmed);
     }
 
+    public Player getPlacingPlayer()
+    {
+        return this.placingPlayer;
+    }
+
     public void setMachineCursorOver(String machineName)
     {
         pieceObservers.forEach(o -> o.machineCursorSetTo(machineName));
     }
 
-    // switchPlacingPlaye is probably temporary
-    // because we automatically switch players once a player places a piece on the board
-
-    public void switchPlacingPlayer()
+    public void selectMachine(String machineName)
     {
-        this.placingPlayer = placingPlayer.next();
-        pieceObservers.forEach(o -> o.placingPlayerSwitchedTo(placingPlayer));
+        pieceObservers.forEach(o -> o.machineSelected(machineName));
     }
 
-    public void selectMachineUnderCursor()
+    public void setBoardCursor(Coord coord)
     {
-        pieceObservers.forEach(o -> o.machineUnderCursorSelected());
+        pieceObservers.forEach(o -> o.boardCursorMovedOver(coord));
+    }
+
+    public void cancelCurrentPlacement()
+    {
+        pieceObservers.forEach(o -> o.currentPlacementCancelled());
+    }
+
+    public void confirmCurrentPlacement()
+    {
+        // TODO should also signal the end of the placement phase
+        placingPlayer = placingPlayer.next();
+        pieceObservers.forEach(o -> o.currentPlacementConfirmed());
     }
 }

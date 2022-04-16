@@ -79,7 +79,7 @@ public class MachineSelectionPanel extends JComponent
         if (showCursor) {
             var cy = cursor.row() * SIDE_PX;
             var cx = cursor.col() * SIDE_PX;
-            g.setColor(cursorColor/**/);
+            g.setColor(cursorColor);
             g.setStroke(new BasicStroke(5.0f, BasicStroke.JOIN_MITER, BasicStroke.CAP_ROUND));
             g.drawRect(cx+2, cy+2, SIDE_PX-5, SIDE_PX-5);
         }
@@ -128,18 +128,25 @@ public class MachineSelectionPanel extends JComponent
         return machineNames[cursor.row()][cursor.col()];
     }
 
-    public void showCursor(boolean show)
-    {
-        this.showCursor = show;
-    }
-
     public void setCursorOver(String machineName)
     {
         cursor.set(positionByName.get(machineName));
     }
 
+    public String machineUnderCursor()
+    {
+        return machineNames[cursor.row()][cursor.col()];
+    }
+
     public void setMachineUnderCursorSelected(boolean sel)
     {
         selected[cursor.row()][cursor.col()] = sel;
+    }
+
+    public void setFocused(boolean b)
+    {
+        if (b) requestFocusInWindow();
+        showCursor = b;
+        repaint();
     }
 }
