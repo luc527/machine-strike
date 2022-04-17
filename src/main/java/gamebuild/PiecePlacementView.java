@@ -2,7 +2,6 @@ package gamebuild;
 
 import logic.Coord;
 import logic.Direction;
-import logic.Machine;
 import logic.Player;
 
 import javax.swing.*;
@@ -26,9 +25,11 @@ public class PiecePlacementView implements PiecePlacementObserver
     private final Color p2color = new Color(145, 32, 100);
 
     private final GameBuildingController controller;
+
     private final MachineSelectionPanel p1machinePanel;
     private final MachineSelectionPanel p2machinePanel;
     private final BoardPanel boardPanel;
+    private final JLabel warnLabel;
 
     public PiecePlacementView(GameBuildingController controller)
     {
@@ -46,11 +47,18 @@ public class PiecePlacementView implements PiecePlacementObserver
         // for the players to select the machines to put on the board
         //
 
-        p1machinePanel = new MachineSelectionPanel(p1color);
-        p2machinePanel = new MachineSelectionPanel(p2color);
+        p1machinePanel = new MachineSelectionPanel(
+                controller.getPlayerInventory(Player.PLAYER1),
+                p1color
+        );
+        p2machinePanel = new MachineSelectionPanel(
+                controller.getPlayerInventory(Player.PLAYER2),
+                p2color
+        );
         panel.add(p1machinePanel, BorderLayout.LINE_START);
         panel.add(p2machinePanel, BorderLayout.LINE_END);
 
+        var that = this;
         for (var machinePanel : new MachineSelectionPanel[]{p1machinePanel, p2machinePanel}) {
             machinePanel.addKeyListener(new KeyAdapter()
             {
@@ -69,7 +77,9 @@ public class PiecePlacementView implements PiecePlacementObserver
                         }
                         controller.setMachineCursorOver(machineName);
                     } else if (c == KeyEvent.VK_ENTER) {
-                        controller.selectMachine(machinePanel.machineUnderCursor());
+                        if (!controller.selectMachine(machinePanel.machineUnderCursor())) {
+                            that.warn("You don't have any more pieces of this type!");
+                        }
                     }
                 }
             });
@@ -108,6 +118,26 @@ public class PiecePlacementView implements PiecePlacementObserver
                 }
             }
         });
+
+        warnLabel = new JLabel(" ");
+        warnLabel.setForeground(Color.RED);
+        // TODO better header layout, not just warnings (players etc.)
+        panel.add(warnLabel, BorderLayout.SOUTH);
+    }
+
+    private void warn(String s)
+    {
+        warnLabel.setText(s);
+        warnLabel.repaint();
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+                warnLabel.setText(" ");
+                warnLabel.repaint();
+            } catch (InterruptedException e) {
+                System.err.println(e);
+            }
+        }).start();
     }
 
     public void show()
@@ -121,13 +151,9 @@ public class PiecePlacementView implements PiecePlacementObserver
         var panel = player == Player.PLAYER1 ? p1machinePanel : p2machinePanel;
         var other = player == Player.PLAYER1 ? p2machinePanel : p1machinePanel;
         panel.setFocused(true);
+        panel.repaint();
         other.setFocused(false);
-    }
-
-    @Override
-    public void placingPlayerSwitchedTo(Player placingPlayer)
-    {
-        focusOn(placingPlayer);
+        other.repaint();
     }
 
     @Override
@@ -143,22 +169,6 @@ public class PiecePlacementView implements PiecePlacementObserver
     }
 
     @Override
-    public void currentPlacementCancelled()
-    {
-        boardPanel.setFocused(false);
-        var machinePanel = placingPlayerPanel();
-        machinePanel.setFocused(true);
-        machinePanel.setMachineUnderCursorSelected(false);
-    }
-
-    @Override
-    public void currentPlacementConfirmed()
-    {
-        boardPanel.setFocused(false);
-        focusOn(controller.getPlacingPlayer());
-    }
-
-    @Override
     public void machineCursorSetTo(String machineName)
     {
         var panel = placingPlayerPanel();
@@ -170,12 +180,32 @@ public class PiecePlacementView implements PiecePlacementObserver
     public void machineSelected(String machineName)
     {
         var panel = placingPlayerPanel();
-        panel.setMachineUnderCursorSelected(true);
+        // panel.setMachineUnderCursorSelected(true);
         panel.setFocused(false);
+        panel.repaint();
         boardPanel.setCursorColor(p1color);
         boardPanel.setFocused(true);
         boardPanel.carryMachine(machineName);
-        panel.repaint();
+        boardPanel.repaint();
+    }
+
+    @Override
+    public void currentPlacementCancelled()
+    {
+        boardPanel.setFocused(false);
+        boardPanel.repaint();
+        var machinePanel = placingPlayerPanel();
+        machinePanel.setFocused(true);
+        // machinePanel.setMachineUnderCursorSelected(false);
+        machinePanel.repaint();
+    }
+
+    @Override
+    public void currentPlacementConfirmed()
+    {
+        boardPanel.setFocused(false);
+        boardPanel.repaint();
+        focusOn(controller.getPlacingPlayer());
     }
 
     public void onClose(Runnable r)

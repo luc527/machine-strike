@@ -5,6 +5,7 @@ import assets.Machines;
 import logic.Coord;
 import logic.Direction;
 import logic.Machine;
+import logic.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,36 +22,36 @@ public class MachineSelectionPanel extends JComponent
     private final int n;
     private final int rows;
     private final Image[][] machineImages;
-    private final boolean[][] selected;
 
     private final String[][] machineNames;
     private final Map<String, Coord> positionByName;  // inverted index of machineNames
+    private final PlayerMachineInventory inventory;
 
     private final Color cursorColor;
     private final Coord cursor;
     private boolean showCursor;
 
-    public MachineSelectionPanel(Color cursorColor)
+    public MachineSelectionPanel(PlayerMachineInventory inventory, Color cursorColor)
     {
-        this(Machines.all(), cursorColor);
+        this(Machines.all(), inventory, cursorColor);
     }
 
-    public MachineSelectionPanel(List<Machine> machines, Color cursorColor)
+    public MachineSelectionPanel(List<Machine> machines, PlayerMachineInventory inventory, Color cursorColor)
     {
-        this.n = machines.size();
+        n = machines.size();
+        this.inventory = inventory;
         this.cursorColor = cursorColor;
-        this.showCursor = false;
-        this.cursor = new Coord(0, 0);
 
-        this.rows = (n - 1) / MACHINES_PER_ROW + 1;  // n/MACHINES_PER_ROW rounded up
+        showCursor = false;
+        cursor = new Coord(0, 0);
 
-        this.machineImages = new Image[rows][MACHINES_PER_ROW];
-        this.machineNames = new String[rows][MACHINES_PER_ROW];
-        this.selected = new boolean[rows][MACHINES_PER_ROW];
+        rows = (n - 1) / MACHINES_PER_ROW + 1;  // n/MACHINES_PER_ROW rounded up
+
+        machineImages = new Image[rows][MACHINES_PER_ROW];
+        machineNames = new String[rows][MACHINES_PER_ROW];
         for (var row = 0; row < rows; row++) {
-            this.machineImages[row] = new Image[MACHINES_PER_ROW];
-            this.machineNames[row] = new String[MACHINES_PER_ROW];
-            this.selected[row] = new boolean[MACHINES_PER_ROW];
+            machineImages[row] = new Image[MACHINES_PER_ROW];
+            machineNames[row] = new String[MACHINES_PER_ROW];
         }
 
         positionByName = new HashMap<>();
@@ -59,8 +60,8 @@ public class MachineSelectionPanel extends JComponent
             var row = i / MACHINES_PER_ROW;
             var col = i % MACHINES_PER_ROW;
             var name = machines.get(i).name();
-            this.machineImages[row][col] = MachineImageMap.get(name);
-            this.machineNames[row][col] = name;
+            machineImages[row][col] = MachineImageMap.get(name);
+            machineNames[row][col] = name;
             positionByName.put(name, new Coord(row, col));
         }
 
@@ -90,18 +91,24 @@ public class MachineSelectionPanel extends JComponent
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
             g.drawImage(machineImages[row][col], x, y, null);
-        }
 
-        g.setStroke(new BasicStroke());
-        g.setColor(new Color(0, 0, 0, .2f));  // For selected machines
+            g.setStroke(new BasicStroke());
+            var amount = inventory.amount(machineNames[row][col]);
+            var amountString = String.valueOf(amount);
+            // hacky way of doing outlines, but other stack overflow answers were pretty complicated
+            var stringHeight = 12;
+            var ax = x+2;
+            var ay = y+2+stringHeight;
+            g.setColor(Color.BLACK);
+            for (var yoff = -1; yoff <= 1; yoff++)
+                for (var xoff = -1; xoff <= 1; xoff++)
+                    g.drawString(amountString, ax+xoff, ay+yoff);
+            g.setColor(Color.WHITE);
+            g.drawString(amountString, ax, ay);
 
-        for (var row = 0; row < rows; row++) {
-            for (var col = 0; col < MACHINES_PER_ROW; col++) {
-                var y = row * SIDE_PX;
-                var x = col * SIDE_PX;
-                if (selected[row][col]) {
-                    g.fillRect(x, y, SIDE_PX, SIDE_PX);
-                }
+            if (amount == 0) {
+                g.setColor(new Color(0, 0, 0, .2f));
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
             }
         }
 
@@ -138,15 +145,9 @@ public class MachineSelectionPanel extends JComponent
         return machineNames[cursor.row()][cursor.col()];
     }
 
-    public void setMachineUnderCursorSelected(boolean sel)
-    {
-        selected[cursor.row()][cursor.col()] = sel;
-    }
-
     public void setFocused(boolean b)
     {
         if (b) requestFocusInWindow();
         showCursor = b;
-        repaint();
     }
 }

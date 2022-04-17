@@ -29,7 +29,7 @@ public class GameBuilder
         this.board = b;
     }
 
-    public GameState initialGameState()
+    public GameState build()
     {
         return new GameState(startingPlayer, board, piecesByPosition);
     }

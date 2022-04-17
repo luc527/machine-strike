@@ -1,9 +1,6 @@
 package logic;
 
-import assets.Boards;
-import assets.Machines;
-import assets.MachineImageMap;
-import assets.TerrainColorMap;
+import assets.*;
 import gamebuild.GameBuildingController;
 import gamebuild.GameSelectionView;
 import gamebuild.MachineSelectionPanel;
@@ -22,6 +19,7 @@ public class App
         Boards.load();
         MachineImageMap.load();
         TerrainColorMap.load();
+        MachineInventory.load();
     }
 
     public static void main(String[] args) throws IOException

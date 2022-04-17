@@ -11,8 +11,6 @@ public interface PiecePlacementObserver
 
     void machineSelected(String machineName);
 
-    void placingPlayerSwitchedTo(Player placingPlayer);
-
     void boardCursorMovedOver(Coord coord);
 
     void currentPlacementCancelled();

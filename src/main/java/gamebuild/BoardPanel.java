@@ -76,7 +76,6 @@ public class BoardPanel extends JPanel
     {
         if (b) requestFocusInWindow();
         showCursor = b;
-        repaint();
     }
 
     public void carryMachine(String machineName)

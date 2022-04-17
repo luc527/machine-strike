@@ -7,6 +7,8 @@ import logic.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO refactor into two controllers, one for "game selection" and another for "piece placement"
+
 public class GameBuildingController
 {
     private final GameBuilder gameBuilder = new GameBuilder();
@@ -14,6 +16,9 @@ public class GameBuildingController
     private final List<PiecePlacementObserver> pieceObservers = new ArrayList<>();
 
     private Player placingPlayer;
+    private final PlayerMachineInventory p1inventory = PlayerMachineInventory.initial();
+    private final PlayerMachineInventory p2inventory = PlayerMachineInventory.initial();
+    private String selectedMachine;
 
     public void attach(GameSelectionObserver obs)
     {
@@ -50,7 +55,7 @@ public class GameBuildingController
 
     public void confirmSelections()
     {
-        selecObservers.forEach(GameSelectionObserver::selectionsConfirmed);
+        selecObservers.forEach(o -> o.selectionsConfirmed());
     }
 
     public Player getPlacingPlayer()
@@ -63,9 +68,20 @@ public class GameBuildingController
         pieceObservers.forEach(o -> o.machineCursorSetTo(machineName));
     }
 
-    public void selectMachine(String machineName)
+    public PlayerMachineInventory getPlayerInventory(Player p)
     {
-        pieceObservers.forEach(o -> o.machineSelected(machineName));
+        return p == Player.PLAYER1 ? p1inventory : p2inventory;
+    }
+
+    public boolean selectMachine(String machineName)
+    {
+        this.selectedMachine = machineName;
+        if (getPlayerInventory(placingPlayer).amount(machineName) > 0) {
+            pieceObservers.forEach(o -> o.machineSelected(machineName));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void setBoardCursor(Coord coord)
@@ -81,6 +97,8 @@ public class GameBuildingController
     public void confirmCurrentPlacement()
     {
         // TODO should also signal the end of the placement phase
+        getPlayerInventory(placingPlayer).take(selectedMachine);
+        selectedMachine = null;
         placingPlayer = placingPlayer.next();
         pieceObservers.forEach(o -> o.currentPlacementConfirmed());
     }

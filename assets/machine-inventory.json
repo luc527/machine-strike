@@ -1,0 +1,12 @@
+{
+  "Peon": 3,
+  "Spades": 3,
+  "Bishop": 3,
+  "Knight": 3,
+  "Hearts": 2,
+  "Tower": 2,
+  "Diamonds": 1,
+  "Queen": 1,
+  "King": 1,
+  "Clubs": 1
+}
