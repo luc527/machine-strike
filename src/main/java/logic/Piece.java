@@ -21,4 +21,5 @@ public class Piece
     public Machine machine() { return this.machine; }
     public Direction direction() { return this.direction; }
     public int health() { return this.currentHealth; }
+    public Player player() { return this.player; }
 }

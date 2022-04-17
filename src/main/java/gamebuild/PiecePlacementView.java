@@ -21,9 +21,6 @@ public class PiecePlacementView implements PiecePlacementObserver
 {
     private final JFrame frame;
 
-    private final Color p1color = new Color(32, 100, 145);
-    private final Color p2color = new Color(145, 32, 100);
-
     private final GameBuildingController controller;
 
     private final MachineSelectionPanel p1machinePanel;
@@ -49,11 +46,11 @@ public class PiecePlacementView implements PiecePlacementObserver
 
         p1machinePanel = new MachineSelectionPanel(
                 controller.getPlayerInventory(Player.PLAYER1),
-                p1color
+                Player.PLAYER1.color()
         );
         p2machinePanel = new MachineSelectionPanel(
                 controller.getPlayerInventory(Player.PLAYER2),
-                p2color
+                Player.PLAYER2.color()
         );
         panel.add(p1machinePanel, BorderLayout.LINE_START);
         panel.add(p2machinePanel, BorderLayout.LINE_END);
@@ -64,7 +61,6 @@ public class PiecePlacementView implements PiecePlacementObserver
             {
                 public void keyPressed(KeyEvent e)
                 {
-                    System.out.println(e);
                     var k = e.getKeyCode();
                     var c = e.getKeyChar();
                     if (k == KeyEvent.VK_UP || k == KeyEvent.VK_DOWN || k == KeyEvent.VK_LEFT || k == KeyEvent.VK_RIGHT) {
@@ -92,7 +88,7 @@ public class PiecePlacementView implements PiecePlacementObserver
         // where the players actually put their pieces on
         //
 
-        boardPanel = new BoardPanel(controller.getBoard());
+        boardPanel = new BoardPanel(controller.getBoard(), controller::pieceAt);
         panel.add(boardPanel, BorderLayout.CENTER);
 
         boardPanel.addKeyListener(new KeyAdapter()
@@ -131,7 +127,7 @@ public class PiecePlacementView implements PiecePlacementObserver
         warnLabel.repaint();
         new Thread(() -> {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2500);
                 warnLabel.setText(" ");
                 warnLabel.repaint();
             } catch (InterruptedException e) {
@@ -159,7 +155,7 @@ public class PiecePlacementView implements PiecePlacementObserver
     @Override
     public void boardCursorMovedOver(Coord coord)
     {
-        boardPanel.setCursorOver(coord);
+        boardPanel.setCursor(coord);
         boardPanel.repaint();
     }
 
@@ -183,7 +179,7 @@ public class PiecePlacementView implements PiecePlacementObserver
         // panel.setMachineUnderCursorSelected(true);
         panel.setFocused(false);
         panel.repaint();
-        boardPanel.setCursorColor(p1color);
+        boardPanel.setCursorColor(controller.getPlacingPlayer().color());
         boardPanel.setFocused(true);
         boardPanel.carryMachine(machineName);
         boardPanel.repaint();
@@ -206,6 +202,12 @@ public class PiecePlacementView implements PiecePlacementObserver
         boardPanel.setFocused(false);
         boardPanel.repaint();
         focusOn(controller.getPlacingPlayer());
+    }
+
+    @Override
+    public void currentPlacementFailed()
+    {
+        warn("That tile is already occupied!");
     }
 
     public void onClose(Runnable r)

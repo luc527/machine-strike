@@ -1,8 +1,7 @@
 package gamebuild;
 
-import logic.Board;
-import logic.Coord;
-import logic.Player;
+import assets.Machines;
+import logic.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,8 @@ public class GameBuildingController
     private Player placingPlayer;
     private final PlayerMachineInventory p1inventory = PlayerMachineInventory.initial();
     private final PlayerMachineInventory p2inventory = PlayerMachineInventory.initial();
-    private String selectedMachine;
+    private Coord boardCursor;
+    private String selectedMachineName;
 
     public void attach(GameSelectionObserver obs)
     {
@@ -75,7 +75,7 @@ public class GameBuildingController
 
     public boolean selectMachine(String machineName)
     {
-        this.selectedMachine = machineName;
+        this.selectedMachineName = machineName;
         if (getPlayerInventory(placingPlayer).amount(machineName) > 0) {
             pieceObservers.forEach(o -> o.machineSelected(machineName));
             return true;
@@ -86,20 +86,35 @@ public class GameBuildingController
 
     public void setBoardCursor(Coord coord)
     {
+        boardCursor = coord;
         pieceObservers.forEach(o -> o.boardCursorMovedOver(coord));
     }
 
     public void cancelCurrentPlacement()
     {
+        boardCursor = null;
+        selectedMachineName = null;
         pieceObservers.forEach(o -> o.currentPlacementCancelled());
     }
 
     public void confirmCurrentPlacement()
     {
-        // TODO should also signal the end of the placement phase
-        getPlayerInventory(placingPlayer).take(selectedMachine);
-        selectedMachine = null;
-        placingPlayer = placingPlayer.next();
-        pieceObservers.forEach(o -> o.currentPlacementConfirmed());
+        var selectedMachine = Machines.get(selectedMachineName);
+        var piece = new Piece(selectedMachine, Direction.NORTH, placingPlayer);
+        if (!gameBuilder.addPiece(piece, boardCursor.row(), boardCursor.col())) {
+            pieceObservers.forEach(o -> o.currentPlacementFailed());
+        } else {
+            // TODO should also signal the end of the placement phase
+            getPlayerInventory(placingPlayer).take(selectedMachineName);
+            selectedMachineName = null;
+            placingPlayer = placingPlayer.next();
+            pieceObservers.forEach(o -> o.currentPlacementConfirmed());
+        }
+
+    }
+
+    public Piece pieceAt(Coord coord)
+    {
+        return gameBuilder.pieceAt(coord.row(), coord.col());
     }
 }

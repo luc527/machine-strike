@@ -5,7 +5,6 @@ import assets.Machines;
 import logic.Coord;
 import logic.Direction;
 import logic.Machine;
-import logic.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +20,8 @@ public class MachineSelectionPanel extends JComponent
 
     private final int n;
     private final int rows;
-    private final Image[][] machineImages;
 
-    private final String[][] machineNames;
+    private final String[][] machines;
     private final Map<String, Coord> positionByName;  // inverted index of machineNames
     private final PlayerMachineInventory inventory;
 
@@ -47,11 +45,9 @@ public class MachineSelectionPanel extends JComponent
 
         rows = (n - 1) / MACHINES_PER_ROW + 1;  // n/MACHINES_PER_ROW rounded up
 
-        machineImages = new Image[rows][MACHINES_PER_ROW];
-        machineNames = new String[rows][MACHINES_PER_ROW];
+        this.machines = new String[rows][MACHINES_PER_ROW];
         for (var row = 0; row < rows; row++) {
-            machineImages[row] = new Image[MACHINES_PER_ROW];
-            machineNames[row] = new String[MACHINES_PER_ROW];
+            this.machines[row] = new String[MACHINES_PER_ROW];
         }
 
         positionByName = new HashMap<>();
@@ -60,8 +56,7 @@ public class MachineSelectionPanel extends JComponent
             var row = i / MACHINES_PER_ROW;
             var col = i % MACHINES_PER_ROW;
             var name = machines.get(i).name();
-            machineImages[row][col] = MachineImageMap.get(name);
-            machineNames[row][col] = name;
+            this.machines[row][col] = name;
             positionByName.put(name, new Coord(row, col));
         }
 
@@ -90,10 +85,10 @@ public class MachineSelectionPanel extends JComponent
             var col = i % MACHINES_PER_ROW;
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
-            g.drawImage(machineImages[row][col], x, y, null);
+            g.drawImage(MachineImageMap.get(machines[row][col]), x, y, null);
 
             g.setStroke(new BasicStroke());
-            var amount = inventory.amount(machineNames[row][col]);
+            var amount = inventory.amount(machines[row][col]);
             var amountString = String.valueOf(amount);
             // hacky way of doing outlines, but other stack overflow answers were pretty complicated
             var stringHeight = 12;
@@ -132,7 +127,7 @@ public class MachineSelectionPanel extends JComponent
             var lastRow = cursor.col() >= n % MACHINES_PER_ROW ? rows - 2 : rows - 1;
             cursor.setRow(clamp(cursor.row() + offset, 0, lastRow));
         }
-        return machineNames[cursor.row()][cursor.col()];
+        return machines[cursor.row()][cursor.col()];
     }
 
     public void setCursorOver(String machineName)
@@ -142,7 +137,7 @@ public class MachineSelectionPanel extends JComponent
 
     public String machineUnderCursor()
     {
-        return machineNames[cursor.row()][cursor.col()];
+        return machines[cursor.row()][cursor.col()];
     }
 
     public void setFocused(boolean b)

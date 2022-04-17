@@ -1,5 +1,7 @@
 package utils;
 
+import java.awt.*;
+
 public class Constants
 {
     public final static int BOARD_ROWS = 8;

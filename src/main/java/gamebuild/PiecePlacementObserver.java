@@ -16,4 +16,6 @@ public interface PiecePlacementObserver
     void currentPlacementCancelled();
 
     void currentPlacementConfirmed();
+
+    void currentPlacementFailed();
 }

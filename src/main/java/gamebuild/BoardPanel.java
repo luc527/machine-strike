@@ -5,10 +5,12 @@ import assets.TerrainColorMap;
 import logic.Board;
 import logic.Coord;
 import logic.Direction;
+import logic.Piece;
 import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.function.Function;
 
 public class BoardPanel extends JPanel
 {
@@ -17,17 +19,19 @@ public class BoardPanel extends JPanel
     private static final int SIDE_PX = Constants.BOARD_SIDE_PX;
 
     private final Coord cursor;
-    private Color cursorColor;
     private boolean showCursor;
+    private Color cursorColor;
     private String carriedMachine;  // carried by the cursor
 
     private final Board board;
+    private final Function<Coord, Piece> pieceProvider;
 
-    public BoardPanel(Board board)
+    public BoardPanel(Board board, Function<Coord, Piece> pieceSupplier)
     {
         this.cursor = new Coord(0, 0);
         this.showCursor = false;
         this.board = board;
+        this.pieceProvider = pieceSupplier;
     }
 
     @Override
@@ -54,6 +58,11 @@ public class BoardPanel extends JPanel
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
                 g.setColor(color.darker());
                 g.drawRect(x, y, SIDE_PX, SIDE_PX);
+
+                var piece = pieceProvider.apply(new Coord(row, col));
+                if (piece != null) {
+                    drawPiece(piece, g, x, y);
+                }
             }
         }
 
@@ -65,6 +74,17 @@ public class BoardPanel extends JPanel
             g.drawRect(cx+2, cy+2, SIDE_PX-5, SIDE_PX-5);
             g.drawImage(MachineImageMap.get(carriedMachine), cx, cy, null);
         }
+    }
+
+    private void drawPiece(Piece piece, Graphics g, int x, int y)
+    {
+        var img = MachineImageMap.get(piece.machine().name());
+        g.drawImage(img, x, y, null);
+        var c = piece.player().color();
+        var color = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int)(255*0.3));
+        g.setColor(color);
+        g.fillRect(x, y, img.getWidth(null), img.getHeight(null));
+        // TODO also consider direction and so on
     }
 
     public void setCursorColor(Color c)
@@ -102,7 +122,7 @@ public class BoardPanel extends JPanel
         return cursor;
     }
 
-    public void setCursorOver(Coord coord)
+    public void setCursor(Coord coord)
     {
         cursor.set(coord);
     }
