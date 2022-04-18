@@ -1,17 +1,16 @@
 package gamebuild;
 
 import logic.Coord;
-import logic.Player;
 
 // :PatternUsed Observer
 
 public interface PiecePlacementObserver
 {
-    void machineCursorSetTo(String machineName);
+    void machineCursorOver(String machineName);
 
     void machineSelected(String machineName);
 
-    void boardCursorMovedOver(Coord coord);
+    void boardCursorOver(Coord coord);
 
     void currentPlacementCancelled();
 

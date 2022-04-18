@@ -10,12 +10,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 
-
-
-
-// TODO separate setFocues() into requestFocus() and showCursor() and repaint() again, they're different things!
+// TODO refactor this whole thing later, it's messy
+//  consider especially not having the cursor level of granularity in the interfaces
+//  on the controller only selectPiece, placePiece and so on
 
 public class PiecePlacementView implements PiecePlacementObserver
 {
@@ -27,6 +27,7 @@ public class PiecePlacementView implements PiecePlacementObserver
     private final MachineSelectionPanel p2machinePanel;
     private final BoardPanel boardPanel;
     private final JLabel warnLabel;
+    private List<Coord> availablePlacements;
 
     public PiecePlacementView(GameBuildingController controller)
     {
@@ -153,7 +154,7 @@ public class PiecePlacementView implements PiecePlacementObserver
     }
 
     @Override
-    public void boardCursorMovedOver(Coord coord)
+    public void boardCursorOver(Coord coord)
     {
         boardPanel.setCursor(coord);
         boardPanel.repaint();
@@ -161,11 +162,11 @@ public class PiecePlacementView implements PiecePlacementObserver
 
     private MachineSelectionPanel placingPlayerPanel()
     {
-        return controller.getPlacingPlayer() == Player.PLAYER1 ? p1machinePanel : p2machinePanel;
+        return controller.placingPlayer() == Player.PLAYER1 ? p1machinePanel : p2machinePanel;
     }
 
     @Override
-    public void machineCursorSetTo(String machineName)
+    public void machineCursorOver(String machineName)
     {
         var panel = placingPlayerPanel();
         panel.setCursorOver(machineName);
@@ -176,10 +177,13 @@ public class PiecePlacementView implements PiecePlacementObserver
     public void machineSelected(String machineName)
     {
         var panel = placingPlayerPanel();
-        // panel.setMachineUnderCursorSelected(true);
         panel.setFocused(false);
         panel.repaint();
-        boardPanel.setCursorColor(controller.getPlacingPlayer().color());
+
+        var available = controller.availablePlacements();
+        boardPanel.setAvailablePositions(available);
+        boardPanel.setCursor(available.get(0));
+        boardPanel.setCursorColor(controller.placingPlayer().color());
         boardPanel.setFocused(true);
         boardPanel.carryMachine(machineName);
         boardPanel.repaint();
@@ -189,10 +193,10 @@ public class PiecePlacementView implements PiecePlacementObserver
     public void currentPlacementCancelled()
     {
         boardPanel.setFocused(false);
+        boardPanel.setAvailablePositions(List.of());
         boardPanel.repaint();
         var machinePanel = placingPlayerPanel();
         machinePanel.setFocused(true);
-        // machinePanel.setMachineUnderCursorSelected(false);
         machinePanel.repaint();
     }
 
@@ -200,8 +204,9 @@ public class PiecePlacementView implements PiecePlacementObserver
     public void currentPlacementConfirmed()
     {
         boardPanel.setFocused(false);
+        boardPanel.setAvailablePositions(List.of());
         boardPanel.repaint();
-        focusOn(controller.getPlacingPlayer());
+        focusOn(controller.placingPlayer());
     }
 
     @Override

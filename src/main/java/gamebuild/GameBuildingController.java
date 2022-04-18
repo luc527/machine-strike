@@ -2,6 +2,7 @@ package gamebuild;
 
 import assets.Machines;
 import logic.*;
+import utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,20 @@ public class GameBuildingController
     private final PlayerMachineInventory p2inventory = PlayerMachineInventory.initial();
     private Coord boardCursor;
     private String selectedMachineName;
+
+    private final static List<Coord> p1availablePlacements;
+    private final static List<Coord> p2availablePlacements;
+
+    static {
+        p1availablePlacements = new ArrayList<>();
+        p2availablePlacements = new ArrayList<>();
+        for (var col = 0; col < Constants.BOARD_COLS; col++) {
+            p1availablePlacements.add(new Coord(Constants.BOARD_ROWS-1, col));
+            p1availablePlacements.add(new Coord(Constants.BOARD_ROWS-2, col));
+            p2availablePlacements.add(new Coord(0, col));
+            p2availablePlacements.add(new Coord(1, col));
+        }
+    }
 
     public void attach(GameSelectionObserver obs)
     {
@@ -58,14 +73,14 @@ public class GameBuildingController
         selecObservers.forEach(o -> o.selectionsConfirmed());
     }
 
-    public Player getPlacingPlayer()
+    public Player placingPlayer()
     {
         return this.placingPlayer;
     }
 
     public void setMachineCursorOver(String machineName)
     {
-        pieceObservers.forEach(o -> o.machineCursorSetTo(machineName));
+        pieceObservers.forEach(o -> o.machineCursorOver(machineName));
     }
 
     public PlayerMachineInventory getPlayerInventory(Player p)
@@ -84,10 +99,17 @@ public class GameBuildingController
         }
     }
 
+    public List<Coord> availablePlacements()
+    {
+        return placingPlayer == Player.PLAYER1
+             ? p1availablePlacements
+             : p2availablePlacements;
+    }
+
     public void setBoardCursor(Coord coord)
     {
         boardCursor = coord;
-        pieceObservers.forEach(o -> o.boardCursorMovedOver(coord));
+        pieceObservers.forEach(o -> o.boardCursorOver(coord));
     }
 
     public void cancelCurrentPlacement()
@@ -117,4 +139,5 @@ public class GameBuildingController
     {
         return gameBuilder.pieceAt(coord.row(), coord.col());
     }
+
 }

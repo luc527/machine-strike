@@ -10,6 +10,7 @@ import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.function.Function;
 
 public class BoardPanel extends JPanel
@@ -25,6 +26,7 @@ public class BoardPanel extends JPanel
 
     private final Board board;
     private final Function<Coord, Piece> pieceProvider;
+    private List<Coord> availablePositions;
 
     public BoardPanel(Board board, Function<Coord, Piece> pieceSupplier)
     {
@@ -32,6 +34,7 @@ public class BoardPanel extends JPanel
         this.showCursor = false;
         this.board = board;
         this.pieceProvider = pieceSupplier;
+        this.availablePositions = List.of();
     }
 
     @Override
@@ -64,6 +67,13 @@ public class BoardPanel extends JPanel
                     drawPiece(piece, g, x, y);
                 }
             }
+        }
+
+        g.setColor(new Color(0.8f, 1f, 1f, 0.3f));
+        for (var coord : availablePositions) {
+            var y = coord.row() * SIDE_PX;
+            var x = coord.col() * SIDE_PX;
+            g.fillRect(x, y, SIDE_PX, SIDE_PX);
         }
 
         if (showCursor) {
@@ -112,18 +122,29 @@ public class BoardPanel extends JPanel
 
     public Coord moveCursor(Direction dir)
     {
+        System.out.println("Moving cursor " + dir);
+        var result = new Coord(cursor.row(), cursor.col());
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
-            cursor.setCol(clamp(cursor.col() + offset, 0, COLS - 1));
+            result.setCol(clamp(cursor.col() + offset, 0, COLS - 1));
         } else {
             var offset = dir == Direction.NORTH ? -1 : 1;
-            cursor.setRow(clamp(cursor.row() + offset, 0, ROWS - 1));
+            result.setRow(clamp(cursor.row() + offset, 0, ROWS - 1));
         }
+        if (availablePositions.contains(result)) {
+            System.out.println("OK!");
+            cursor.set(result);
+        } else System.out.println("Oh no!");
         return cursor;
     }
 
     public void setCursor(Coord coord)
     {
         cursor.set(coord);
+    }
+
+    public void setAvailablePositions(List<Coord> availablePositions)
+    {
+        this.availablePositions = availablePositions;
     }
 }
