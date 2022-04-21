@@ -22,4 +22,15 @@ public class Piece
     public Direction direction() { return this.direction; }
     public int health() { return this.currentHealth; }
     public Player player() { return this.player; }
+
+    @Override
+    public String toString()
+    {
+        return "Piece{" +
+                "machine=" + machine +
+                ", direction=" + direction +
+                ", player=" + player +
+                ", currentHealth=" + currentHealth +
+                '}';
+    }
 }

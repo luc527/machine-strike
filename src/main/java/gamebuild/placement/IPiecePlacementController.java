@@ -1,21 +1,26 @@
 package gamebuild.placement;
 
 import gamebuild.IMachineInventory;
-import logic.CoordState;
-import logic.Piece;
-import logic.Player;
+import logic.*;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface IPiecePlacementController
 {
     void attach(IPiecePlacementObserver obs);
 
+    Board getBoard();
+
     Player getPlacingPlayer();
 
     IMachineInventory getPlayerInventory(Player player);
 
-    Optional<Piece> getPieceAt(CoordState coord);
+    ICoord getInitialAvailablePosition();
 
-    PlacementRequestStatus placePiece(String machine, CoordState coord);  // implicitely of placing player
+    Set<ICoord> getAvailablePositions();
+
+    Optional<Piece> getPieceAt(ICoord coord);
+
+    boolean placePiece(String machine, ICoord coord);  // implicitely of placing player
 }

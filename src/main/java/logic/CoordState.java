@@ -1,5 +1,7 @@
 package logic;
 
+import utils.Constants;
+
 import java.util.Objects;
 
 public class CoordState implements ICoord
@@ -35,10 +37,10 @@ public class CoordState implements ICoord
         this.col = col;
     }
 
-    public void set(CoordState coord)
+    public void set(ICoord coord)
     {
-        this.row = coord.row;
-        this.col = coord.col;
+        this.row = coord.row();
+        this.col = coord.col();
     }
 
     @Override

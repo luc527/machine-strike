@@ -106,7 +106,6 @@ public class SelectionView implements ISelectionObserver
     @Override
     public void selectionFinished(Player startingPlayer, Board board, IPiecePlacementController nextCon)
     {
-        System.out.println("Selection finished!");
         setEnabled(false);
 
         var nextView = new PiecePlacementView(nextCon);

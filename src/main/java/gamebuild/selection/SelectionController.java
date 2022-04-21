@@ -8,18 +8,20 @@ import logic.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class SelectionController implements ISelectionController
-
 {
+    public interface NextControllerConstructor extends Function<GameBuilder, IPiecePlacementController> {};
+
     private final GameBuilder builder;
     private final List<ISelectionObserver> os;
-    private final IPiecePlacementController nextCon;
+    private final NextControllerConstructor consNextCon;
 
-    public SelectionController(GameBuilder builder, IPiecePlacementController nextCon)
+    public SelectionController(GameBuilder builder, NextControllerConstructor consNextCon)
     {
         this.builder = builder;
-        this.nextCon = nextCon;
+        this.consNextCon = consNextCon;
         os = new ArrayList<>();
     }
 
@@ -41,6 +43,7 @@ public class SelectionController implements ISelectionController
     {
         builder.setStartingPlayer(startingPlayer);
         builder.setBoard(board);
+        var nextCon = consNextCon.apply(builder);
         os.forEach(o -> o.selectionFinished(startingPlayer, board, nextCon));
     }
 }

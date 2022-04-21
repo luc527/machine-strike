@@ -38,12 +38,11 @@ public class MachineInventoryState implements IMachineInventory
         machineAmounts.put(m, amount + getAmount(m));
     }
 
-    public boolean take(String m)
+    public void take(String m)
     {
         var amountLeft = getAmount(m) - 1;
-        if (amountLeft < 0) return false;
+        if (amountLeft < 0) throw new RuntimeException("Attempted to take a machine with no amount left!");
         machineAmounts.put(m, amountLeft);
-        return true;
     }
 
     public static MachineInventoryState initial()

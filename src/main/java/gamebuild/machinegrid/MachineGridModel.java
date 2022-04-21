@@ -5,6 +5,8 @@ import logic.CoordState;
 import logic.Direction;
 import logic.ICoord;
 
+import java.util.Optional;
+
 public class MachineGridModel
 {
     private static final int MACHINES_PER_ROW = 4;
@@ -52,9 +54,14 @@ public class MachineGridModel
         return cursor;
     }
 
-    public String machineUnderCursor()
+    public Optional<String> selectMachineUnderCursor()
     {
-        return machines[cursor.row()][cursor.col()];
+        var machine = machines[cursor.row()][cursor.col()];
+        if (inv.getAmount(machine) > 0) {
+            return Optional.of(machine);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private int clamp(int x, int min, int max)

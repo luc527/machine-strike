@@ -4,7 +4,7 @@ import java.awt.*;
 
 public enum Player
 {
-    PLAYER1(new Color(32, 145, 100)),
+    PLAYER1(new Color(32, 100, 145)),
     PLAYER2(new Color(145, 32, 100));
 
     private final Color color;

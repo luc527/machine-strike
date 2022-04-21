@@ -2,6 +2,7 @@ package gamebuild.machinegrid;
 
 import assets.MachineImageMap;
 import logic.Direction;
+import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +11,14 @@ import java.awt.event.KeyEvent;
 
 public class MachineGridPanel extends JPanel
 {
-    private static final int SIDE_PX = 48;
+    private static final int SIDE_PX = Constants.BOARD_SIDE_PX;
 
     private final MachineGridModel grid;
     private final Color cursorColor;
     private boolean showCursor;
+    private Runnable onSelect;
 
-    public MachineGridPanel(MachineGridModel grid, Color cursorColor, Runnable selectionCallback)
+    public MachineGridPanel(MachineGridModel grid, Color cursorColor)
     {
         this.grid = grid;
         this.cursorColor = cursorColor;
@@ -24,9 +26,10 @@ public class MachineGridPanel extends JPanel
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                System.out.println(e);
                 if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-                    selectionCallback.run();
+                    if (onSelect != null) {
+                        onSelect.run();
+                    }
                 } else {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_RIGHT -> grid.moveCursor(Direction.EAST);
@@ -91,5 +94,11 @@ public class MachineGridPanel extends JPanel
     {
         if (b) requestFocusInWindow();
         showCursor = b;
+        repaint();
+    }
+
+    public void onSelect(Runnable r)
+    {
+        this.onSelect = r;
     }
 }
