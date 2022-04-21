@@ -1,4 +1,4 @@
-package gamebuild;
+package gamebuild_old;
 
 import logic.Board;
 import logic.Player;

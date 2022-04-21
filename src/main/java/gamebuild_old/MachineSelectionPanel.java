@@ -1,8 +1,9 @@
-package gamebuild;
+package gamebuild_old;
 
 import assets.MachineImageMap;
 import assets.Machines;
-import logic.Coord;
+import gamebuild.MachineInventoryState;
+import logic.CoordState;
 import logic.Direction;
 import logic.Machine;
 
@@ -22,26 +23,26 @@ public class MachineSelectionPanel extends JComponent
     private final int rows;
 
     private final String[][] machines;
-    private final Map<String, Coord> positionByName;  // inverted index of machineNames
-    private final PlayerMachineInventory inventory;
+    private final Map<String, CoordState> positionByName;  // inverted index of machineNames
+    private final MachineInventoryState inventory;
 
     private final Color cursorColor;
-    private final Coord cursor;
+    private final CoordState cursor;
     private boolean showCursor;
 
-    public MachineSelectionPanel(PlayerMachineInventory inventory, Color cursorColor)
+    public MachineSelectionPanel(MachineInventoryState inventory, Color cursorColor)
     {
         this(Machines.all(), inventory, cursorColor);
     }
 
-    public MachineSelectionPanel(List<Machine> machines, PlayerMachineInventory inventory, Color cursorColor)
+    public MachineSelectionPanel(List<Machine> machines, MachineInventoryState inventory, Color cursorColor)
     {
         n = machines.size();
         this.inventory = inventory;
         this.cursorColor = cursorColor;
 
         showCursor = false;
-        cursor = new Coord(0, 0);
+        cursor = new CoordState(0, 0);
 
         rows = (n - 1) / MACHINES_PER_ROW + 1;  // n/MACHINES_PER_ROW rounded up
 
@@ -57,7 +58,7 @@ public class MachineSelectionPanel extends JComponent
             var col = i % MACHINES_PER_ROW;
             var name = machines.get(i).name();
             this.machines[row][col] = name;
-            positionByName.put(name, new Coord(row, col));
+            positionByName.put(name, new CoordState(row, col));
         }
 
         setFocusable(true);
@@ -88,7 +89,7 @@ public class MachineSelectionPanel extends JComponent
             g.drawImage(MachineImageMap.get(machines[row][col]), x, y, null);
 
             g.setStroke(new BasicStroke());
-            var amount = inventory.amount(machines[row][col]);
+            var amount = inventory.getAmount(machines[row][col]);
             var amountString = String.valueOf(amount);
             // hacky way of doing outlines, but other stack overflow answers were pretty complicated
             var stringHeight = 12;

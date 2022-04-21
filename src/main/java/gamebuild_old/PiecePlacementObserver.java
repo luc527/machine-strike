@@ -1,6 +1,6 @@
-package gamebuild;
+package gamebuild_old;
 
-import logic.Coord;
+import logic.CoordState;
 
 // :PatternUsed Observer
 
@@ -10,7 +10,7 @@ public interface PiecePlacementObserver
 
     void machineSelected(String machineName);
 
-    void boardCursorOver(Coord coord);
+    void boardCursorOver(CoordState coord);
 
     void currentPlacementCancelled();
 

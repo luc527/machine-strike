@@ -1,4 +1,4 @@
-package gamebuild;
+package gamebuild_old;
 
 import assets.Boards;
 import graphics.BoardIcon;
@@ -121,7 +121,7 @@ public class GameSelectionView implements GameSelectionObserver
     public void selectionsConfirmed()
     {
         setEnabled(false);
-        var piecePlacementView = new PiecePlacementView(this.controller);
+        var piecePlacementView = new OldPiecePlacementView(this.controller);
         piecePlacementView.show();
         piecePlacementView.onClose(() -> setEnabled(true));
     }

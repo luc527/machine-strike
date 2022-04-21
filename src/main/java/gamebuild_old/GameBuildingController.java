@@ -1,6 +1,8 @@
-package gamebuild;
+package gamebuild_old;
 
 import assets.Machines;
+import gamebuild.GameBuilder;
+import gamebuild.MachineInventoryState;
 import logic.*;
 import utils.Constants;
 
@@ -16,22 +18,22 @@ public class GameBuildingController
     private final List<PiecePlacementObserver> pieceObservers = new ArrayList<>();
 
     private Player placingPlayer;
-    private final PlayerMachineInventory p1inventory = PlayerMachineInventory.initial();
-    private final PlayerMachineInventory p2inventory = PlayerMachineInventory.initial();
-    private Coord boardCursor;
+    private final MachineInventoryState p1inventory = MachineInventoryState.initial();
+    private final MachineInventoryState p2inventory = MachineInventoryState.initial();
+    private CoordState boardCursor;
     private String selectedMachineName;
 
-    private final static List<Coord> p1availablePlacements;
-    private final static List<Coord> p2availablePlacements;
+    private final static List<CoordState> p1availablePlacements;
+    private final static List<CoordState> p2availablePlacements;
 
     static {
         p1availablePlacements = new ArrayList<>();
         p2availablePlacements = new ArrayList<>();
         for (var col = 0; col < Constants.BOARD_COLS; col++) {
-            p1availablePlacements.add(new Coord(Constants.BOARD_ROWS-1, col));
-            p1availablePlacements.add(new Coord(Constants.BOARD_ROWS-2, col));
-            p2availablePlacements.add(new Coord(0, col));
-            p2availablePlacements.add(new Coord(1, col));
+            p1availablePlacements.add(new CoordState(Constants.BOARD_ROWS-1, col));
+            p1availablePlacements.add(new CoordState(Constants.BOARD_ROWS-2, col));
+            p2availablePlacements.add(new CoordState(0, col));
+            p2availablePlacements.add(new CoordState(1, col));
         }
     }
 
@@ -83,7 +85,7 @@ public class GameBuildingController
         pieceObservers.forEach(o -> o.machineCursorOver(machineName));
     }
 
-    public PlayerMachineInventory getPlayerInventory(Player p)
+    public MachineInventoryState getPlayerInventory(Player p)
     {
         return p == Player.PLAYER1 ? p1inventory : p2inventory;
     }
@@ -91,7 +93,7 @@ public class GameBuildingController
     public boolean selectMachine(String machineName)
     {
         this.selectedMachineName = machineName;
-        if (getPlayerInventory(placingPlayer).amount(machineName) > 0) {
+        if (getPlayerInventory(placingPlayer).getAmount(machineName) > 0) {
             pieceObservers.forEach(o -> o.machineSelected(machineName));
             return true;
         } else {
@@ -99,14 +101,14 @@ public class GameBuildingController
         }
     }
 
-    public List<Coord> availablePlacements()
+    public List<CoordState> availablePlacements()
     {
         return placingPlayer == Player.PLAYER1
              ? p1availablePlacements
              : p2availablePlacements;
     }
 
-    public void setBoardCursor(Coord coord)
+    public void setBoardCursor(CoordState coord)
     {
         boardCursor = coord;
         pieceObservers.forEach(o -> o.boardCursorOver(coord));
@@ -135,7 +137,7 @@ public class GameBuildingController
 
     }
 
-    public Piece pieceAt(Coord coord)
+    public Piece pieceAt(CoordState coord)
     {
         return gameBuilder.pieceAt(coord.row(), coord.col());
     }

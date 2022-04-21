@@ -1,12 +1,11 @@
 package logic;
 
 import assets.*;
-import gamebuild.GameBuildingController;
-import gamebuild.GameSelectionView;
-import gamebuild.MachineSelectionPanel;
-import gamebuild.PiecePlacementView;
+import gamebuild.placement.PiecePlacementController;
+import gamebuild.selection.SelectionController;
+import gamebuild.selection.SelectionView;
+import gamebuild.GameBuilder;
 
-import javax.swing.*;
 import java.io.IOException;
 
 // TODO use better look-and-feel
@@ -19,7 +18,7 @@ public class App
         Boards.load();
         MachineImageMap.load();
         TerrainColorMap.load();
-        MachineInventory.load();
+        DefaultMachineInventory.load();
     }
 
     public static void main(String[] args) throws IOException
@@ -28,9 +27,14 @@ public class App
 
         // TODO use better colors (blue for marsh, gray for hill, brown for ?, blue-ish white for mountain)
 
-        var controller = new GameBuildingController();
-        var view = new GameSelectionView(controller);
-        view.show();
+
+        var builder = new GameBuilder();
+
+        var placementCon = new PiecePlacementController(builder);
+        var selectionCon = new SelectionController(builder, placementCon);
+
+        var selectionView = new SelectionView(selectionCon);
+        selectionView.show();
 
     }
 }

@@ -1,9 +1,9 @@
-package gamebuild;
+package gamebuild_old;
 
 import assets.MachineImageMap;
 import assets.TerrainColorMap;
 import logic.Board;
-import logic.Coord;
+import logic.CoordState;
 import logic.Direction;
 import logic.Piece;
 import utils.Constants;
@@ -19,18 +19,18 @@ public class BoardPanel extends JPanel
     private static final int COLS = Constants.BOARD_COLS;
     private static final int SIDE_PX = Constants.BOARD_SIDE_PX;
 
-    private final Coord cursor;
+    private final CoordState cursor;
     private boolean showCursor;
     private Color cursorColor;
     private String carriedMachine;  // carried by the cursor
 
     private final Board board;
-    private final Function<Coord, Piece> pieceProvider;
-    private List<Coord> availablePositions;
+    private final Function<CoordState, Piece> pieceProvider;
+    private List<CoordState> availablePositions;
 
-    public BoardPanel(Board board, Function<Coord, Piece> pieceSupplier)
+    public BoardPanel(Board board, Function<CoordState, Piece> pieceSupplier)
     {
-        this.cursor = new Coord(0, 0);
+        this.cursor = new CoordState(0, 0);
         this.showCursor = false;
         this.board = board;
         this.pieceProvider = pieceSupplier;
@@ -62,7 +62,7 @@ public class BoardPanel extends JPanel
                 g.setColor(color.darker());
                 g.drawRect(x, y, SIDE_PX, SIDE_PX);
 
-                var piece = pieceProvider.apply(new Coord(row, col));
+                var piece = pieceProvider.apply(new CoordState(row, col));
                 if (piece != null) {
                     drawPiece(piece, g, x, y);
                 }
@@ -120,10 +120,10 @@ public class BoardPanel extends JPanel
         return x;
     }
 
-    public Coord moveCursor(Direction dir)
+    public CoordState moveCursor(Direction dir)
     {
         System.out.println("Moving cursor " + dir);
-        var result = new Coord(cursor.row(), cursor.col());
+        var result = new CoordState(cursor.row(), cursor.col());
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
             result.setCol(clamp(cursor.col() + offset, 0, COLS - 1));
@@ -138,12 +138,12 @@ public class BoardPanel extends JPanel
         return cursor;
     }
 
-    public void setCursor(Coord coord)
+    public void setCursor(CoordState coord)
     {
         cursor.set(coord);
     }
 
-    public void setAvailablePositions(List<Coord> availablePositions)
+    public void setAvailablePositions(List<CoordState> availablePositions)
     {
         this.availablePositions = availablePositions;
     }

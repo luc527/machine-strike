@@ -2,22 +2,24 @@ package logic;
 
 import java.util.Objects;
 
-public class Coord
+public class CoordState implements ICoord
 {
     private int row;
     private int col;
 
-    public Coord(int row, int col)
+    public CoordState(int row, int col)
     {
         this.row = row;
         this.col = col;
     }
 
+    @Override
     public int row()
     {
         return row;
     }
 
+    @Override
     public int col()
     {
         return col;
@@ -33,7 +35,7 @@ public class Coord
         this.col = col;
     }
 
-    public void set(Coord coord)
+    public void set(CoordState coord)
     {
         this.row = coord.row;
         this.col = coord.col;
@@ -44,7 +46,7 @@ public class Coord
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Coord coord = (Coord) o;
+        CoordState coord = (CoordState) o;
         return row == coord.row && col == coord.col;
     }
 

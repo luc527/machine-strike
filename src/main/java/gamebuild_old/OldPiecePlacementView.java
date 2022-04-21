@@ -1,6 +1,6 @@
-package gamebuild;
+package gamebuild_old;
 
-import logic.Coord;
+import logic.CoordState;
 import logic.Direction;
 import logic.Player;
 
@@ -17,7 +17,7 @@ import java.util.List;
 //  consider especially not having the cursor level of granularity in the interfaces
 //  on the controller only selectPiece, placePiece and so on
 
-public class PiecePlacementView implements PiecePlacementObserver
+public class OldPiecePlacementView implements PiecePlacementObserver
 {
     private final JFrame frame;
 
@@ -27,9 +27,9 @@ public class PiecePlacementView implements PiecePlacementObserver
     private final MachineSelectionPanel p2machinePanel;
     private final BoardPanel boardPanel;
     private final JLabel warnLabel;
-    private List<Coord> availablePlacements;
+    private List<CoordState> availablePlacements;
 
-    public PiecePlacementView(GameBuildingController controller)
+    public OldPiecePlacementView(GameBuildingController controller)
     {
         controller.attach(this);
         this.controller = controller;
@@ -100,7 +100,7 @@ public class PiecePlacementView implements PiecePlacementObserver
                 var k = e.getKeyCode();
                 var c = e.getKeyChar();
                 if (k == KeyEvent.VK_UP || k == KeyEvent.VK_RIGHT || k == KeyEvent.VK_DOWN || k == KeyEvent.VK_LEFT) {
-                    var coord = new Coord(0, 0);
+                    var coord = new CoordState(0, 0);
                     switch (k) {
                         case KeyEvent.VK_UP -> coord = boardPanel.moveCursor(Direction.NORTH);
                         case KeyEvent.VK_RIGHT -> coord = boardPanel.moveCursor(Direction.EAST);
@@ -154,7 +154,7 @@ public class PiecePlacementView implements PiecePlacementObserver
     }
 
     @Override
-    public void boardCursorOver(Coord coord)
+    public void boardCursorOver(CoordState coord)
     {
         boardPanel.setCursor(coord);
         boardPanel.repaint();
