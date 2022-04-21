@@ -53,33 +53,40 @@ public class PiecePlacementController implements IPiecePlacementController
     }
 
     @Override
+    public Player getFirstPlayer()
+    {
+        return placingPlayer;
+    }
+
+    @Override
+    public boolean selectMachine(String machine)
+    {
+        var inv = placingPlayer == Player.PLAYER1 ? p1inventory : p2inventory;
+        if (inv.getAmount(machine) <= 0) {
+            return false;
+        }
+        var initialPos = placingPlayer == Player.PLAYER1 ? p1initialPosition : p2initialPosition;
+        var availablePos = placingPlayer == Player.PLAYER1 ? p1availablePositions : p2availablePositions;
+        os.forEach(o -> o.machineSelected(machine, placingPlayer, initialPos, availablePos));
+        return true;
+    }
+
+    @Override
+    public void cancelSelection()
+    {
+        os.forEach(o -> o.selectionCancelled(placingPlayer));
+    }
+
+    @Override
     public Board getBoard()
     {
         return builder.board();
     }
 
     @Override
-    public Player getPlacingPlayer()
-    {
-        return placingPlayer;
-    }
-
-    @Override
     public IMachineInventory getPlayerInventory(Player player)
     {
         return player == Player.PLAYER1 ? p1inventory : p2inventory;
-    }
-
-    @Override
-    public ICoord getInitialAvailablePosition()
-    {
-        return placingPlayer == Player.PLAYER1 ? p1initialPosition : p2initialPosition;
-    }
-
-    @Override
-    public Set<ICoord> getAvailablePositions()
-    {
-        return placingPlayer == Player.PLAYER1 ? p1availablePositions : p2availablePositions;
     }
 
     @Override
@@ -102,6 +109,7 @@ public class PiecePlacementController implements IPiecePlacementController
         var piece = new Piece(Machines.get(machine), Direction.NORTH, placingPlayer);
         builder.addPiece(piece, coord.row(), coord.col());
         placingPlayer = placingPlayer.next();
+        os.forEach(o -> o.piecePlaced(piece, coord));
         return true;
     }
 }

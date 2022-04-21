@@ -4,23 +4,30 @@ import gamebuild.IMachineInventory;
 import logic.*;
 
 import java.util.Optional;
-import java.util.Set;
+
+
+// Observe how the player is never passed
+// This is because the controller is responsible for keeping
+// track of the current placing player, and ensuring that
+// the players alternate correctly. Otherwise two sequential calls
+// to placePiece(Player p, ...) could have the same player,
+// which would be wrong.
 
 public interface IPiecePlacementController
 {
     void attach(IPiecePlacementObserver obs);
 
-    Board getBoard();
+    Player getFirstPlayer();
 
-    Player getPlacingPlayer();
+    boolean selectMachine(String machine);
+
+    void cancelSelection();
+
+    boolean placePiece(String machine, ICoord coord);
+
+    Board getBoard();
 
     IMachineInventory getPlayerInventory(Player player);
 
-    ICoord getInitialAvailablePosition();
-
-    Set<ICoord> getAvailablePositions();
-
     Optional<Piece> getPieceAt(ICoord coord);
-
-    boolean placePiece(String machine, ICoord coord);  // implicitely of placing player
 }

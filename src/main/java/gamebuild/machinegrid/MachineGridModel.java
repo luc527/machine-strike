@@ -54,16 +54,6 @@ public class MachineGridModel
         return cursor;
     }
 
-    public Optional<String> selectMachineUnderCursor()
-    {
-        var machine = machines[cursor.row()][cursor.col()];
-        if (inv.getAmount(machine) > 0) {
-            return Optional.of(machine);
-        } else {
-            return Optional.empty();
-        }
-    }
-
     private int clamp(int x, int min, int max)
     {
         if (x < min) return min;
@@ -82,6 +72,11 @@ public class MachineGridModel
             var lastRow = cursor.col() >= n % MACHINES_PER_ROW ? rows - 2 : rows - 1;
             cursor.setRow(clamp(cursor.row() + offset, 0, lastRow));
         }
+    }
+
+    public String machineUnderCursor()
+    {
+        return machines[cursor.row()][cursor.col()];
     }
 
     public interface MachineGridIterator

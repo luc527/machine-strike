@@ -109,7 +109,7 @@ public class SelectionView implements ISelectionObserver
         setEnabled(false);
 
         var nextView = new PiecePlacementView(nextCon);
-        nextView.show();
+        nextView.show(nextCon.getFirstPlayer());
         nextView.onClose(() -> setEnabled(true));
     }
 
