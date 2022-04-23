@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class MachineInventoryState implements IMachineInventory
+public class MachineInventory implements IMachineInventory
 {
     private final Map<String, Integer> machineAmounts;
 
-    private MachineInventoryState()
+    private MachineInventory()
     {
         this.machineAmounts = new HashMap<>();
     }
@@ -45,13 +45,18 @@ public class MachineInventoryState implements IMachineInventory
         machineAmounts.put(m, amountLeft);
     }
 
-    public static MachineInventoryState initial()
+    public static MachineInventory full()
     {
-        var inv = new MachineInventoryState();
+        var inv = new MachineInventory();
         for (var machine : Machines.all()) {
             var name = machine.name();
             inv.add(name, DefaultMachineInventory.get(name));
         }
         return inv;
+    }
+
+    public static MachineInventory empty()
+    {
+        return new MachineInventory();
     }
 }

@@ -35,6 +35,12 @@ public class Machines
         return instance.byName.get(name);
     }
 
+    public static Set<String> allNames()
+    {
+        if (instance == null) throw new RuntimeException("Machines not load()'ed yet!");
+        return instance.byName.keySet();
+    }
+
     private Machines() throws IOException
     {
         all = new ArrayList<>();
@@ -51,6 +57,4 @@ public class Machines
 
         all = Collections.unmodifiableList(all);
     }
-
-
 }

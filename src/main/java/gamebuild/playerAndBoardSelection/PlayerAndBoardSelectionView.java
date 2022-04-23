@@ -1,5 +1,7 @@
-package gamebuild.selection;
+package gamebuild.playerAndBoardSelection;
 
+import gamebuild.machineSelection.IMachineSelectionController;
+import gamebuild.machineSelection.MachineSelectionView;
 import gamebuild.placement.IPiecePlacementController;
 import gamebuild.placement.PiecePlacementView;
 import graphics.BoardIcon;
@@ -13,7 +15,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class SelectionView implements ISelectionObserver
+public class PlayerAndBoardSelectionView implements IPlayerAndBoardSelectionObserver
 {
     private final JFrame frame;
     private final JRadioButton p1radio;
@@ -23,7 +25,7 @@ public class SelectionView implements ISelectionObserver
 
     private Board selectedBoard;
 
-    public SelectionView(ISelectionController con)
+    public PlayerAndBoardSelectionView(IPlayerAndBoardSelectionController con)
     {
         con.attach(this);
 
@@ -104,24 +106,11 @@ public class SelectionView implements ISelectionObserver
     }
 
     @Override
-    public void selectionFinished(Player startingPlayer, Board board, IPiecePlacementController nextCon)
+    public void selectionFinished(Player startingPlayer, Board board, IMachineSelectionController nextCon)
     {
-        setEnabled(false);
-
-        var nextView = new PiecePlacementView(nextCon);
+        var nextView = new MachineSelectionView(nextCon);
         nextView.show(nextCon.getFirstPlayer());
-        nextView.onClose(() -> setEnabled(true));
+        frame.dispose();
     }
-
-    private void setEnabled(boolean b)
-    {
-        p1radio.setEnabled(b);
-        p2radio.setEnabled(b);
-        for (var radio : boardRadios) {
-            radio.setEnabled(b);
-        }
-        nextButton.setEnabled(b);
-    }
-
 
 }

@@ -1,23 +1,9 @@
 package logic;
 
-import java.awt.*;
-
 public enum Player
 {
-    PLAYER1(new Color(32, 100, 145)),
-    PLAYER2(new Color(145, 32, 100));
-
-    private final Color color;
-
-    Player(Color color)
-    {
-        this.color = color;
-    }
-
-    public Color color()
-    {
-        return this.color;
-    }
+    PLAYER1,
+    PLAYER2;
 
     public Player next()
     {

@@ -2,6 +2,7 @@ package boardgrid;
 
 import assets.MachineImageMap;
 import assets.TerrainColorMap;
+import graphics.Palette;
 import logic.Direction;
 import logic.Piece;
 import utils.Constants;
@@ -102,7 +103,7 @@ public class BoardGridPanel extends JPanel
     {
         var img = MachineImageMap.get(piece.machine().name());
         g.drawImage(img, x, y, null);
-        var c = piece.player().color();
+        var c = Palette.color(piece.player());
         var color = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int)(255*0.3));
         g.setColor(color);
         g.fillRect(x, y, img.getWidth(null), img.getHeight(null));

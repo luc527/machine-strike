@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface IPiecePlacementObserver
 {
-    void machineSelected(String machine, Player byPlayer, ICoord initialPos, Set<ICoord> availablePos);
+    void pieceSelected(String machine, Player byPlayer, ICoord initialPos, Set<ICoord> availablePos);
 
     void selectionCancelled(Player byPlayer);
 

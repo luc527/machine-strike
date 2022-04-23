@@ -1,15 +1,13 @@
-package logic;
-
 import assets.*;
-import gamebuild.placement.IPiecePlacementController;
+import gamebuild.MachineInventory;
+import gamebuild.machineSelection.MachineSelectionController;
 import gamebuild.placement.PiecePlacementController;
-import gamebuild.selection.SelectionController;
-import gamebuild.selection.SelectionView;
+import gamebuild.playerAndBoardSelection.PlayerAndBoardSelectionController;
+import gamebuild.playerAndBoardSelection.PlayerAndBoardSelectionView;
 import gamebuild.GameBuilder;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.function.Function;
 
 public class App
 {
@@ -38,10 +36,15 @@ public class App
 
         var builder = new GameBuilder();
 
-        var selectionCon = new SelectionController(builder, b -> new PiecePlacementController(b));
+        var pbCon =
+        new PlayerAndBoardSelectionController(builder, () ->
+            new MachineSelectionController(builder, (p1inv, p2inv) ->
+                new PiecePlacementController(builder, p1inv, p2inv)
+            )
+        );
 
-        var selectionView = new SelectionView(selectionCon);
-        selectionView.show();
+        var pbView = new PlayerAndBoardSelectionView(pbCon);
+        pbView.show();
 
     }
 }

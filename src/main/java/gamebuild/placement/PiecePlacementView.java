@@ -4,6 +4,7 @@ import boardgrid.BoardGridModel;
 import boardgrid.BoardGridPanel;
 import gamebuild.machinegrid.MachineGridModel;
 import gamebuild.machinegrid.MachineGridPanel;
+import graphics.Palette;
 import logic.ICoord;
 import logic.Piece;
 import logic.Player;
@@ -19,6 +20,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
     private final JFrame frame;
     private final JLabel warnLabel;
 
+    private final IPiecePlacementController con;
+
     private final MachineGridPanel p1gridPanel;
     private final MachineGridPanel p2gridPanel;
 
@@ -31,30 +34,37 @@ public class PiecePlacementView implements IPiecePlacementObserver
     public PiecePlacementView(IPiecePlacementController con)
     {
         con.attach(this);
+        this.con = con;
 
         frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         var panel = new JPanel();
         panel.setLayout(new BorderLayout());
         frame.setContentPane(panel);
 
+        // The inventories encapsulate the logic around each player having a certain amount
+        // of certain machines to be placed in the board
         var p1inventory = con.getPlayerInventory(Player.PLAYER1);
         var p2inventory = con.getPlayerInventory(Player.PLAYER2);
 
-        var p1gridModel = new MachineGridModel(p1inventory);
-        var p2gridModel = new MachineGridModel(p2inventory);
+        // The grid model (logically, not visually) organizes those machines in a grid
+        // on which a cursor can move
+        var p1gridModel = new MachineGridModel(p1inventory.getMachines(), 3);
+        var p2gridModel = new MachineGridModel(p2inventory.getMachines(), 3);
 
-        p1gridPanel = new MachineGridPanel(p1gridModel, Player.PLAYER1.color());
-        p2gridPanel = new MachineGridPanel(p2gridModel, Player.PLAYER2.color());
+        // Finally, the grid panels are responsible for showing the machines, the cursor,
+        // and the amounts of each machine; they are the visuals for the aforementioned models and inventories
+        p1gridPanel = new MachinePlacementGridPanel(p1gridModel, p1inventory, Palette.p1color);
+        p2gridPanel = new MachinePlacementGridPanel(p2gridModel, p2inventory, Palette.p2color);
 
         boardModel = new BoardGridModel(con.getBoard(), con::getPieceAt);
         boardPanel = new BoardGridPanel(boardModel);
 
-        // TODO figure out how to make warning font bigger
         warnLabel = new JLabel(" ");
         warnLabel.setForeground(Color.RED);
 
-        p1gridPanel.onSelect(() -> {
-            var machine = p1gridModel.machineUnderCursor();
+        p1gridPanel.onPressEnter(() -> {
+            var machine = p1gridModel.machineAt(p1gridModel.cursor());
             var ok = con.selectMachine(machine);
             if (!ok) {
                 warn("You don't have any more pieces of this type!");
@@ -62,8 +72,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
             }
         });
 
-        p2gridPanel.onSelect(() -> {
-            var machine = p2gridModel.machineUnderCursor();
+        p2gridPanel.onPressEnter(() -> {
+            var machine = p2gridModel.machineAt(p2gridModel.cursor());
             if (!con.selectMachine(machine)) {
                 warn("You don't have any more pieces of this type!");
             }
@@ -109,18 +119,18 @@ public class PiecePlacementView implements IPiecePlacementObserver
         return p == Player.PLAYER1 ? p1gridPanel : p2gridPanel;
     }
 
-    public void show(Player firstPlayer)
+    public void show()
     {
         frame.pack();
         frame.setVisible(true);
-        playerMachinePanel(firstPlayer).setFocused(true);
+        playerMachinePanel(con.getFirstPlayer()).setFocused(true);
     }
 
     @Override
-    public void machineSelected(String machine, Player player, ICoord initialPos, Set<ICoord> availablePos)
+    public void pieceSelected(String machine, Player player, ICoord initialPos, Set<ICoord> availablePos)
     {
         boardModel.startInteraction(initialPos, availablePos, machine);
-        boardPanel.setCursorColor(player.color());
+        boardPanel.setCursorColor(Palette.color(player));
         boardPanel.setFocused(true);
         playerMachinePanel(player).setFocused(false);
     }
@@ -140,14 +150,5 @@ public class PiecePlacementView implements IPiecePlacementObserver
         other.setFocused(true);
         other.repaint();
         boardPanel.setFocused(false);
-    }
-
-    public void onClose(Runnable r)
-    {
-        frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                r.run();
-            }
-        });
     }
 }

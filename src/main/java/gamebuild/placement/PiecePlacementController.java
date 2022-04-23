@@ -2,7 +2,7 @@ package gamebuild.placement;
 
 import assets.Machines;
 import gamebuild.IMachineInventory;
-import gamebuild.MachineInventoryState;
+import gamebuild.MachineInventory;
 import gamebuild.GameBuilder;
 import logic.*;
 import utils.Constants;
@@ -13,8 +13,8 @@ public class PiecePlacementController implements IPiecePlacementController
 {
     private final List<IPiecePlacementObserver> os;
     private Player placingPlayer;
-    private final MachineInventoryState p1inventory;
-    private final MachineInventoryState p2inventory;
+    private final MachineInventory p1inventory;
+    private final MachineInventory p2inventory;
     private final GameBuilder builder;
 
     private static final Set<ICoord> p1availablePositions;
@@ -37,13 +37,13 @@ public class PiecePlacementController implements IPiecePlacementController
         p2initialPosition = CoordCache.get(0,      cols/2);
     }
 
-    public PiecePlacementController(GameBuilder builder)
+    public PiecePlacementController(GameBuilder builder, MachineInventory p1inventory, MachineInventory p2inventory)
     {
         this.builder = builder;
         placingPlayer = builder.startingPlayer();
         os = new ArrayList<>();
-        p1inventory = MachineInventoryState.initial();
-        p2inventory = MachineInventoryState.initial();
+        this.p1inventory = p1inventory;
+        this.p2inventory = p2inventory;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class PiecePlacementController implements IPiecePlacementController
         }
         var initialPos = placingPlayer == Player.PLAYER1 ? p1initialPosition : p2initialPosition;
         var availablePos = placingPlayer == Player.PLAYER1 ? p1availablePositions : p2availablePositions;
-        os.forEach(o -> o.machineSelected(machine, placingPlayer, initialPos, availablePos));
+        os.forEach(o -> o.pieceSelected(machine, placingPlayer, initialPos, availablePos));
         return true;
     }
 

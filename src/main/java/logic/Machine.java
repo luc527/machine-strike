@@ -4,8 +4,12 @@ package logic;
 import com.google.gson.JsonElement;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 // :PatternUsed? Prototype (for Piece)
+
+// TODO replace all the (String machine) with (Machine machine)
+//  they're already equal() and hashCode() by their name, so it's the same thing (and easier)
 
 public class Machine
 {
@@ -97,5 +101,20 @@ public class Machine
                 ", health=" + health +
                 ", points=" + Arrays.toString(points) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Machine machine = (Machine) o;
+        return name.equals(machine.name);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name);
     }
 }
