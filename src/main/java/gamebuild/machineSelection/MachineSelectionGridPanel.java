@@ -36,24 +36,36 @@ public class MachineSelectionGridPanel extends MachineGridPanel
         grid.iterate((row, col) -> {
             var x = SIDE_PX * col;
             var y = SIDE_PX * row;
+
             var mach = grid.machineAt(CoordCache.get(row, col));
             var selected = machSelModel.selectedAmount(mach);
             var available = machSelModel.availableAmount(mach);
+
+            var selectable =  Machines.get(mach).victoryPoints()
+                    +  machSelModel.currentVictoryPoints()
+                    <= machSelModel.maxVictoryPoints();
+            if (selected == available || !selectable) {
+                g.setColor(Palette.transparentBlack);
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
+            }
 
             //
             // Show amount
             //
             var string = String.format("%d / %d", selected, available);
 
+            var amountBackColor  = selected == 0 ? Color.DARK_GRAY : Palette.darkYellow;
+            var amountFrontColor = selected == 0 ? Color.LIGHT_GRAY : Palette.yellow;
+
             var stringHeight = 10;
             var sx = x + 2;
             var sy = y + 2 + stringHeight;
 
-            g.setColor(Palette.darkYellow);
+            g.setColor(amountBackColor);
             for (var yoff = -1; yoff <= 1; yoff++)
                 for (var xoff = -1; xoff <= 1; xoff++)
                     g.drawString(string, sx + xoff, sy + yoff);
-            g.setColor(Palette.yellow);
+            g.setColor(amountFrontColor);
             g.drawString(string, sx, sy);
 
             //
@@ -68,14 +80,6 @@ public class MachineSelectionGridPanel extends MachineGridPanel
                     g.drawString(string, sx + xoff, sy + yoff);
             g.setColor(Palette.green);
             g.drawString(string, sx, sy);
-
-            var selectable =  Machines.get(mach).victoryPoints()
-                           +  machSelModel.currentVictoryPoints()
-                           <= machSelModel.maxVictoryPoints();
-            if (selected == available || !selectable) {
-                g.setColor(Palette.transparentBlack);
-                g.fillRect(x, y, SIDE_PX, SIDE_PX);
-            }
         });
     }
 }
