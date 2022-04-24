@@ -31,6 +31,10 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
     public int currentVictoryPoints()
     { return currentVictoryPoints; }
 
+    @Override
+    public boolean isSelectionEmpty()
+    { return selectedInv.isEmpty(); }
+
     public MachineSelectionResponse select(String machine)
     {
         if (selectedAmount(machine) == availableAmount(machine)) {

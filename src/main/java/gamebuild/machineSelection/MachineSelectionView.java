@@ -182,7 +182,10 @@ public class MachineSelectionView implements IMachineSelectionObserver
     public void acceptDeselectionResponse(Player player, String machine, MachineDeselectionResponse response)
     {
         if (response == MachineDeselectionResponse.DESELECTED) {
-            // TODO 0 pieces selected -> hide done button
+            var machSel = con.getPlayerMachineSelection(player);
+            if (machSel.isSelectionEmpty()) {
+                (player == Player.PLAYER1 ? p1doneButton : p2doneButton).setEnabled(false);
+            }
         } else if (response == MachineDeselectionResponse.NONE_SELECTED) {
             warn(player, "You're de-selecting a piece you haven't even selected!");
         }

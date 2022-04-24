@@ -11,4 +11,6 @@ public interface IPlayerMachineSelectionModel
     int maxVictoryPoints();
 
     int currentVictoryPoints();
+
+    boolean isSelectionEmpty();
 }
