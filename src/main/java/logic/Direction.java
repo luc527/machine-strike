@@ -2,21 +2,28 @@ package logic;
 
 public enum Direction
 {
-    EAST(0),
-    NORTH(1),
-    WEST(2),
-    SOUTH(3);
+    EAST  (0, 3*Math.PI/2),
+    NORTH (1, 0.0),
+    WEST  (2, Math.PI/2),
+    SOUTH (3, Math.PI);
 
-    private int idx;
+    private final int idx;
+    private final double theta;
 
-    Direction(int idx)
+    Direction(int idx, double theta)
     {
         this.idx = idx;
+        this.theta = theta;
     }
 
     public int idx()
     {
         return this.idx;
+    }
+
+    public double theta()
+    {
+        return this.theta;
     }
 
     public static Direction from(int idx)

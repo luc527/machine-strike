@@ -20,15 +20,6 @@ public class BoardGridPanel extends JPanel
     private static final int ROWS = Constants.BOARD_ROWS;
     private static final int COLS = Constants.BOARD_COLS;
     private static final int SIDE_PX = Constants.BOARD_SIDE_PX;
-    private static final EnumMap<Direction, Double> DIR_TO_THETA;
-
-    static {
-        DIR_TO_THETA = new EnumMap<>(Direction.class);
-        DIR_TO_THETA.put(Direction.NORTH,   0.0);
-        DIR_TO_THETA.put(Direction.WEST,    Math.PI/2);
-        DIR_TO_THETA.put(Direction.SOUTH,   Math.PI);
-        DIR_TO_THETA.put(Direction.EAST,  3*Math.PI/2);
-    }
 
     private final BoardGridModel grid;
 
@@ -122,7 +113,7 @@ public class BoardGridPanel extends JPanel
         var img = MachineImageMap.get(machine.name());
 
         var xformSaved = g.getTransform();
-        g.rotate(DIR_TO_THETA.get(direction), x + SIDE_PX / 2.0, y + SIDE_PX / 2.0);
+        g.rotate(direction.theta(), x + SIDE_PX / 2.0, y + SIDE_PX / 2.0);
         g.drawImage(img, x, y, null);
 
         // TODO also show armored/weak points
