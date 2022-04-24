@@ -12,5 +12,5 @@ public interface IPiecePlacementObserver
 
     void selectionCancelled(Player byPlayer);
 
-    void piecePlaced(Piece piece, ICoord pos);
+    void piecePlaced(Piece piece, ICoord pos, Player nextPlayer);
 }

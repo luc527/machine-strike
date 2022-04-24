@@ -33,18 +33,10 @@ public class App
 
         // TODO use better colors (blue for marsh, gray for hill, brown for ?, blue-ish white for mountain)
 
-
         var builder = new GameBuilder();
-
-        var pbCon =
-        new PlayerAndBoardSelectionController(builder, () ->
-            new MachineSelectionController(builder, (p1inv, p2inv) ->
-                new PiecePlacementController(builder, p1inv, p2inv)
-            )
-        );
-
-        var pbView = new PlayerAndBoardSelectionView(pbCon);
-        pbView.show();
+        var con = new PlayerAndBoardSelectionController(builder);
+        var view = new PlayerAndBoardSelectionView(con);
+        view.show();
 
     }
 }

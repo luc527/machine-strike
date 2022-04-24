@@ -8,7 +8,7 @@ public interface IMachineSelectionController
 
     Player getFirstPlayer();
 
-    IPlayerMachineSelectionModel playerMachineSelectionModel(Player player1);
+    IPlayerMachineSelectionModel getPlayerMachineSelection(Player player);
 
     void selectMachine(Player player, String machine);
 

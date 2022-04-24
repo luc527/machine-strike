@@ -9,4 +9,10 @@ public enum Player
     {
         return this == PLAYER1 ? PLAYER2 : PLAYER1;
     }
+
+    // For readability
+    public Player prev()
+    {
+        return this == PLAYER1 ? PLAYER2 : PLAYER1;
+    }
 }

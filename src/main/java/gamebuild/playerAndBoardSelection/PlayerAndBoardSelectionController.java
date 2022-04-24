@@ -1,29 +1,23 @@
 package gamebuild.playerAndBoardSelection;
 
 import assets.Boards;
-import gamebuild.machineSelection.IMachineSelectionController;
 import gamebuild.GameBuilder;
+import gamebuild.machineSelection.MachineSelectionController;
 import logic.Board;
 import logic.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class PlayerAndBoardSelectionController implements IPlayerAndBoardSelectionController
 {
-    public interface NextControllerConstructor extends Supplier<IMachineSelectionController>
-    {};
+    private final GameBuilder gameBuilder;
+    private final List<IPlayerAndBoardSelectionObserver> observers;
 
-    private final GameBuilder builder;
-    private final List<IPlayerAndBoardSelectionObserver> os;
-    private final NextControllerConstructor next;
-
-    public PlayerAndBoardSelectionController(GameBuilder builder, NextControllerConstructor next)
+    public PlayerAndBoardSelectionController(GameBuilder gameBuilder)
     {
-        this.builder = builder;
-        this.next = next;
-        os = new ArrayList<>();
+        this.gameBuilder = gameBuilder;
+        observers = new ArrayList<>();
     }
 
     @Override
@@ -33,18 +27,18 @@ public class PlayerAndBoardSelectionController implements IPlayerAndBoardSelecti
     }
 
     @Override
-    public void attach(IPlayerAndBoardSelectionObserver obs)
+    public void attach(IPlayerAndBoardSelectionObserver observer)
     {
-        os.add(obs);
+        observers.add(observer);
     }
 
 
     @Override
     public void select(Player startingPlayer, Board board)
     {
-        builder.setStartingPlayer(startingPlayer);
-        builder.setBoard(board);
-        var nextCon = next.get();
-        os.forEach(o -> o.selectionFinished(startingPlayer, board, nextCon));
+        gameBuilder.setStartingPlayer(startingPlayer);
+        gameBuilder.setBoard(board);
+        var nextController = new MachineSelectionController(gameBuilder);
+        observers.forEach(o -> o.selectionFinished(startingPlayer, board, nextController));
     }
 }

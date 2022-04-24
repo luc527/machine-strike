@@ -19,15 +19,15 @@ public interface IPiecePlacementController
 
     Player getFirstPlayer();
 
-    boolean selectMachine(String machine);
-
-    void cancelSelection();
-
-    boolean placePiece(String machine, ICoord coord);
-
     Board getBoard();
 
     IMachineInventory getPlayerInventory(Player player);
 
     Optional<Piece> getPieceAt(ICoord coord);
+
+    boolean selectMachine(String machine);
+
+    void cancelSelection();
+
+    boolean placeMachine(String machine, ICoord coord);
 }

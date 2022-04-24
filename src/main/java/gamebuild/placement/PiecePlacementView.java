@@ -11,8 +11,6 @@ import logic.Player;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Set;
 
 public class PiecePlacementView implements IPiecePlacementObserver
@@ -84,7 +82,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
         boardPanel.onConfirm(() -> {
             var coord = boardModel.getCursor();
             var machine = boardModel.getCarriedMachine();
-            if (!con.placePiece(machine, coord)) {
+            if (!con.placeMachine(machine, coord)) {
                 warn("This space is already occupied!");
             }
         });
@@ -143,12 +141,10 @@ public class PiecePlacementView implements IPiecePlacementObserver
     }
 
     @Override
-    public void piecePlaced(Piece piece, ICoord pos)
+    public void piecePlaced(Piece piece, ICoord pos, Player nextPlayer)
     {
-        playerMachinePanel(piece.player()).setFocused(false);
-        var other = playerMachinePanel(piece.player().next());
-        other.setFocused(true);
-        other.repaint();
+        playerMachinePanel(nextPlayer.prev()).setFocused(false);
+        playerMachinePanel(nextPlayer).setFocused(true);
         boardPanel.setFocused(false);
     }
 }

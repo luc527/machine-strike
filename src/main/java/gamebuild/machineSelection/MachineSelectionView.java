@@ -45,8 +45,8 @@ public class MachineSelectionView implements IMachineSelectionObserver
         var panel = new JPanel(new BorderLayout());
         frame.setContentPane(panel);
 
-        var p1machSelModel = con.playerMachineSelectionModel(Player.PLAYER1);
-        var p2machSelModel = con.playerMachineSelectionModel(Player.PLAYER2);
+        var p1machSelModel = con.getPlayerMachineSelection(Player.PLAYER1);
+        var p2machSelModel = con.getPlayerMachineSelection(Player.PLAYER2);
 
         var p1gridModel = new MachineGridModel(Machines.allNames(), 5);
         var p2gridModel = new MachineGridModel(Machines.allNames(), 5);
@@ -83,7 +83,7 @@ public class MachineSelectionView implements IMachineSelectionObserver
         var panel = new JPanel(new BorderLayout());
         panel.add(machSelPanel, BorderLayout.CENTER);
         var bottom = new JPanel();
-        var vpCounter = new JLabel(String.format("VP: 0/%d", con.playerMachineSelectionModel(player).maxVictoryPoints()));
+        var vpCounter = new JLabel(String.format("VP: 0/%d", con.getPlayerMachineSelection(player).maxVictoryPoints()));
         bottom.add(vpCounter);
         var doneButton = new JButton("Done");
         doneButton.addActionListener(e -> con.playerDone(player));
@@ -127,9 +127,9 @@ public class MachineSelectionView implements IMachineSelectionObserver
 
     private void refresh()
     {
-        var p1model = con.playerMachineSelectionModel(Player.PLAYER1);
+        var p1model = con.getPlayerMachineSelection(Player.PLAYER1);
         p1vpCounter.setText(String.format("VP: %d/%d", p1model.currentVictoryPoints(), p1model.maxVictoryPoints()));
-        var p2model = con.playerMachineSelectionModel(Player.PLAYER2);
+        var p2model = con.getPlayerMachineSelection(Player.PLAYER2);
         p2vpCounter.setText(String.format("VP: %d/%d", p2model.currentVictoryPoints(), p2model.maxVictoryPoints()));
         p1container.repaint();
         p2container.repaint();

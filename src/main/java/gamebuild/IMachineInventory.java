@@ -9,4 +9,6 @@ public interface IMachineInventory
     Set<String> getMachines();
 
     int getAmount(String machine);
+
+    boolean isEmpty();
 }

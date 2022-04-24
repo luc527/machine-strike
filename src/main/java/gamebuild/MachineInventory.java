@@ -28,6 +28,16 @@ public class MachineInventory implements IMachineInventory
         return machineAmounts.getOrDefault(machine, 0);
     }
 
+    @Override
+    public boolean isEmpty()
+    {
+        var sum = 0;
+        for (var machine : getMachines()) {
+            sum += getAmount(machine);
+        }
+        return sum == 0;
+    }
+
     public void add(String m)
     {
         add(m, 1);
@@ -41,8 +51,15 @@ public class MachineInventory implements IMachineInventory
     public void take(String m)
     {
         var amountLeft = getAmount(m) - 1;
-        if (amountLeft < 0) throw new RuntimeException("Attempted to take a machine with no amount left!");
-        machineAmounts.put(m, amountLeft);
+        if (amountLeft < 0) {
+            throw new RuntimeException("Attempted to take a machine with no amount left!");
+        }
+
+        if (amountLeft == 0) {
+            machineAmounts.remove(m);
+        } else {
+            machineAmounts.put(m, amountLeft);
+        }
     }
 
     public static MachineInventory full()

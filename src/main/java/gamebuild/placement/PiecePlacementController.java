@@ -11,11 +11,11 @@ import java.util.*;
 
 public class PiecePlacementController implements IPiecePlacementController
 {
-    private final List<IPiecePlacementObserver> os;
+    private final List<IPiecePlacementObserver> observers;
     private Player placingPlayer;
     private final MachineInventory p1inventory;
     private final MachineInventory p2inventory;
-    private final GameBuilder builder;
+    private final GameBuilder gameBuilder;
 
     private static final Set<ICoord> p1availablePositions;
     private static final Set<ICoord> p2availablePositions;
@@ -37,25 +37,25 @@ public class PiecePlacementController implements IPiecePlacementController
         p2initialPosition = CoordCache.get(0,      cols/2);
     }
 
-    public PiecePlacementController(GameBuilder builder, MachineInventory p1inventory, MachineInventory p2inventory)
+    public PiecePlacementController(GameBuilder gameBuilder, MachineInventory p1inventory, MachineInventory p2inventory)
     {
-        this.builder = builder;
-        placingPlayer = builder.startingPlayer();
-        os = new ArrayList<>();
+        this.gameBuilder = gameBuilder;
+        placingPlayer = gameBuilder.startingPlayer();
+        observers = new ArrayList<>();
         this.p1inventory = p1inventory;
         this.p2inventory = p2inventory;
     }
 
     @Override
-    public void attach(IPiecePlacementObserver obs)
+    public void attach(IPiecePlacementObserver observer)
     {
-        os.add(obs);
+        observers.add(observer);
     }
 
     @Override
     public Player getFirstPlayer()
     {
-        return placingPlayer;
+        return gameBuilder.startingPlayer();
     }
 
     @Override
@@ -67,20 +67,20 @@ public class PiecePlacementController implements IPiecePlacementController
         }
         var initialPos = placingPlayer == Player.PLAYER1 ? p1initialPosition : p2initialPosition;
         var availablePos = placingPlayer == Player.PLAYER1 ? p1availablePositions : p2availablePositions;
-        os.forEach(o -> o.pieceSelected(machine, placingPlayer, initialPos, availablePos));
+        observers.forEach(o -> o.pieceSelected(machine, placingPlayer, initialPos, availablePos));
         return true;
     }
 
     @Override
     public void cancelSelection()
     {
-        os.forEach(o -> o.selectionCancelled(placingPlayer));
+        observers.forEach(o -> o.selectionCancelled(placingPlayer));
     }
 
     @Override
     public Board getBoard()
     {
-        return builder.board();
+        return gameBuilder.board();
     }
 
     @Override
@@ -92,24 +92,28 @@ public class PiecePlacementController implements IPiecePlacementController
     @Override
     public Optional<Piece> getPieceAt(ICoord coord)
     {
-        return Optional.ofNullable(builder.pieceAt(coord.row(), coord.col()));
+        return Optional.ofNullable(gameBuilder.pieceAt(coord.row(), coord.col()));
     }
 
     @Override
-    public boolean placePiece(String machine, ICoord coord)
+    public boolean placeMachine(String machine, ICoord coord)
     {
         var inv = placingPlayer == Player.PLAYER1 ? p1inventory : p2inventory;
         if (inv.getAmount(machine) <= 0) {
             throw new RuntimeException("Got to placePiece(machine, coord) without the placing player actually having the machine available!");
         }
-        if (builder.pieceAt(coord.row(), coord.col()) != null) {
+        if (gameBuilder.pieceAt(coord.row(), coord.col()) != null) {
             return false;
         }
         inv.take(machine);
         var piece = new Piece(Machines.get(machine), Direction.NORTH, placingPlayer);
-        builder.addPiece(piece, coord.row(), coord.col());
-        placingPlayer = placingPlayer.next();
-        os.forEach(o -> o.piecePlaced(piece, coord));
+        gameBuilder.addPiece(piece, coord.row(), coord.col());
+
+        var nextInv = inv == p1inventory ? p2inventory : p1inventory;
+        if (!nextInv.isEmpty()) {
+            placingPlayer = placingPlayer.next();
+        }
+        observers.forEach(o -> o.piecePlaced(piece, coord, placingPlayer));
         return true;
     }
 }
