@@ -1,4 +1,4 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 import assets.Machines;
 import gamebuild.IMachineInventory;
@@ -114,6 +114,17 @@ public class PiecePlacementController implements IPiecePlacementController
             placingPlayer = placingPlayer.next();
         }
         observers.forEach(o -> o.piecePlaced(piece, coord, placingPlayer));
+
+        if (nextInv.isEmpty() && inv.isEmpty()) {
+            observers.forEach(IPiecePlacementObserver::allPiecesPlaced);
+        }
+
         return true;
+    }
+
+    @Override
+    public void startGame()
+    {
+        System.out.println("TODO start game");
     }
 }

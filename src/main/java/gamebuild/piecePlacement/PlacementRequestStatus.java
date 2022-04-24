@@ -1,4 +1,4 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 public enum PlacementRequestStatus
 {

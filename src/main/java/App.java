@@ -1,7 +1,4 @@
 import assets.*;
-import gamebuild.MachineInventory;
-import gamebuild.machineSelection.MachineSelectionController;
-import gamebuild.placement.PiecePlacementController;
 import gamebuild.playerAndBoardSelection.PlayerAndBoardSelectionController;
 import gamebuild.playerAndBoardSelection.PlayerAndBoardSelectionView;
 import gamebuild.GameBuilder;

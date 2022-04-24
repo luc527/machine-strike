@@ -3,8 +3,8 @@ package gamebuild.machineSelection;
 import assets.Machines;
 import gamebuild.MachineInventory;
 import gamebuild.machinegrid.MachineGridModel;
-import gamebuild.placement.IPiecePlacementController;
-import gamebuild.placement.PiecePlacementView;
+import gamebuild.piecePlacement.IPiecePlacementController;
+import gamebuild.piecePlacement.PiecePlacementView;
 import graphics.Palette;
 import logic.Player;
 

@@ -1,4 +1,4 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 import boardgrid.BoardGridModel;
 import boardgrid.BoardGridPanel;
@@ -25,6 +25,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
     private final BoardGridModel boardModel;
     private final BoardGridPanel boardPanel;
+
+    private final JButton startGameButton;
 
     private Thread currentWarnThread;
     private int warnCounter = 0;
@@ -66,7 +68,6 @@ public class PiecePlacementView implements IPiecePlacementObserver
             var ok = con.selectMachine(machine);
             if (!ok) {
                 warn("You don't have any more pieces of this type!");
-                return;
             }
         });
 
@@ -77,7 +78,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
             }
         });
 
-        boardPanel.onCancel(() -> con.cancelSelection());
+        boardPanel.onCancel(con::cancelSelection);
 
         boardPanel.onConfirm(() -> {
             var coord = boardModel.getCursor();
@@ -87,10 +88,18 @@ public class PiecePlacementView implements IPiecePlacementObserver
             }
         });
 
+        startGameButton = new JButton("Start game");
+        startGameButton.addActionListener(e -> con.startGame());
+        startGameButton.setEnabled(false);
+
+        var bottomRow = new JPanel(new BorderLayout());
+        bottomRow.add(warnLabel, BorderLayout.NORTH);
+        bottomRow.add(startGameButton, BorderLayout.SOUTH);
+
         panel.add(p1gridPanel, BorderLayout.LINE_START);
         panel.add(p2gridPanel, BorderLayout.LINE_END);
         panel.add(boardPanel, BorderLayout.CENTER);
-        panel.add(warnLabel, BorderLayout.PAGE_END);
+        panel.add(bottomRow, BorderLayout.PAGE_END);
     }
 
     private void warn(String s)
@@ -146,5 +155,14 @@ public class PiecePlacementView implements IPiecePlacementObserver
         playerMachinePanel(nextPlayer.prev()).setFocused(false);
         playerMachinePanel(nextPlayer).setFocused(true);
         boardPanel.setFocused(false);
+    }
+
+    @Override
+    public void allPiecesPlaced()
+    {
+        p1gridPanel.setFocused(false);
+        p2gridPanel.setFocused(false);
+        startGameButton.setEnabled(true);
+        startGameButton.requestFocusInWindow();
     }
 }

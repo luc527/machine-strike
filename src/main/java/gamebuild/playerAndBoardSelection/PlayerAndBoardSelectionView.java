@@ -2,8 +2,6 @@ package gamebuild.playerAndBoardSelection;
 
 import gamebuild.machineSelection.IMachineSelectionController;
 import gamebuild.machineSelection.MachineSelectionView;
-import gamebuild.placement.IPiecePlacementController;
-import gamebuild.placement.PiecePlacementView;
 import graphics.BoardIcon;
 import logic.Board;
 import logic.Player;

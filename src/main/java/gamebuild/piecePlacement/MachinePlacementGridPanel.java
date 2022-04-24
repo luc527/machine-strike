@@ -1,4 +1,4 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 import gamebuild.IMachineInventory;
 import gamebuild.machinegrid.MachineGridModel;

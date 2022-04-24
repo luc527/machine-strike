@@ -1,8 +1,9 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 import gamebuild.IMachineInventory;
 import logic.*;
 
+import java.awt.event.ActionEvent;
 import java.util.Optional;
 
 
@@ -12,6 +13,8 @@ import java.util.Optional;
 // the players alternate correctly. Otherwise two sequential calls
 // to placePiece(Player p, ...) could have the same player,
 // which would be wrong.
+
+// TODO!!! enable players to rotate the pieces
 
 public interface IPiecePlacementController
 {
@@ -30,4 +33,6 @@ public interface IPiecePlacementController
     void cancelSelection();
 
     boolean placeMachine(String machine, ICoord coord);
+
+    void startGame();
 }

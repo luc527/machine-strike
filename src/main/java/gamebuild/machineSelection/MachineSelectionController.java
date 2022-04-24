@@ -1,7 +1,7 @@
 package gamebuild.machineSelection;
 
 import gamebuild.GameBuilder;
-import gamebuild.placement.PiecePlacementController;
+import gamebuild.piecePlacement.PiecePlacementController;
 import logic.Player;
 
 import java.util.ArrayList;

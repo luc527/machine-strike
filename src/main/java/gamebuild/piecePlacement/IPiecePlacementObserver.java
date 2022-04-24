@@ -1,4 +1,4 @@
-package gamebuild.placement;
+package gamebuild.piecePlacement;
 
 import logic.ICoord;
 import logic.Piece;
@@ -13,4 +13,6 @@ public interface IPiecePlacementObserver
     void selectionCancelled(Player byPlayer);
 
     void piecePlaced(Piece piece, ICoord pos, Player nextPlayer);
+
+    void allPiecesPlaced();
 }

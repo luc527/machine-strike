@@ -1,7 +1,7 @@
 package gamebuild.machineSelection;
 
 import gamebuild.MachineInventory;
-import gamebuild.placement.IPiecePlacementController;
+import gamebuild.piecePlacement.IPiecePlacementController;
 import logic.Player;
 
 public interface IMachineSelectionObserver
