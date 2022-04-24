@@ -1,7 +1,7 @@
 package gamebuild.machinegrid;
 
 import assets.MachineImageMap;
-import logic.CoordCache;
+import logic.Coord;
 import logic.Direction;
 import utils.Constants;
 
@@ -63,7 +63,7 @@ public class MachineGridPanel extends JPanel
         grid.iterate((row, col) -> {
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
-            var machine = grid.machineAt(CoordCache.get(row, col));
+            var machine = grid.machineAt(Coord.create(row, col));
             g.drawImage(MachineImageMap.get(machine), x, y, null);
 
         });

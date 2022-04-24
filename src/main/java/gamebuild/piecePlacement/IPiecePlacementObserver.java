@@ -1,6 +1,6 @@
 package gamebuild.piecePlacement;
 
-import logic.ICoord;
+import logic.Coord;
 import logic.Piece;
 import logic.Player;
 
@@ -8,11 +8,11 @@ import java.util.Set;
 
 public interface IPiecePlacementObserver
 {
-    void pieceSelected(String machine, Player byPlayer, ICoord initialPos, Set<ICoord> availablePos);
+    void pieceSelected(String machine, Player byPlayer, Coord initialPos, Set<Coord> availablePos);
 
     void selectionCancelled(Player byPlayer);
 
-    void piecePlaced(Piece piece, ICoord pos, Player nextPlayer);
+    void piecePlaced(Piece piece, Coord pos, Player nextPlayer);
 
     void allPiecesPlaced();
 }

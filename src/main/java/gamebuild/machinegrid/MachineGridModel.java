@@ -1,12 +1,8 @@
 package gamebuild.machinegrid;
 
-import gamebuild.IMachineInventory;
-import logic.CoordState;
+import logic.Coord;
 import logic.Direction;
-import logic.ICoord;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class MachineGridModel
@@ -15,12 +11,12 @@ public class MachineGridModel
     private final String[][] machines;
     private final int n;
     private final int rows;
-    private final CoordState cursor;
+    private Coord cursor;
 
     public MachineGridModel(Set<String> machineNames, int machinesPerRow)
     {
         this.machinesPerRow = machinesPerRow;
-        cursor = new CoordState(0, 0);
+        cursor = Coord.create(0, 0);
 
         n = machineNames.size();
         rows = (n - 1) / machinesPerRow + 1; // n/MACHINES rounded up
@@ -48,7 +44,7 @@ public class MachineGridModel
         return machinesPerRow;
     }
 
-    public ICoord cursor()
+    public Coord cursor()
     {
         return cursor;
     }
@@ -65,15 +61,15 @@ public class MachineGridModel
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
             var lastCol = n % machinesPerRow > 0 && cursor.row() == rows - 1 ? n % machinesPerRow - 1 : machinesPerRow - 1;
-            cursor.setCol(clamp(cursor.col() + offset, 0, lastCol));
+            cursor = cursor.withCol(clamp(cursor.col() + offset, 0, lastCol));
         } else {
             var offset = dir == Direction.NORTH ? -1 : 1;
             var lastRow = n % machinesPerRow > 0 && cursor.col() >= n % machinesPerRow ? rows - 2 : rows - 1;
-            cursor.setRow(clamp(cursor.row() + offset, 0, lastRow));
+            cursor = cursor.withRow(clamp(cursor.row() + offset, 0, lastRow));
         }
     }
 
-    public String machineAt(ICoord coord)
+    public String machineAt(Coord coord)
     {
         return machines[coord.row()][coord.col()];
     }

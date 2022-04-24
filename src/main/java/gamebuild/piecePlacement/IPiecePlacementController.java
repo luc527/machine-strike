@@ -26,13 +26,13 @@ public interface IPiecePlacementController
 
     IMachineInventory getPlayerInventory(Player player);
 
-    Optional<Piece> getPieceAt(ICoord coord);
+    Optional<Piece> getPieceAt(Coord coord);
 
     boolean selectMachine(String machine);
 
     void cancelSelection();
 
-    boolean placeMachine(String machine, ICoord coord);
+    boolean placeMachine(String machine, Coord coord);
 
     void startGame();
 }

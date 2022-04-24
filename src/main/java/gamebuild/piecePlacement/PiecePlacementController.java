@@ -17,10 +17,10 @@ public class PiecePlacementController implements IPiecePlacementController
     private final MachineInventory p2inventory;
     private final GameBuilder gameBuilder;
 
-    private static final Set<ICoord> p1availablePositions;
-    private static final Set<ICoord> p2availablePositions;
-    private static final ICoord p1initialPosition;
-    private static final ICoord p2initialPosition;
+    private static final Set<Coord> p1availablePositions;
+    private static final Set<Coord> p2availablePositions;
+    private static final Coord p1initialPosition;
+    private static final Coord p2initialPosition;
 
     static {
         var rows = Constants.BOARD_ROWS;
@@ -28,13 +28,13 @@ public class PiecePlacementController implements IPiecePlacementController
         p1availablePositions = new HashSet<>();
         p2availablePositions = new HashSet<>();
         for (var col = 0; col < cols; col++) {
-            p1availablePositions.add(CoordCache.get(rows-2, col));
-            p1availablePositions.add(CoordCache.get(rows-1, col));
-            p2availablePositions.add(CoordCache.get(0,      col));
-            p2availablePositions.add(CoordCache.get(1,      col));
+            p1availablePositions.add(Coord.create(rows-2, col));
+            p1availablePositions.add(Coord.create(rows-1, col));
+            p2availablePositions.add(Coord.create(0,      col));
+            p2availablePositions.add(Coord.create(1,      col));
         }
-        p1initialPosition = CoordCache.get(rows-1, cols/2);
-        p2initialPosition = CoordCache.get(0,      cols/2);
+        p1initialPosition = Coord.create(rows-1, cols/2);
+        p2initialPosition = Coord.create(0,      cols/2);
     }
 
     public PiecePlacementController(GameBuilder gameBuilder, MachineInventory p1inventory, MachineInventory p2inventory)
@@ -90,13 +90,13 @@ public class PiecePlacementController implements IPiecePlacementController
     }
 
     @Override
-    public Optional<Piece> getPieceAt(ICoord coord)
+    public Optional<Piece> getPieceAt(Coord coord)
     {
         return Optional.ofNullable(gameBuilder.pieceAt(coord.row(), coord.col()));
     }
 
     @Override
-    public boolean placeMachine(String machine, ICoord coord)
+    public boolean placeMachine(String machine, Coord coord)
     {
         var inv = placingPlayer == Player.PLAYER1 ? p1inventory : p2inventory;
         if (inv.getAmount(machine) <= 0) {

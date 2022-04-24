@@ -4,7 +4,7 @@ import assets.Machines;
 import gamebuild.machinegrid.MachineGridModel;
 import gamebuild.machinegrid.MachineGridPanel;
 import graphics.Palette;
-import logic.CoordCache;
+import logic.Coord;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -37,7 +37,7 @@ public class MachineSelectionGridPanel extends MachineGridPanel
             var x = SIDE_PX * col;
             var y = SIDE_PX * row;
 
-            var mach = grid.machineAt(CoordCache.get(row, col));
+            var mach = grid.machineAt(Coord.create(row, col));
             var selected = machSelModel.selectedAmount(mach);
             var available = machSelModel.availableAmount(mach);
 

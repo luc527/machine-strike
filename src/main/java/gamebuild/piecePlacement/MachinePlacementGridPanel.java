@@ -3,7 +3,7 @@ package gamebuild.piecePlacement;
 import gamebuild.IMachineInventory;
 import gamebuild.machinegrid.MachineGridModel;
 import gamebuild.machinegrid.MachineGridPanel;
-import logic.CoordCache;
+import logic.Coord;
 
 import java.awt.*;
 
@@ -24,7 +24,7 @@ public class MachinePlacementGridPanel extends MachineGridPanel
         var g = (Graphics2D) G;
 
         grid.iterate((row, col) -> {
-            var machine = grid.machineAt(CoordCache.get(row, col));
+            var machine = grid.machineAt(Coord.create(row, col));
             var amount = inventory.getAmount(machine);
 
             var x = SIDE_PX * col;

@@ -1,17 +1,17 @@
 package boardgrid;
 
+import logic.Coord;
 import logic.Direction;
-import logic.ICoord;
 
 import java.util.Set;
 
 public interface IBoardGridModel
 {
-    void startInteraction(ICoord cursor, Set<ICoord> availablePositions, String carriedMachine);
+    void startInteraction(Coord cursor, Set<Coord> availablePositions, String carriedMachine);
 
     void endInteraction();
 
-    ICoord getCursor();
+    Coord getCursor();
 
     String getCarriedMachine();
 

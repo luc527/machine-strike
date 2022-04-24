@@ -5,7 +5,7 @@ import boardgrid.BoardGridPanel;
 import gamebuild.machinegrid.MachineGridModel;
 import gamebuild.machinegrid.MachineGridPanel;
 import graphics.Palette;
-import logic.ICoord;
+import logic.Coord;
 import logic.Piece;
 import logic.Player;
 
@@ -134,7 +134,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     }
 
     @Override
-    public void pieceSelected(String machine, Player player, ICoord initialPos, Set<ICoord> availablePos)
+    public void pieceSelected(String machine, Player player, Coord initialPos, Set<Coord> availablePos)
     {
         boardModel.startInteraction(initialPos, availablePos, machine);
         boardPanel.setCursorColor(Palette.color(player));
@@ -150,7 +150,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     }
 
     @Override
-    public void piecePlaced(Piece piece, ICoord pos, Player nextPlayer)
+    public void piecePlaced(Piece piece, Coord pos, Player nextPlayer)
     {
         playerMachinePanel(nextPlayer.prev()).setFocused(false);
         playerMachinePanel(nextPlayer).setFocused(true);
