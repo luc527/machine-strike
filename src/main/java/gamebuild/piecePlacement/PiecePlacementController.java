@@ -96,7 +96,7 @@ public class PiecePlacementController implements IPiecePlacementController
     }
 
     @Override
-    public boolean placeMachine(String machine, Coord coord)
+    public boolean placeMachine(Coord coord, String machine, Direction direction)
     {
         var inv = placingPlayer == Player.PLAYER1 ? p1inventory : p2inventory;
         if (inv.getAmount(machine) <= 0) {
@@ -106,7 +106,7 @@ public class PiecePlacementController implements IPiecePlacementController
             return false;
         }
         inv.take(machine);
-        var piece = new Piece(Machines.get(machine), Direction.NORTH, placingPlayer);
+        var piece = new Piece(Machines.get(machine), direction, placingPlayer);
         gameBuilder.addPiece(piece, coord.row(), coord.col());
 
         var nextInv = inv == p1inventory ? p2inventory : p1inventory;

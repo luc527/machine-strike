@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class BoardGridModel implements IBoardGridModel
+public class BoardGridModel
 {
     public interface BoardGridIterator
     {
@@ -25,6 +25,7 @@ public class BoardGridModel implements IBoardGridModel
 
     // Machine carried by the cursor as the player moves it across the board
     private String carriedMachine;
+    private Direction carriedMachineDirection;
 
     // Positions the player is currently allowed to move within
     private Set<Coord> availablePositions;
@@ -37,21 +38,24 @@ public class BoardGridModel implements IBoardGridModel
         availablePositions = Set.of();
     }
 
-    @Override
     public void startInteraction(Coord cursor, Set<Coord> availablePositions, String carriedMachine)
     {
         this.carriedMachine = carriedMachine;
+        this.carriedMachineDirection = Direction.NORTH;
         this.availablePositions = availablePositions;
         this.cursor = cursor;
     }
 
-    @Override
+    public void rotateCarriedMachine(boolean right)
+    {
+        carriedMachineDirection = carriedMachineDirection.rotated(right ? 1 : -1);
+    }
+
     public void endInteraction()
     {
         this.availablePositions = Set.of();
     }
 
-    @Override
     public Coord getCursor()
     {
         return cursor;
@@ -62,13 +66,13 @@ public class BoardGridModel implements IBoardGridModel
         return this.carriedMachine;
     }
 
-    @Override
+    public Direction getCarriedMachineDirection()
+    {
+        return this.carriedMachineDirection;
+    }
+
     public void iterate(BoardGridIterator it)
     {
-        // TODO make some kind of coord cache, so I can get the Coord object for any row and col without necessarely
-        //  having to actually create a new one each time (like Java does with Integer objects up to like 128)
-        //  and also call it a factory ;)
-
         for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
                 var coord = Coord.create(row, col);

@@ -32,7 +32,7 @@ public interface IPiecePlacementController
 
     void cancelSelection();
 
-    boolean placeMachine(String machine, Coord coord);
+    boolean placeMachine(Coord coord, String machine, Direction direction);
 
     void startGame();
 }

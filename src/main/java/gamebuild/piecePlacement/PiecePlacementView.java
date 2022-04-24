@@ -83,7 +83,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
         boardPanel.onConfirm(() -> {
             var coord = boardModel.getCursor();
             var machine = boardModel.getCarriedMachine();
-            if (!con.placeMachine(machine, coord)) {
+            var direction = boardModel.getCarriedMachineDirection();
+            if (!con.placeMachine(coord, machine, direction)) {
                 warn("This space is already occupied!");
             }
         });
