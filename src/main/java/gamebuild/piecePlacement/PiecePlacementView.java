@@ -146,6 +146,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     @Override
     public void selectionCancelled(Player player)
     {
+        boardModel.endInteraction();
         boardPanel.setFocused(false);
         playerMachinePanel(player).setFocused(true);
     }
@@ -155,6 +156,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     {
         playerMachinePanel(nextPlayer.prev()).setFocused(false);
         playerMachinePanel(nextPlayer).setFocused(true);
+        boardModel.endInteraction();
         boardPanel.setFocused(false);
     }
 

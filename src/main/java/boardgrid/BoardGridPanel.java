@@ -129,7 +129,6 @@ public class BoardGridPanel extends JPanel
     public void setFocused(boolean b)
     {
         if (b) requestFocusInWindow();
-        if (!b) grid.endInteraction();
         showCursor = b;
         repaint();
     }
