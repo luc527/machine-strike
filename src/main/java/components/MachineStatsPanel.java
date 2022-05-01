@@ -5,6 +5,7 @@ import logic.Direction;
 import logic.Machine;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,6 +33,13 @@ public class MachineStatsPanel extends JPanel
         add(victoryPoints = new JLabel());
         add(points = new JLabel());
         setMachine(initialMachine);
+    }
+
+    @Override
+    public Dimension getPreferredSize()
+    {
+        var dim = super.getPreferredSize();
+        return new Dimension(200, dim.height);
     }
 
     public JPanel setMachine(Machine machine)

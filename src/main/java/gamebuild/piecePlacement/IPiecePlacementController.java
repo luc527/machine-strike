@@ -16,9 +16,9 @@ import java.util.Optional;
 
 public interface IPiecePlacementController
 {
-    void attach(IPiecePlacementObserver obs);
+    void startPlacement();
 
-    Player getFirstPlayer();
+    void attach(IPiecePlacementObserver obs);
 
     Board getBoard();
 

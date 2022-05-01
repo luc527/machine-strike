@@ -1,5 +1,6 @@
 package gamebuild.piecePlacement;
 
+import components.MachineStatsPanel;
 import components.boardgrid.BoardGridModel;
 import components.boardgrid.BoardGridPanel;
 import components.machinegrid.MachineGridModel;
@@ -23,9 +24,13 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
     private final MachineGridPanel p1gridPanel;
     private final MachineGridPanel p2gridPanel;
+    private final MachineGridModel p1gridModel;
+    private final MachineGridModel p2gridModel;
 
+    private final JPanel centerPanel;
     private final BoardGridModel boardModel;
     private final BoardGridPanel boardPanel;
+    private MachineStatsPanel machineStats;
 
     private final JButton startGameButton;
 
@@ -51,8 +56,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
         // The grid model (logically, not visually) organizes those machines in a grid
         // on which a cursor can move
-        var p1gridModel = new MachineGridModel(p1inventory.getMachines(), 3);
-        var p2gridModel = new MachineGridModel(p2inventory.getMachines(), 3);
+        p1gridModel = new MachineGridModel(p1inventory.getMachines(), 3);
+        p2gridModel = new MachineGridModel(p2inventory.getMachines(), 3);
 
         // Finally, the grid panels are responsible for showing the machines, the cursor,
         // and the amounts of each machine; they are the visuals for the aforementioned models and inventories
@@ -62,8 +67,13 @@ public class PiecePlacementView implements IPiecePlacementObserver
         boardModel = new BoardGridModel(con.getBoard(), con::getPieceAt);
         boardPanel = new BoardGridPanel(boardModel);
 
+        centerPanel = new JPanel();
+        centerPanel.add(boardPanel);
+
         warnLabel = new JLabel(" ");
         warnLabel.setForeground(Color.RED);
+
+        p1gridPanel.onMoveCursor(() -> machineStats.setMachine(p1gridModel.machineUnderCursor()).repaint());
 
         p1gridPanel.onPressEnter(() -> {
             var machine = p1gridModel.machineAt(p1gridModel.cursor());
@@ -72,6 +82,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
                 warn("You don't have any more pieces of this type!");
             }
         });
+
+        p2gridPanel.onMoveCursor(() -> machineStats.setMachine(p2gridModel.machineUnderCursor()).repaint());
 
         p2gridPanel.onPressEnter(() -> {
             var machine = p2gridModel.machineAt(p2gridModel.cursor());
@@ -101,7 +113,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
         panel.add(p1gridPanel, BorderLayout.LINE_START);
         panel.add(p2gridPanel, BorderLayout.LINE_END);
-        panel.add(boardPanel, BorderLayout.CENTER);
+        panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomRow, BorderLayout.PAGE_END);
     }
 
@@ -129,11 +141,14 @@ public class PiecePlacementView implements IPiecePlacementObserver
         return p == Player.PLAYER1 ? p1gridPanel : p2gridPanel;
     }
 
-    public void show()
+    public void show(Player firstPlayer)
     {
+        var grid = firstPlayer == Player.PLAYER1 ? p1gridModel : p2gridModel;
+        machineStats = new MachineStatsPanel(grid.machineUnderCursor());
+        centerPanel.add(machineStats);
         frame.pack();
         frame.setVisible(true);
-        playerMachinePanel(con.getFirstPlayer()).setFocused(true);
+        playerMachinePanel(firstPlayer).setFocused(true);
     }
 
     @Override

@@ -46,15 +46,15 @@ public class PiecePlacementController implements IPiecePlacementController
     }
 
     @Override
-    public void attach(IPiecePlacementObserver observer)
+    public void startPlacement()
     {
-        observers.add(observer);
+        observers.forEach(o -> o.show(gameBuilder.startingPlayer()));
     }
 
     @Override
-    public Player getFirstPlayer()
+    public void attach(IPiecePlacementObserver observer)
     {
-        return gameBuilder.startingPlayer();
+        observers.add(observer);
     }
 
     @Override

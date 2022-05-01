@@ -158,7 +158,7 @@ public class MachineSelectionView implements IMachineSelectionObserver
     public void selectionFinished(MachineInventory p1inventory, MachineInventory p2inventory, IPiecePlacementController nextCon)
     {
         var nextView = new PiecePlacementView(nextCon);
-        nextView.show();
+        nextCon.startPlacement();
         frame.dispose();
     }
 

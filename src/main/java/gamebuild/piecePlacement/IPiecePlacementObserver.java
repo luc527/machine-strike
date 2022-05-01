@@ -9,6 +9,8 @@ import java.util.Set;
 
 public interface IPiecePlacementObserver
 {
+    void show(Player firstPlayer);
+
     void pieceSelected(Machine machine, Player byPlayer, Coord initialPos, Set<Coord> availablePos);
 
     void selectionCancelled(Player byPlayer);

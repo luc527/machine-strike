@@ -60,7 +60,7 @@ public class BoardGridPanel extends JPanel
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(COLS * SIDE_PX, ROWS * SIDE_PX);
+        return new Dimension(COLS * SIDE_PX + 1, ROWS * SIDE_PX + 1);
     }
 
     @Override
