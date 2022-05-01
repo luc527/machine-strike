@@ -66,8 +66,7 @@ public class MachineGridPanel extends JPanel
         grid.iterate((row, col) -> {
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
-            var machineName = grid.machineAt(Coord.create(row, col));
-            var machine = Machines.get(machineName);
+            var machine = grid.machineAt(Coord.create(row, col));
             for (var dir : Direction.iter()) {
                 var pt = machine.point(dir);
                 if (pt == Machine.Point.EMPTY) continue;
@@ -78,7 +77,7 @@ public class MachineGridPanel extends JPanel
                 g.fillRect(x+11, y+1, SIDE_PX-22, 10);
                 g.setTransform(tmp);
             }
-            g.drawImage(MachineImageMap.get(machineName), x, y, null);
+            g.drawImage(MachineImageMap.get(machine), x, y, null);
         });
     }
 

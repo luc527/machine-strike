@@ -3,6 +3,7 @@ package gamebuild.machineSelection;
 import assets.Machines;
 import gamebuild.IMachineInventory;
 import gamebuild.MachineInventory;
+import logic.Machine;
 
 public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
 {
@@ -16,11 +17,11 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
     { return selectedInv; }
 
     @Override
-    public int availableAmount(String machine)
+    public int availableAmount(Machine machine)
     { return availableInv.getAmount(machine); }
 
     @Override
-    public int selectedAmount(String machine)
+    public int selectedAmount(Machine machine)
     { return selectedInv.getAmount(machine); }
 
     @Override
@@ -35,13 +36,13 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
     public boolean isSelectionEmpty()
     { return selectedInv.isEmpty(); }
 
-    public MachineSelectionResponse select(String machine)
+    public MachineSelectionResponse select(Machine machine)
     {
         if (selectedAmount(machine) == availableAmount(machine)) {
             return MachineSelectionResponse.UNAVAILABLE_AMOUNT;
         }
 
-        var vp = Machines.get(machine).victoryPoints();
+        var vp = machine.victoryPoints();
         if (vp + currentVictoryPoints > MAX_VICTORY_POINTS) {
             return MachineSelectionResponse.UNAVAILABLE_VICTORY_POINTS;
         }
@@ -51,12 +52,12 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
         return MachineSelectionResponse.SELECTED;
     }
 
-    public MachineDeselectionResponse deselect(String machine)
+    public MachineDeselectionResponse deselect(Machine machine)
     {
         if (selectedAmount(machine) <= 0) {
             return MachineDeselectionResponse.NONE_SELECTED;
         }
-        currentVictoryPoints -= Machines.get(machine).victoryPoints();
+        currentVictoryPoints -= machine.victoryPoints();
         selectedInv.take(machine);
         return MachineDeselectionResponse.DESELECTED;
     }

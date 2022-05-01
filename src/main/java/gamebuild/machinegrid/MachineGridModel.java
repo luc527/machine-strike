@@ -2,31 +2,32 @@ package gamebuild.machinegrid;
 
 import logic.Coord;
 import logic.Direction;
+import logic.Machine;
 
-import java.util.Set;
+import java.util.List;
 
 public class MachineGridModel
 {
     private final int machinesPerRow;
-    private final String[][] machines;
+    private final Machine[][] machines;
     private final int n;
     private final int rows;
     private Coord cursor;
 
-    public MachineGridModel(Set<String> machineNames, int machinesPerRow)
+    public MachineGridModel(List<Machine> machines, int machinesPerRow)
     {
         this.machinesPerRow = machinesPerRow;
         cursor = Coord.create(0, 0);
 
-        n = machineNames.size();
+        n = machines.size();
         rows = (n - 1) / machinesPerRow + 1; // n/MACHINES rounded up
-        this.machines = new String[rows][];
+        this.machines = new Machine[rows][];
         for (var row = 0; row < rows; row++) {
-            this.machines[row] = new String[machinesPerRow];
+            this.machines[row] = new Machine[machinesPerRow];
         }
 
         var i = 0;
-        for (var machine : machineNames) {
+        for (var machine : machines) {
             var row = i / machinesPerRow;
             var col = i % machinesPerRow;
             this.machines[row][col] = machine;
@@ -69,12 +70,12 @@ public class MachineGridModel
         }
     }
 
-    public String machineAt(Coord coord)
+    public Machine machineAt(Coord coord)
     {
         return machines[coord.row()][coord.col()];
     }
 
-    public String machineUnderCursor()
+    public Machine machineUnderCursor()
     {
         return machineAt(cursor());
     }

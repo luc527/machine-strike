@@ -1,6 +1,7 @@
 package assets;
 
 import com.google.gson.JsonParser;
+import logic.Machine;
 import utils.Constants;
 
 import javax.imageio.ImageIO;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // :PatternUsed Singleton
-// But with initialization (load()) and getInstance (the()) separated,
+// But with initialization (load()) and getInstance separated,
 // so we can load it in one place and then call the instance in other places
 // without hvaing to handle IOExceptions
 
@@ -21,17 +22,17 @@ public class MachineImageMap
     private static final String FILENAME = "./assets/machines-images.json";
     private static MachineImageMap instance;
 
-    private final Map<String, Image> map;
+    private final Map<Machine, Image> map;
 
     public static void load() throws IOException
     {
         instance = new MachineImageMap();
     }
 
-    public static Image get(String name)
+    public static Image get(Machine mach)
     {
         if (instance == null) throw new RuntimeException("MachineImageMap not load()'ed yet!");
-        return instance.map.get(name);
+        return instance.map.get(mach);
     }
 
     private MachineImageMap() throws IOException
@@ -43,7 +44,7 @@ public class MachineImageMap
                 var filename = obj.get(name).getAsJsonPrimitive().getAsString();
                 var image = ImageIO.read(new File(filename));
                 var resized = image.getScaledInstance(Constants.BOARD_SIDE_PX, Constants.BOARD_SIDE_PX, Image.SCALE_DEFAULT);
-                map.put(name, resized);
+                map.put(Machines.get(name), resized);
             }
         }
     }

@@ -16,8 +16,7 @@ public class GameState
         var width = Constants.BOARD_COLS;
         this.pieces = new Piece[height][width];
         for (var i = 0; i < height; i++)
-            for (var j = 0; j < width; j++)
-                this.pieces[i][j] = startingPieces[i][j];
+            System.arraycopy(startingPieces[i], 0, this.pieces[i], 0, width);
     }
 
 }

@@ -37,11 +37,11 @@ public class MachineSelectionGridPanel extends MachineGridPanel
             var x = SIDE_PX * col;
             var y = SIDE_PX * row;
 
-            var mach = grid.machineAt(Coord.create(row, col));
-            var selected = machSelModel.selectedAmount(mach);
-            var available = machSelModel.availableAmount(mach);
+            var machine = grid.machineAt(Coord.create(row, col));
+            var selected = machSelModel.selectedAmount(machine);
+            var available = machSelModel.availableAmount(machine);
 
-            var selectable =  Machines.get(mach).victoryPoints()
+            var selectable =  machine.victoryPoints()
                     +  machSelModel.currentVictoryPoints()
                     <= machSelModel.maxVictoryPoints();
             if (selected == available || !selectable) {
@@ -71,7 +71,7 @@ public class MachineSelectionGridPanel extends MachineGridPanel
             //
             // Show victory points
             //
-            string = String.format("%d", Machines.get(mach).victoryPoints());
+            string = String.format("%d", machine.victoryPoints());
             sx = x + 2;
             sy = y + 2 + SIDE_PX - stringHeight;
             g.setColor(Palette.darkGreen);

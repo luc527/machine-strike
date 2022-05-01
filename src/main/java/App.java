@@ -10,9 +10,9 @@ public class App
 {
     private static void loadAssets() throws IOException
     {
-        Machines.load();
-        Boards.load();
+        Machines.load();  // must come before MachineImageMap
         MachineImageMap.load();
+        Boards.load();
         TerrainColorMap.load();
         DefaultMachineInventory.load();
     }

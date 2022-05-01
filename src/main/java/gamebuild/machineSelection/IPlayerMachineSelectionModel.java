@@ -2,11 +2,13 @@ package gamebuild.machineSelection;
 
 // Read-only interface
 
+import logic.Machine;
+
 public interface IPlayerMachineSelectionModel
 {
-    int availableAmount(String machine);
+    int availableAmount(Machine machine);
 
-    int selectedAmount(String machine);
+    int selectedAmount(Machine machine);
 
     int maxVictoryPoints();
 

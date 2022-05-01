@@ -101,7 +101,7 @@ public class BoardGridPanel extends JPanel
             g.setStroke(new BasicStroke(5.0f));
             g.drawRect(cx+2, cy+2, SIDE_PX-5, SIDE_PX-5);
             drawMachine(
-                    Machines.get(grid.getCarriedMachine()),
+                    grid.getCarriedMachine(),
                     grid.getCarriedMachineDirection(),
                     g, cx, cy
             );
@@ -110,7 +110,7 @@ public class BoardGridPanel extends JPanel
 
     private void drawMachine(Machine machine, Direction direction, Graphics2D g, int x, int y)
     {
-        var img = MachineImageMap.get(machine.name());
+        var img = MachineImageMap.get(machine);
 
         var xformSaved = g.getTransform();
         g.rotate(direction.theta(), x + SIDE_PX / 2.0, y + SIDE_PX / 2.0);

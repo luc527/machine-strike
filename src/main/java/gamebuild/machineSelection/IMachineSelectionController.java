@@ -1,5 +1,6 @@
 package gamebuild.machineSelection;
 
+import logic.Machine;
 import logic.Player;
 
 public interface IMachineSelectionController
@@ -10,9 +11,9 @@ public interface IMachineSelectionController
 
     IPlayerMachineSelectionModel getPlayerMachineSelection(Player player);
 
-    void selectMachine(Player player, String machine);
+    void selectMachine(Player player, Machine machine);
 
-    void deselectMachine(Player player, String machine);
+    void deselectMachine(Player player, Machine machine);
 
     void playerDone(Player player);
 }

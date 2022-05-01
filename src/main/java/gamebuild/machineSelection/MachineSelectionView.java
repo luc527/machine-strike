@@ -6,10 +6,12 @@ import gamebuild.machinegrid.MachineGridModel;
 import gamebuild.piecePlacement.IPiecePlacementController;
 import gamebuild.piecePlacement.PiecePlacementView;
 import graphics.Palette;
+import logic.Machine;
 import logic.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Set;
 
 public class MachineSelectionView implements IMachineSelectionObserver
 {
@@ -46,8 +48,8 @@ public class MachineSelectionView implements IMachineSelectionObserver
         var p1machSelModel = con.getPlayerMachineSelection(Player.PLAYER1);
         var p2machSelModel = con.getPlayerMachineSelection(Player.PLAYER2);
 
-        var p1gridModel = new MachineGridModel(Machines.allNames(), 5);
-        var p2gridModel = new MachineGridModel(Machines.allNames(), 5);
+        var p1gridModel = new MachineGridModel(Machines.all(), 5);
+        var p2gridModel = new MachineGridModel(Machines.all(), 5);
 
         p1machSelPanel = new MachineSelectionGridPanel(p1machSelModel, p1gridModel, Palette.p1color);
         p2machSelPanel = new MachineSelectionGridPanel(p2machSelModel, p2gridModel, Palette.p2color);
@@ -151,7 +153,7 @@ public class MachineSelectionView implements IMachineSelectionObserver
     }
 
     @Override
-    public void acceptSelectionResponse(Player player, String machine, MachineSelectionResponse response)
+    public void acceptSelectionResponse(Player player, Machine machine, MachineSelectionResponse response)
     {
         var doneButton = player == Player.PLAYER1 ? p1doneButton : p2doneButton;
         if (response == MachineSelectionResponse.SELECTED) {
@@ -177,7 +179,7 @@ public class MachineSelectionView implements IMachineSelectionObserver
     }
 
     @Override
-    public void acceptDeselectionResponse(Player player, String machine, MachineDeselectionResponse response)
+    public void acceptDeselectionResponse(Player player, Machine machine, MachineDeselectionResponse response)
     {
         if (response == MachineDeselectionResponse.DESELECTED) {
             var machSel = con.getPlayerMachineSelection(player);

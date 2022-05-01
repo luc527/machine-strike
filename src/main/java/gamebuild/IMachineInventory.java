@@ -1,14 +1,16 @@
 package gamebuild;
 
-import java.util.Set;
+import logic.Machine;
+
+import java.util.List;
 
 // Read-only interface
 
 public interface IMachineInventory
 {
-    Set<String> getMachines();
+    List<Machine> getMachines();
 
-    int getAmount(String machine);
+    int getAmount(Machine machine);
 
     boolean isEmpty();
 }

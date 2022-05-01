@@ -1,2 +1,4 @@
-package graphics;public class MachineStatsPanel {
+package graphics;
+
+public class MachineStatsPanel {
 }

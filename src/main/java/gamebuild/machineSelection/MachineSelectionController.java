@@ -2,6 +2,7 @@ package gamebuild.machineSelection;
 
 import gamebuild.GameBuilder;
 import gamebuild.piecePlacement.PiecePlacementController;
+import logic.Machine;
 import logic.Player;
 
 import java.util.ArrayList;
@@ -41,14 +42,14 @@ public class MachineSelectionController implements IMachineSelectionController
     }
 
     @Override
-    public void selectMachine(Player player, String machine)
+    public void selectMachine(Player player, Machine machine)
     {
         var response = getPlayerMachineSelection(player).select(machine);
         observers.forEach(o -> o.acceptSelectionResponse(player, machine, response));
     }
 
     @Override
-    public void deselectMachine(Player player, String machine)
+    public void deselectMachine(Player player, Machine machine)
     {
         var response = getPlayerMachineSelection(player).deselect(machine);
         observers.forEach(o -> o.acceptDeselectionResponse(player, machine, response));

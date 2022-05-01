@@ -26,11 +26,11 @@ public interface IPiecePlacementController
 
     Optional<Piece> getPieceAt(Coord coord);
 
-    boolean selectMachine(String machine);
+    boolean selectMachine(Machine machine);
 
     void cancelSelection();
 
-    boolean placeMachine(Coord coord, String machine, Direction direction);
+    boolean placeMachine(Coord coord, Machine machine, Direction direction);
 
     void startGame();
 }

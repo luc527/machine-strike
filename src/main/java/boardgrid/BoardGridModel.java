@@ -24,7 +24,7 @@ public class BoardGridModel
     private Coord cursor;
 
     // Machine carried by the cursor as the player moves it across the board
-    private String carriedMachine;
+    private Machine carriedMachine;
     private Direction carriedMachineDirection;
 
     // Positions the player is currently allowed to move within
@@ -38,7 +38,7 @@ public class BoardGridModel
         availablePositions = Set.of();
     }
 
-    public void startInteraction(Coord cursor, Set<Coord> availablePositions, String carriedMachine)
+    public void startInteraction(Coord cursor, Set<Coord> availablePositions, Machine carriedMachine)
     {
         this.carriedMachine = carriedMachine;
         this.carriedMachineDirection = Direction.NORTH;
@@ -61,7 +61,7 @@ public class BoardGridModel
         return cursor;
     }
 
-    public String getCarriedMachine()
+    public Machine getCarriedMachine()
     {
         return this.carriedMachine;
     }
