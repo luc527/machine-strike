@@ -1,7 +1,7 @@
 package logic;
 
 import com.google.gson.JsonElement;
-import utils.Constants;
+import constants.Constants;
 
 public class Board
 {

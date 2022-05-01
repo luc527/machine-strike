@@ -1,15 +1,16 @@
-package gamebuild.machinegrid;
+package components.machinegrid;
 
 import assets.MachineImageMap;
-import assets.Machines;
-import graphics.Palette;
+import components.Palette;
 import logic.Coord;
 import logic.Direction;
 import logic.Machine;
-import utils.Constants;
+import constants.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -22,6 +23,7 @@ public class MachineGridPanel extends JPanel
     protected boolean showCursor;
     private Runnable onPressEnter;
     private Runnable onPressBackspace;
+    private Runnable onMoveCursor;
 
     public MachineGridPanel(MachineGridModel grid, Color cursorColor)
     {
@@ -45,6 +47,9 @@ public class MachineGridPanel extends JPanel
                         case KeyEvent.VK_UP    -> grid.moveCursor(Direction.NORTH);
                         case KeyEvent.VK_LEFT  -> grid.moveCursor(Direction.WEST);
                         case KeyEvent.VK_DOWN  -> grid.moveCursor(Direction.SOUTH);
+                    }
+                    if (onMoveCursor != null) {
+                        onMoveCursor.run();
                     }
                 }
                 repaint();
@@ -106,6 +111,16 @@ public class MachineGridPanel extends JPanel
         if (b) requestFocusInWindow();
         showCursor = b;
         repaint();
+    }
+
+    public void onMoveCursor(Runnable r)
+    {
+        this.onMoveCursor = r;
+        addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                r.run();
+            }
+        });
     }
 
     public void onPressEnter(Runnable r)

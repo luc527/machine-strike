@@ -1,9 +1,8 @@
 package gamebuild.machineSelection;
 
-import assets.Machines;
-import gamebuild.machinegrid.MachineGridModel;
-import gamebuild.machinegrid.MachineGridPanel;
-import graphics.Palette;
+import components.machinegrid.MachineGridModel;
+import components.machinegrid.MachineGridPanel;
+import components.Palette;
 import logic.Coord;
 
 import java.awt.*;

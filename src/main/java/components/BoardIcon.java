@@ -1,8 +1,8 @@
-package graphics;
+package components;
 
 import assets.TerrainColorMap;
 import logic.Board;
-import utils.Constants;
+import constants.Constants;
 
 import javax.swing.*;
 import java.awt.*;

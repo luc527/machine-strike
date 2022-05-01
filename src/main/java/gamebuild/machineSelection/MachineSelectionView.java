@@ -2,16 +2,16 @@ package gamebuild.machineSelection;
 
 import assets.Machines;
 import gamebuild.MachineInventory;
-import gamebuild.machinegrid.MachineGridModel;
+import components.machinegrid.MachineGridModel;
 import gamebuild.piecePlacement.IPiecePlacementController;
 import gamebuild.piecePlacement.PiecePlacementView;
-import graphics.Palette;
+import components.MachineStatsPanel;
+import components.Palette;
 import logic.Machine;
 import logic.Player;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Set;
 
 public class MachineSelectionView implements IMachineSelectionObserver
 {
@@ -19,17 +19,22 @@ public class MachineSelectionView implements IMachineSelectionObserver
 
     private final JFrame frame;
 
+    private final JPanel p1container;
+    private final JPanel p2container;
+
+    private final MachineGridModel p1gridModel;
+    private final MachineGridModel p2gridModel;
+
     private final MachineSelectionGridPanel p1machSelPanel;
     private final MachineSelectionGridPanel p2machSelPanel;
-
-    private JPanel p1container;
-    private JPanel p2container;
 
     private JButton p1doneButton;
     private JButton p2doneButton;
 
     private JLabel p1vpCounter;
     private JLabel p2vpCounter;
+
+    private MachineStatsPanel stats;
 
     private JLabel p1warn;
     private JLabel p2warn;
@@ -42,24 +47,26 @@ public class MachineSelectionView implements IMachineSelectionObserver
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        var panel = new JPanel(new BorderLayout());
+        var panel = new JPanel(new BorderLayout(10, 10));
         frame.setContentPane(panel);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        p1gridModel = new MachineGridModel(Machines.all(), 5);
+        p2gridModel = new MachineGridModel(Machines.all(), 5);
 
         var p1machSelModel = con.getPlayerMachineSelection(Player.PLAYER1);
         var p2machSelModel = con.getPlayerMachineSelection(Player.PLAYER2);
-
-        var p1gridModel = new MachineGridModel(Machines.all(), 5);
-        var p2gridModel = new MachineGridModel(Machines.all(), 5);
-
         p1machSelPanel = new MachineSelectionGridPanel(p1machSelModel, p1gridModel, Palette.p1color);
         p2machSelPanel = new MachineSelectionGridPanel(p2machSelModel, p2gridModel, Palette.p2color);
 
         p1container = createPlayerPanel(Player.PLAYER1, p1machSelPanel);
         p2container = createPlayerPanel(Player.PLAYER2, p2machSelPanel);
 
+        p1machSelPanel.onMoveCursor(() -> stats.setMachine(p1gridModel.machineUnderCursor()).repaint());
         p1machSelPanel.onPressEnter(() -> con.selectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
         p1machSelPanel.onPressBackspace(() -> con.deselectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
 
+        p2machSelPanel.onMoveCursor(() -> stats.setMachine(p2gridModel.machineUnderCursor()).repaint());
         p2machSelPanel.onPressEnter(() -> con.selectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
         p2machSelPanel.onPressBackspace(() -> con.deselectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
 
@@ -71,7 +78,7 @@ public class MachineSelectionView implements IMachineSelectionObserver
                 return new Dimension(dim.width, 48);
             }
         };
-        spacer.add(new JLabel("<html>ENTER to select<br>BACKSPACE to de-select</html>"));
+        spacer.add(new JLabel("<html>ENTER select<br>BACKSPACE de-select</html>"));
 
         panel.add(p1container, BorderLayout.NORTH);
         panel.add(spacer, BorderLayout.CENTER);
@@ -137,6 +144,9 @@ public class MachineSelectionView implements IMachineSelectionObserver
 
     public void show(Player firstPlayer)
     {
+        var grid = firstPlayer == Player.PLAYER1 ? p1gridModel : p2gridModel;
+        stats = new MachineStatsPanel(grid.machineUnderCursor());
+        frame.getContentPane().add(stats, BorderLayout.WEST);
         frame.pack();
         frame.setVisible(true);
         // setFocused after setVisible, otherwise requestFocus will fail

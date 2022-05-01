@@ -1,6 +1,6 @@
 package logic;
 
-import utils.Constants;
+import constants.Constants;
 
 public class GameState
 {

@@ -1,11 +1,10 @@
 package gamebuild.piecePlacement;
 
-import assets.Machines;
 import gamebuild.IMachineInventory;
 import gamebuild.MachineInventory;
 import gamebuild.GameBuilder;
 import logic.*;
-import utils.Constants;
+import constants.Constants;
 
 import java.util.*;
 

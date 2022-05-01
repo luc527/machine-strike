@@ -1,19 +1,16 @@
-package boardgrid;
+package components.boardgrid;
 
 import assets.MachineImageMap;
-import assets.Machines;
 import assets.TerrainColorMap;
-import graphics.Palette;
+import components.Palette;
 import logic.Direction;
 import logic.Machine;
-import utils.Constants;
+import constants.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.util.EnumMap;
 
 public class BoardGridPanel extends JPanel
 {

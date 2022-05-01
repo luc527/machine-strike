@@ -2,7 +2,7 @@ package assets;
 
 import com.google.gson.JsonParser;
 import logic.Machine;
-import utils.Constants;
+import constants.Constants;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

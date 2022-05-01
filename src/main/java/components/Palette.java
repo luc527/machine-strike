@@ -1,4 +1,4 @@
-package graphics;
+package components;
 
 import logic.Player;
 

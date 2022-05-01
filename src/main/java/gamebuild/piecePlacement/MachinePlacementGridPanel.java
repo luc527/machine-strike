@@ -1,8 +1,8 @@
 package gamebuild.piecePlacement;
 
 import gamebuild.IMachineInventory;
-import gamebuild.machinegrid.MachineGridModel;
-import gamebuild.machinegrid.MachineGridPanel;
+import components.machinegrid.MachineGridModel;
+import components.machinegrid.MachineGridPanel;
 import logic.Coord;
 
 import java.awt.*;

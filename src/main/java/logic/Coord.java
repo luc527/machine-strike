@@ -1,6 +1,6 @@
 package logic;
 
-import utils.Constants;
+import constants.Constants;
 
 // :PatternUsed Factory (kind of)
 // Both Java and Python do a similar thing for int object wrappers,

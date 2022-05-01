@@ -1,10 +1,10 @@
 package gamebuild.piecePlacement;
 
-import boardgrid.BoardGridModel;
-import boardgrid.BoardGridPanel;
-import gamebuild.machinegrid.MachineGridModel;
-import gamebuild.machinegrid.MachineGridPanel;
-import graphics.Palette;
+import components.boardgrid.BoardGridModel;
+import components.boardgrid.BoardGridPanel;
+import components.machinegrid.MachineGridModel;
+import components.machinegrid.MachineGridPanel;
+import components.Palette;
 import logic.Coord;
 import logic.Machine;
 import logic.Piece;
@@ -42,6 +42,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
         var panel = new JPanel();
         panel.setLayout(new BorderLayout());
         frame.setContentPane(panel);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // The inventories encapsulate the logic around each player having a certain amount
         // of certain machines to be placed in the board

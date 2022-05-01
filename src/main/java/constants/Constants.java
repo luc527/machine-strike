@@ -1,6 +1,4 @@
-package utils;
-
-import java.awt.*;
+package constants;
 
 public class Constants
 {

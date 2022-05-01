@@ -1,7 +1,7 @@
 package gamebuild;
 
 import logic.*;
-import utils.Constants;
+import constants.Constants;
 
 // :PatternUsed Builder
 // Builds an initial game state

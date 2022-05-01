@@ -1,4 +1,4 @@
-package gamebuild.machinegrid;
+package components.machinegrid;
 
 import logic.Coord;
 import logic.Direction;

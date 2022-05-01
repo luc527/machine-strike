@@ -1,7 +1,7 @@
-package boardgrid;
+package components.boardgrid;
 
 import logic.*;
-import utils.Constants;
+import constants.Constants;
 
 import java.util.Set;
 import java.util.Optional;

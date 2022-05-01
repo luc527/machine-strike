@@ -2,7 +2,7 @@ package gamebuild.playerAndBoardSelection;
 
 import gamebuild.machineSelection.IMachineSelectionController;
 import gamebuild.machineSelection.MachineSelectionView;
-import graphics.BoardIcon;
+import components.BoardIcon;
 import logic.Board;
 import logic.Player;
 
@@ -32,6 +32,7 @@ public class PlayerAndBoardSelectionView implements IPlayerAndBoardSelectionObse
         var panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         frame.setContentPane(panel);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         //
         // Player selection
