@@ -1,8 +1,11 @@
 package gamebuild.machinegrid;
 
 import assets.MachineImageMap;
+import assets.Machines;
+import graphics.Palette;
 import logic.Coord;
 import logic.Direction;
+import logic.Machine;
 import utils.Constants;
 
 import javax.swing.*;
@@ -63,9 +66,19 @@ public class MachineGridPanel extends JPanel
         grid.iterate((row, col) -> {
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
-            var machine = grid.machineAt(Coord.create(row, col));
-            g.drawImage(MachineImageMap.get(machine), x, y, null);
-
+            var machineName = grid.machineAt(Coord.create(row, col));
+            var machine = Machines.get(machineName);
+            for (var dir : Direction.iter()) {
+                var pt = machine.point(dir);
+                if (pt == Machine.Point.EMPTY) continue;
+                var tmp = g.getTransform();
+                g.rotate(dir.theta(), x + SIDE_PX/2, y + SIDE_PX/2);
+                var color = pt == Machine.Point.ARMORED ? Palette.armoredPt : Palette.weakPt;
+                g.setColor(color);
+                g.fillRect(x+11, y+1, SIDE_PX-22, 10);
+                g.setTransform(tmp);
+            }
+            g.drawImage(MachineImageMap.get(machineName), x, y, null);
         });
     }
 
@@ -83,10 +96,10 @@ public class MachineGridPanel extends JPanel
     {
         super.paintComponent(G);
         var g = (Graphics2D) G;
-        paintMachines(g);
         if (showCursor) {
             paintCursor(g);
         }
+        paintMachines(g);
     }
 
     public void setFocused(boolean b)

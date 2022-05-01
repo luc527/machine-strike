@@ -33,8 +33,6 @@ public class MachineSelectionView implements IMachineSelectionObserver
     private JLabel p2warn;
     private Thread currWarnThread;
 
-    // TODO!!! panel at the side that shows the stats of the machine under cursor!
-
     public MachineSelectionView(IMachineSelectionController con)
     {
         con.attach(this);

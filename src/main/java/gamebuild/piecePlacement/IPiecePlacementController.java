@@ -14,8 +14,6 @@ import java.util.Optional;
 // to placePiece(Player p, ...) could have the same player,
 // which would be wrong.
 
-// TODO!!! enable players to rotate the pieces
-
 public interface IPiecePlacementController
 {
     void attach(IPiecePlacementObserver obs);

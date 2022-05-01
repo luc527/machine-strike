@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.List;
+
 public enum Direction
 {
     EAST  (0, 3*Math.PI/2),
@@ -48,5 +50,10 @@ public enum Direction
         i += times;
         i += (1 - i / 4) * 4;
         return Direction.from(i % 4);
+    }
+
+    public static Iterable<Direction> iter()
+    {
+        return List.of(Direction.values());
     }
 }

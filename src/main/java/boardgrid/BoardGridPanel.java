@@ -114,9 +114,19 @@ public class BoardGridPanel extends JPanel
 
         var xformSaved = g.getTransform();
         g.rotate(direction.theta(), x + SIDE_PX / 2.0, y + SIDE_PX / 2.0);
-        g.drawImage(img, x, y, null);
 
-        // TODO also show armored/weak points
+        for (var dir : Direction.iter()) {
+            var pt = machine.point(dir);
+            if (pt == Machine.Point.EMPTY) continue;
+            var xformSaved2 = g.getTransform();
+            g.rotate(dir.theta(), x + SIDE_PX / 2.0, y + SIDE_PX / 2.0);
+            var color = pt == Machine.Point.ARMORED ? Palette.armoredPt : Palette.weakPt;
+            g.setColor(color);
+            g.fillRect(x+11, y+1, SIDE_PX-22, 10);
+            g.setTransform(xformSaved2);
+        }
+
+        g.drawImage(img, x, y, null);
 
         g.setTransform(xformSaved);
     }

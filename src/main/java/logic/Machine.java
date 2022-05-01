@@ -8,9 +8,6 @@ import java.util.Objects;
 
 // :PatternUsed? Prototype (for Piece)
 
-// TODO replace all the (String machine) with (Machine machine)
-//  they're already equal() and hashCode() by their name, so it's the same thing (and easier)
-
 public class Machine
 {
     public enum Point
