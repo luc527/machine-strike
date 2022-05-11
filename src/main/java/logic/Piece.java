@@ -6,9 +6,9 @@ package logic;
 public class Piece
 {
     private final Machine machine;
-    private Direction direction;
-    private Player player;
-    private int currentHealth;
+    private final Direction direction;
+    private final Player player;
+    private final int currentHealth;
 
     public Piece(Machine machine, Direction direction, Player player)
     {

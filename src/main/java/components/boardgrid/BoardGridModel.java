@@ -38,23 +38,44 @@ public class BoardGridModel
         availablePositions = Set.of();
     }
 
-    public void startInteraction(Coord cursor, Set<Coord> availablePositions, Machine carriedMachine)
-    {
-        this.carriedMachine = carriedMachine;
-        this.carriedMachineDirection = Direction.NORTH;
-        this.availablePositions = availablePositions;
+    public void setCursor(Coord cursor) {
         this.cursor = cursor;
+    }
+
+    public void setAvailablePositions(Set<Coord> availablePositions) {
+        this.availablePositions = availablePositions;
+    }
+
+    public void carryMachine(Machine machine)
+    {
+        this.carriedMachine = machine;
+        this.carriedMachineDirection = Direction.NORTH;
     }
 
     public void rotateCarriedMachine(boolean right)
     {
+        if (carriedMachine == null) throw new RuntimeException("No carried machine to rotate");
         carriedMachineDirection = carriedMachineDirection.rotated(right ? 1 : -1);
     }
 
-    public void endInteraction()
+    public void carryPiece(Piece piece)
     {
-        this.availablePositions = Set.of();
+        this.carriedMachine = piece.machine();
+        this.carriedMachineDirection = piece.direction();
     }
+
+    // Alias
+    public void rotateCarriedPiece(boolean right)
+    {
+        rotateCarriedMachine(right);
+    }
+
+
+    public boolean isCarryingMachine()
+    {
+        return this.carriedMachine != null;
+    }
+
 
     public Coord getCursor()
     {
@@ -100,7 +121,7 @@ public class BoardGridModel
             var offset = dir == Direction.NORTH ? -1 : 1;
             result = result.withRow(clamp(cursor.row() + offset, 0, ROWS - 1));
         }
-        if (availablePositions.contains(result)) {
+        if (availablePositions.isEmpty() || availablePositions.contains(result)) {
             cursor = result;
         }
     }

@@ -97,11 +97,14 @@ public class BoardGridPanel extends JPanel
             g.setColor(cursorColor);
             g.setStroke(new BasicStroke(5.0f));
             g.drawRect(cx+2, cy+2, SIDE_PX-5, SIDE_PX-5);
-            drawMachine(
-                    grid.getCarriedMachine(),
-                    grid.getCarriedMachineDirection(),
-                    g, cx, cy
-            );
+            if (grid.isCarryingMachine()) {
+                drawMachine(
+                        grid.getCarriedMachine(),
+                        grid.getCarriedMachineDirection(),
+                        g, cx, cy
+                );
+
+            }
         }
     }
 

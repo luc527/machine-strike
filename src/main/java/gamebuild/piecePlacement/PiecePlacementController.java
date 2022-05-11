@@ -3,6 +3,8 @@ package gamebuild.piecePlacement;
 import gamebuild.IMachineInventory;
 import gamebuild.MachineInventory;
 import gamebuild.GameBuilder;
+import gameplay.GameController;
+import gameplay.GameView;
 import logic.*;
 import constants.Constants;
 
@@ -124,6 +126,10 @@ public class PiecePlacementController implements IPiecePlacementController
     @Override
     public void startGame()
     {
-        System.out.println("TODO start game");
+        observers.forEach(o -> o.gameStarted());
+        var game = gameBuilder.build();
+        var gameController = new GameController(game);
+        new GameView(gameController);
+        gameController.startGame();
     }
 }

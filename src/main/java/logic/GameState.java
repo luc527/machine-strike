@@ -2,6 +2,8 @@ package logic;
 
 import constants.Constants;
 
+import java.util.Optional;
+
 public class GameState
 {
     private Player currentPlayer;
@@ -19,4 +21,10 @@ public class GameState
             System.arraycopy(startingPieces[i], 0, this.pieces[i], 0, width);
     }
 
+    public Player currentPlayer() { return currentPlayer; }
+    public Board board() { return board; }
+
+    public Piece pieceAt(int r, int c) {
+        return pieces[r][c];
+    }
 }

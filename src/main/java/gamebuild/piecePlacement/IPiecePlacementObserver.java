@@ -18,4 +18,6 @@ public interface IPiecePlacementObserver
     void piecePlaced(Piece piece, Coord pos, Player nextPlayer);
 
     void allPiecesPlaced();
+
+    void gameStarted();
 }

@@ -154,7 +154,9 @@ public class PiecePlacementView implements IPiecePlacementObserver
     @Override
     public void pieceSelected(Machine machine, Player player, Coord initialPos, Set<Coord> availablePos)
     {
-        boardModel.startInteraction(initialPos, availablePos, machine);
+        boardModel.carryMachine(machine);
+        boardModel.setCursor(initialPos);
+        boardModel.setAvailablePositions(availablePos);
         boardPanel.setCursorColor(Palette.color(player));
         boardPanel.setFocused(true);
         playerMachinePanel(player).setFocused(false);
@@ -163,7 +165,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     @Override
     public void selectionCancelled(Player player)
     {
-        boardModel.endInteraction();
+        boardModel.setAvailablePositions(Set.of());
         boardPanel.setFocused(false);
         playerMachinePanel(player).setFocused(true);
     }
@@ -173,7 +175,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
     {
         playerMachinePanel(nextPlayer.prev()).setFocused(false);
         playerMachinePanel(nextPlayer).setFocused(true);
-        boardModel.endInteraction();
+        boardModel.setAvailablePositions(Set.of());
         boardPanel.setFocused(false);
     }
 
@@ -184,5 +186,11 @@ public class PiecePlacementView implements IPiecePlacementObserver
         p2gridPanel.setFocused(false);
         startGameButton.setEnabled(true);
         startGameButton.requestFocusInWindow();
+    }
+
+    @Override
+    public void gameStarted()
+    {
+        frame.dispose();
     }
 }
