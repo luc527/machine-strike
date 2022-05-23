@@ -91,9 +91,9 @@ public class PiecePlacementController implements IPiecePlacementController
     }
 
     @Override
-    public Optional<Piece> getPieceAt(Coord coord)
+    public Piece getPieceAt(Coord coord)
     {
-        return Optional.ofNullable(gameBuilder.pieceAt(coord.row(), coord.col()));
+        return gameBuilder.pieceAt(coord.row(), coord.col());
     }
 
     @Override

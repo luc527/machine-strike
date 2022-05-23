@@ -6,11 +6,18 @@ import logic.Machine;
 
 import java.util.List;
 
+/**
+ * Encapsulates a grid of machines wherein you can move a cursor.
+ * Supports arbitrary combinations of machines per row  x  number of machines
+ * (i.e. the grid doesn't need to be rectangular, like 9 machines, 3 per row,
+ * it supports something like 8 machines, 3 per row, where the last row has a
+ * blank square).
+ */
 public class MachineGridModel
 {
     private final int machinesPerRow;
     private final Machine[][] machines;
-    private final int n;
+    private final int nmachines;
     private final int rows;
     private Coord cursor;
 
@@ -19,8 +26,8 @@ public class MachineGridModel
         this.machinesPerRow = machinesPerRow;
         cursor = Coord.create(0, 0);
 
-        n = machines.size();
-        rows = (n - 1) / machinesPerRow + 1; // n/MACHINES rounded up
+        nmachines = machines.size();
+        rows = (nmachines - 1) / machinesPerRow + 1; // n/MACHINES rounded up
         this.machines = new Machine[rows][];
         for (var row = 0; row < rows; row++) {
             this.machines[row] = new Machine[machinesPerRow];
@@ -61,11 +68,11 @@ public class MachineGridModel
     {
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
-            var lastCol = n % machinesPerRow > 0 && cursor.row() == rows - 1 ? n % machinesPerRow - 1 : machinesPerRow - 1;
+            var lastCol = nmachines % machinesPerRow > 0 && cursor.row() == rows - 1 ? nmachines % machinesPerRow - 1 : machinesPerRow - 1;
             cursor = cursor.withCol(clamp(cursor.col() + offset, 0, lastCol));
         } else {
             var offset = dir == Direction.NORTH ? -1 : 1;
-            var lastRow = n % machinesPerRow > 0 && cursor.col() >= n % machinesPerRow ? rows - 2 : rows - 1;
+            var lastRow = nmachines % machinesPerRow > 0 && cursor.col() >= nmachines % machinesPerRow ? rows - 2 : rows - 1;
             cursor = cursor.withRow(clamp(cursor.row() + offset, 0, lastRow));
         }
     }
@@ -87,7 +94,7 @@ public class MachineGridModel
 
     public void iterate(MachineGridIterator it)
     {
-        for (var i = 0; i < n; i++) {
+        for (var i = 0; i < nmachines; i++) {
             var row = i / machinesPerRow;
             var col = i % machinesPerRow;
             it.exec(row, col);

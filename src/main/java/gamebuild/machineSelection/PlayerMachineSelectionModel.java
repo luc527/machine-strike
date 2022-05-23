@@ -13,6 +13,7 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
     private final  MachineInventory selectedInv          = MachineInventory.empty();
     private                     int currentVictoryPoints = 0;
 
+    // inventory of selected machines
     public MachineInventory selectedInventory()
     { return selectedInv; }
 
@@ -23,6 +24,10 @@ public class PlayerMachineSelectionModel implements IPlayerMachineSelectionModel
     @Override
     public int selectedAmount(Machine machine)
     { return selectedInv.getAmount(machine); }
+
+    @Override
+    public boolean selectable(Machine machine)
+    { return machine.victoryPoints() + currentVictoryPoints() <= maxVictoryPoints(); }
 
     @Override
     public int maxVictoryPoints()

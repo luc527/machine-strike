@@ -3,6 +3,9 @@ package logic;
 import com.google.gson.JsonElement;
 import constants.Constants;
 
+/**
+ * The board is only a terrain matrix, no pieces on it.
+ */
 public class Board
 {
     private static final int HEIGHT = Constants.BOARD_ROWS;

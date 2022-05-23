@@ -20,7 +20,7 @@ public class Palette
         return p == Player.PLAYER1 ? p1colorTransparent : p2colorTransparent;
     }
 
-    public static Color transparentYellow = new Color(0.8f, 1f, 1f, 0.3f);
+    public static Color transparentYellow = new Color(0.6f, 1f, 1f, 0.5f);
     public static Color transparentBlack = new Color(0, 0, 0, 0.2f);
 
     public static Color yellow = Color.YELLOW;

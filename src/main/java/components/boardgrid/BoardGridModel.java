@@ -4,105 +4,45 @@ import logic.*;
 import constants.Constants;
 
 import java.util.Set;
-import java.util.Optional;
-import java.util.function.Function;
 
-public class BoardGridModel
+/**
+ * Logically organizes the board into a grid wherein a cursor can move.
+ * Encapsulates the board (terrains) and the cursor, and the positions available for the cursor.
+ */
+public abstract class BoardGridModel
 {
-    public interface BoardGridIterator
+    public interface TerrainIterator
     {
-        void exec(int row, int col, Terrain terrain, Optional<Piece> piece, boolean available);
+        void exec(int row, int col, Terrain terrain);
     }
 
-    public interface PieceProvider extends Function<Coord, Optional<Piece>> {}
+    public interface AvailableIterator
+    {
+        void exec(int row, int col);
+    }
 
-    private static final int ROWS = Constants.BOARD_ROWS;
-    private static final int COLS = Constants.BOARD_COLS;
+    protected static final int ROWS = Constants.BOARD_ROWS;
+    protected static final int COLS = Constants.BOARD_COLS;
 
-    private final Board board;
-    private final PieceProvider pieceProvider;
-    private Coord cursor;
+    protected final Board board;
+    protected Coord cursor;
+    protected Set<Coord> availablePositions;
 
-    // Machine carried by the cursor as the player moves it across the board
-    private Machine carriedMachine;
-    private Direction carriedMachineDirection;
-
-    // Positions the player is currently allowed to move within
-    private Set<Coord> availablePositions;
-
-    public BoardGridModel(Board board, PieceProvider pieceProvider)
+    public BoardGridModel(Board board)
     {
         this.board = board;
-        this.pieceProvider = pieceProvider;
         cursor = Coord.create(0, 0);
         availablePositions = Set.of();
     }
 
-    public void setCursor(Coord cursor) {
-        this.cursor = cursor;
-    }
-
-    public void setAvailablePositions(Set<Coord> availablePositions) {
-        this.availablePositions = availablePositions;
-    }
-
-    public void carryMachine(Machine machine)
-    {
-        this.carriedMachine = machine;
-        this.carriedMachineDirection = Direction.NORTH;
-    }
-
-    public void rotateCarriedMachine(boolean right)
-    {
-        if (carriedMachine == null) throw new RuntimeException("No carried machine to rotate");
-        carriedMachineDirection = carriedMachineDirection.rotated(right ? 1 : -1);
-    }
-
-    public void carryPiece(Piece piece)
-    {
-        this.carriedMachine = piece.machine();
-        this.carriedMachineDirection = piece.direction();
-    }
-
-    // Alias
-    public void rotateCarriedPiece(boolean right)
-    {
-        rotateCarriedMachine(right);
-    }
-
-
-    public boolean isCarryingMachine()
-    {
-        return this.carriedMachine != null;
-    }
-
+    public void setCursor(Coord cursor)
+    { this.cursor = cursor; }
 
     public Coord getCursor()
-    {
-        return cursor;
-    }
+    { return cursor; }
 
-    public Machine getCarriedMachine()
-    {
-        return this.carriedMachine;
-    }
-
-    public Direction getCarriedMachineDirection()
-    {
-        return this.carriedMachineDirection;
-    }
-
-    public void iterate(BoardGridIterator it)
-    {
-        for (var row = 0; row < ROWS; row++) {
-            for (var col = 0; col < COLS; col++) {
-                var coord = Coord.create(row, col);
-                var piece = pieceProvider.apply(coord);
-                var available = availablePositions.contains(coord);
-                it.exec(row, col, board.get(row, col), piece, available);
-            }
-        }
-    }
+    public void setAvailablePositions(Set<Coord> availablePositions)
+    { this.availablePositions = availablePositions; }
 
     private int clamp(int x, int min, int max)
     {
@@ -111,6 +51,11 @@ public class BoardGridModel
         return x;
     }
 
+    /**
+     * Attempts to move the cursor in the given direction;
+     * won't move if the resulting position is unavailable.
+     * @param dir The direction to which move the cursor.
+     */
     public void moveCursor(Direction dir)
     {
         var result = Coord.create(cursor);
@@ -124,6 +69,24 @@ public class BoardGridModel
         if (availablePositions.isEmpty() || availablePositions.contains(result)) {
             cursor = result;
         }
+    }
+
+    public void iterateTerrain(TerrainIterator it)
+    {
+        for (var row = 0; row < ROWS; row++)
+            for (var col = 0; col < COLS; col++)
+                it.exec(row, col, board.get(row, col));
+    }
+
+    public void iterateAvailable(AvailableIterator it)
+    {
+        for (var pos : availablePositions) {
+            var row = pos.row();
+            var col = pos.col();
+            if (row >= 0 && row < ROWS && col >= 0 && col <= COLS)
+                it.exec(row, col);
+        }
+
     }
 
 }

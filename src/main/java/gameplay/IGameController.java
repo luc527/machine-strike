@@ -1,10 +1,24 @@
 package gameplay;
 
+import logic.Board;
+import logic.Coord;
+import logic.Piece;
+
 public interface IGameController
 {
-    void attach(GameObserver observer);
+    //
+
+    Board getBoard();
+
+    Piece pieceAt(Coord coord);
+
+    //
 
     void startGame();
 
-    PieceSelectionResponse selectPiece();
+    void attach(GameObserver observer);
+
+    void selectPiece(int row, int col);
+
+    void unselectPiece();
 }

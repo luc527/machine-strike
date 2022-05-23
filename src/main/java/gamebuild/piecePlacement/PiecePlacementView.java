@@ -1,8 +1,6 @@
 package gamebuild.piecePlacement;
 
 import components.MachineStatsPanel;
-import components.boardgrid.BoardGridModel;
-import components.boardgrid.BoardGridPanel;
 import components.machinegrid.MachineGridModel;
 import components.machinegrid.MachineGridPanel;
 import components.Palette;
@@ -28,8 +26,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
     private final MachineGridModel p2gridModel;
 
     private final JPanel centerPanel;
-    private final BoardGridModel boardModel;
-    private final BoardGridPanel boardPanel;
+    private final PlacementGridModel boardModel;
+    private final PlacementGridPanel boardPanel;
     private MachineStatsPanel machineStats;
 
     private final JButton startGameButton;
@@ -64,8 +62,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
         p1gridPanel = new MachinePlacementGridPanel(p1gridModel, p1inventory, Palette.p1color);
         p2gridPanel = new MachinePlacementGridPanel(p2gridModel, p2inventory, Palette.p2color);
 
-        boardModel = new BoardGridModel(con.getBoard(), con::getPieceAt);
-        boardPanel = new BoardGridPanel(boardModel);
+        boardModel = new PlacementGridModel(con.getBoard(), con::getPieceAt);
+        boardPanel = new PlacementGridPanel(boardModel);
 
         centerPanel = new JPanel();
         centerPanel.add(boardPanel);
@@ -92,9 +90,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
             }
         });
 
-        boardPanel.onCancel(con::cancelSelection);
-
-        boardPanel.onConfirm(() -> {
+        boardPanel.onPressEnter(() -> {
             var coord = boardModel.getCursor();
             var machine = boardModel.getCarriedMachine();
             var direction = boardModel.getCarriedMachineDirection();
@@ -102,6 +98,8 @@ public class PiecePlacementView implements IPiecePlacementObserver
                 warn("This space is already occupied!");
             }
         });
+
+        boardPanel.onPressBackspace(con::cancelSelection);
 
         startGameButton = new JButton("Start game");
         startGameButton.addActionListener(e -> con.startGame());

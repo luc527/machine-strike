@@ -9,6 +9,15 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * Extends the MachineGridPanel to not only display the machines in the grid,
+ * but also display amounts associated with each, with a current amount and
+ * a maximum amount, given by the IPlayerMachineSelectionModel. It also
+ * shows the victory points associated with each machine, since there is
+ * not only a limit on amount, for each piece, but also a global limit on
+ * the sum of the selected machines' victory points. This is also provided
+ * by the IPlayerMachineSelectionModel.
+ */
 public class MachineSelectionGridPanel extends MachineGridPanel
 {
     private final IPlayerMachineSelectionModel machSelModel;
@@ -40,10 +49,7 @@ public class MachineSelectionGridPanel extends MachineGridPanel
             var selected = machSelModel.selectedAmount(machine);
             var available = machSelModel.availableAmount(machine);
 
-            var selectable =  machine.victoryPoints()
-                    +  machSelModel.currentVictoryPoints()
-                    <= machSelModel.maxVictoryPoints();
-            if (selected == available || !selectable) {
+            if (selected == available || !machSelModel.selectable(machine)) {
                 g.setColor(Palette.transparentBlack);
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
             }

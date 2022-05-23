@@ -10,6 +10,8 @@ public interface IPlayerMachineSelectionModel
 
     int selectedAmount(Machine machine);
 
+    boolean selectable(Machine machine);
+
     int maxVictoryPoints();
 
     int currentVictoryPoints();

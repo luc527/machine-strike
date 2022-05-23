@@ -24,7 +24,7 @@ public interface IPiecePlacementController
 
     IMachineInventory getPlayerInventory(Player player);
 
-    Optional<Piece> getPieceAt(Coord coord);
+    Piece getPieceAt(Coord coord);
 
     boolean selectMachine(Machine machine);
 

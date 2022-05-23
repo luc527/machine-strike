@@ -2,7 +2,11 @@ package logic;
 
 import constants.Constants;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class GameState
 {
@@ -26,5 +30,27 @@ public class GameState
 
     public Piece pieceAt(int r, int c) {
         return pieces[r][c];
+    }
+
+    public static Set<Coord> generateAvailablePositions(int sourceRow, int sourceCol, int movementRange)
+    {
+        if (movementRange < 1) return Set.of(Coord.create(sourceRow, sourceCol));
+        var set = new HashSet<Coord>();
+
+        BiConsumer<Integer, Integer> makeRow = (blanks, row) -> {
+            var col = sourceCol - movementRange;
+            for (var j=0; j<blanks; j++) col++;
+            for (var j=0; j<2*movementRange+1-2*blanks; j++) set.add(Coord.create(row, col++));
+        };
+
+        var row = sourceRow - movementRange;
+        for (var blanks = movementRange; blanks >= 0; blanks--) {
+            makeRow.accept(blanks, row++);
+        }
+        for (var blanks = 1; blanks <= movementRange; blanks++) {
+            makeRow.accept(blanks, row++);
+        }
+
+        return set;
     }
 }

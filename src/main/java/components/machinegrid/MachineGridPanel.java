@@ -14,6 +14,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * Displays a MachineGridModel and also emits events on ENTER, BACKSPACE, and when the cursor is moved.
+ */
 public class MachineGridPanel extends JPanel
 {
     protected static final int SIDE_PX = Constants.BOARD_SIDE_PX;
