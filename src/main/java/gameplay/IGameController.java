@@ -2,6 +2,7 @@ package gameplay;
 
 import logic.Board;
 import logic.Coord;
+import logic.Direction;
 import logic.Piece;
 
 public interface IGameController
@@ -18,7 +19,9 @@ public interface IGameController
 
     void attach(GameObserver observer);
 
-    void selectPiece(int row, int col);
+    boolean selectPiece(int row, int col);
 
-    void unselectPiece();
+    boolean unselectPiece();
+
+    boolean placePiece(int row, int col, Direction dir);
 }

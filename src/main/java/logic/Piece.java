@@ -6,9 +6,9 @@ package logic;
 public class Piece
 {
     private final Machine machine;
-    private final Direction direction;
     private final Player player;
     private final int currentHealth;
+    private       Direction direction;
 
     public Piece(Machine machine, Direction direction, Player player)
     {
@@ -22,6 +22,8 @@ public class Piece
     public Direction direction() { return this.direction; }
     public int health() { return this.currentHealth; }
     public Player player() { return this.player; }
+
+    public void setDirection(Direction dir) { this.direction = dir; }
 
     @Override
     public String toString()

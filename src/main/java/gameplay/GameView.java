@@ -2,7 +2,6 @@ package gameplay;
 
 import components.Palette;
 import logic.Coord;
-import logic.GameState;
 import logic.Piece;
 import logic.Player;
 
@@ -19,6 +18,8 @@ public class GameView implements GameObserver
     private final JFrame frame;
     private final GameGridModel gridModel;
     private final GameGridPanel gridPanel;
+
+    private KeyListener currentKeyListener;
 
     private final KeyListener selectionListener;
     private final KeyListener placementListener;  // TODO bad name, find a better one
@@ -37,7 +38,8 @@ public class GameView implements GameObserver
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) return;
                 var cursor = gridModel.getCursor();
-                controller.selectPiece(cursor.row(), cursor.col());
+                if (!controller.selectPiece(cursor.row(), cursor.col())) return;
+                gridModel.carryPieceFrom(cursor);
             }
         };
 
@@ -45,15 +47,30 @@ public class GameView implements GameObserver
             public void keyPressed(KeyEvent e) {
                 var c = e.getKeyChar();
                 var k = e.getKeyCode();
-                if (k == KeyEvent.VK_BACK_SPACE) controller.unselectPiece();
+                var cursor = gridModel.getCursor();
+                if (k == KeyEvent.VK_BACK_SPACE || k == KeyEvent.VK_ESCAPE) {
+                    controller.unselectPiece();
+                } else if (k == KeyEvent.VK_ENTER) {
+                    controller.placePiece(cursor.row(), cursor.col(), gridModel.getCarriedPieceDirection());
+                } else if (gridModel.isCarryingPiece()) {
+                    if      (c == 'q') gridModel.rotateCarriedPiece(false);
+                    else if (c == 'e') gridModel.rotateCarriedPiece(true);
+                    frame.repaint();
+                }
             }
         };
 
         gridModel = new GameGridModel(controller.getBoard(), controller::pieceAt);
         gridPanel = new GameGridPanel(gridModel);
-        gridPanel.addKeyListener(selectionListener);
 
         panel.add(gridPanel);
+    }
+
+    private void setKeyListener(KeyListener to)
+    {
+        gridPanel.removeKeyListener(currentKeyListener);
+        gridPanel.addKeyListener(to);
+        currentKeyListener = to;
     }
 
     @Override
@@ -63,23 +80,35 @@ public class GameView implements GameObserver
         frame.setVisible(true);
         gridPanel.setCursorColor(Palette.color(firstPlayer));
         gridPanel.setFocused(true);
+        setKeyListener(selectionListener);
     }
 
     @Override
     public void pieceSelected(int row, int col, Piece piece, Set<Coord> availablePositions)
     {
-        gridPanel.removeKeyListener(selectionListener);
+        gridModel.carryPieceFrom(Coord.create(row, col));
         gridModel.setAvailablePositions(availablePositions);
         frame.repaint();
-        gridPanel.addKeyListener(placementListener);
+        setKeyListener(placementListener);
+    }
+
+    @Override
+    public void piecePlaced(int row, int col, Piece piece)
+    {
+        gridModel.setAvailablePositions(Set.of());
+        gridModel.stopCarryingPiece();
+        gridModel.syncPieces(controller::pieceAt);
+        frame.repaint();
+        setKeyListener(selectionListener);
     }
 
     @Override
     public void pieceUnselected()
     {
-        gridPanel.removeKeyListener(placementListener);
         gridModel.setAvailablePositions(Set.of());
+        gridModel.stopCarryingPiece();
+        gridModel.syncPieces(controller::pieceAt);
         frame.repaint();
-        gridPanel.addKeyListener(selectionListener);
+        setKeyListener(selectionListener);
     }
 }

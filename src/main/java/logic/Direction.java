@@ -40,7 +40,7 @@ public enum Direction
     }
 
     /**
-     * @param times How many times to rotate; positive for counterclockwise, negative for clockwise.
+     * @param times How many times to rotate; positive for counterclockwise/left, negative for clockwise/right.
      * @return Direction
      */
     public Direction rotated(int times)

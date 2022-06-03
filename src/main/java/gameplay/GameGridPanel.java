@@ -22,7 +22,7 @@ public class GameGridPanel extends BoardGridPanel
 
         var grid = (GameGridModel) this.grid;
 
-        for (var row = 0; row < ROWS; row++)
+        for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
                 var piece = grid.pieceAt(row, col);
                 if (piece == null) continue;
@@ -32,8 +32,18 @@ public class GameGridPanel extends BoardGridPanel
                 g.setColor(Palette.transparentColor(piece.player()));
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
             }
+        }
 
         super.paintAvailablePositions(g);
+
+        if (grid.isCarryingPiece()) {
+            var carried = grid.getCarriedPiece();
+            var direction = grid.getCarriedPieceDirection();
+            var cy = SIDE_PX * grid.getCursor().row();
+            var cx = SIDE_PX * grid.getCursor().col();
+            super.drawMachine(carried.machine(), direction, g, cx, cy);
+        }
+
         super.paintCursor(g);
     }
 }

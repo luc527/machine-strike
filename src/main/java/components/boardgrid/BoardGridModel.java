@@ -12,14 +12,10 @@ import java.util.Set;
 public abstract class BoardGridModel
 {
     public interface TerrainIterator
-    {
-        void exec(int row, int col, Terrain terrain);
-    }
+    { void exec(int row, int col, Terrain terrain); }
 
     public interface AvailableIterator
-    {
-        void exec(int row, int col);
-    }
+    { void exec(int row, int col); }
 
     protected static final int ROWS = Constants.BOARD_ROWS;
     protected static final int COLS = Constants.BOARD_COLS;

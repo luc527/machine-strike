@@ -1,9 +1,6 @@
 package gameplay;
 
-import logic.Board;
-import logic.Coord;
-import logic.GameState;
-import logic.Piece;
+import logic.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ public class GameController implements IGameController
     private final GameState game;
 
     private Piece selectedPiece;
+    private Coord selectedPieceSource;
     private Set<Coord> availablePositions; // TODO +1 range for running option
 
     public GameController(GameState game)
@@ -40,22 +38,46 @@ public class GameController implements IGameController
     { observers.add(observer); }
 
     @Override
-    public void selectPiece(int row, int col)
+    public boolean selectPiece(int row, int col)
     {
         var piece = game.pieceAt(row, col);
-        if (piece == null) return;
-        if (piece.player() != game.currentPlayer()) return;
+        if (piece == null) return false;
+        if (piece.player() != game.currentPlayer()) return false;
         selectedPiece = piece;
+        selectedPieceSource = Coord.create(row, col);
         availablePositions = GameState.generateAvailablePositions(row, col, piece.machine().movementRange());
         observers.forEach(o -> o.pieceSelected(row, col, game.pieceAt(row, col), availablePositions));
+        return true;
     }
 
     @Override
-    public void unselectPiece()
+    public boolean unselectPiece()
     {
-        if (selectedPiece == null) return;
-        selectedPiece = null;
-        availablePositions = null;
+        if (selectedPiece == null) return false;
         observers.forEach(o -> o.pieceUnselected());
+
+        //TODO are these =null really needed? also check for placePiece
+        selectedPiece = null;
+        selectedPieceSource = null;
+        availablePositions = null;
+        return true;
+    }
+
+    @Override
+    public boolean placePiece(int row, int col, Direction dir)
+    {
+        if (selectedPiece == null) return false;
+
+        var destPiece = game.pieceAt(row, col);
+        if (destPiece != null && destPiece != selectedPiece) return false;
+        var src = selectedPieceSource;
+        game.pieceAt(src.row(), src.col()).setDirection(dir);
+        game.movePiece(src.row(), src.col(), row, col);
+        observers.forEach(o -> o.piecePlaced(row, col, game.pieceAt(row, col)));
+
+        selectedPiece = null;
+        selectedPieceSource = null;
+        availablePositions = null;
+        return true;
     }
 }

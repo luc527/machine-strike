@@ -12,5 +12,7 @@ public interface GameObserver
 
     void pieceSelected(int row, int col, Piece piece, Set<Coord> availablePositions);
 
+    void piecePlaced(int row, int co, Piece piece);
+
     void pieceUnselected();
 }

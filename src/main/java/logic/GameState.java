@@ -53,4 +53,20 @@ public class GameState
 
         return set;
     }
+
+    public void movePiece(int srcRow, int srcCol, int destRow, int destCol)
+    {
+        if (srcRow == destRow && srcCol == destCol) {
+            return;
+        }
+        var moved = pieces[srcRow][srcCol];
+        if (moved == null) {
+            throw new RuntimeException("Attempted to move piece from empty space (row:"+srcRow+", col:"+srcCol+")");
+        }
+        if (pieces[destRow][destCol] != null) {
+            throw new RuntimeException("Attempted to move piece to a non-empty space (row:"+destRow+", col:"+destCol+")");
+        }
+        pieces[destRow][destCol] = moved;
+        pieces[srcRow][srcCol] = null;
+    }
 }
