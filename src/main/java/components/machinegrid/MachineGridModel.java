@@ -1,5 +1,6 @@
 package components.machinegrid;
 
+import logic.Utils;
 import logic.Coord;
 import logic.Direction;
 import logic.Machine;
@@ -57,23 +58,16 @@ public class MachineGridModel
         return cursor;
     }
 
-    private int clamp(int x, int min, int max)
-    {
-        if (x < min) return min;
-        if (x > max) return max;
-        return x;
-    }
-
     public void moveCursor(Direction dir)
     {
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
             var lastCol = nmachines % machinesPerRow > 0 && cursor.row() == rows - 1 ? nmachines % machinesPerRow - 1 : machinesPerRow - 1;
-            cursor = cursor.withCol(clamp(cursor.col() + offset, 0, lastCol));
+            cursor = cursor.withCol(Utils.clamp(cursor.col() + offset, 0, lastCol));
         } else {
             var offset = dir == Direction.NORTH ? -1 : 1;
             var lastRow = nmachines % machinesPerRow > 0 && cursor.col() >= nmachines % machinesPerRow ? rows - 2 : rows - 1;
-            cursor = cursor.withRow(clamp(cursor.row() + offset, 0, lastRow));
+            cursor = cursor.withRow(Utils.clamp(cursor.row() + offset, 0, lastRow));
         }
     }
 

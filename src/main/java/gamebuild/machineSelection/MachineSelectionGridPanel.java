@@ -1,5 +1,6 @@
 package gamebuild.machineSelection;
 
+import logic.Utils;
 import components.machinegrid.MachineGridModel;
 import components.machinegrid.MachineGridPanel;
 import components.Palette;
@@ -54,37 +55,19 @@ public class MachineSelectionGridPanel extends MachineGridPanel
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
             }
 
+            var stringHeight = 10;
             //
             // Show amount
             //
-            var string = String.format("%d / %d", selected, available);
-
+            var amountString = String.format("%d / %d", selected, available);
             var amountBackColor  = selected == 0 ? Color.DARK_GRAY : Palette.darkYellow;
             var amountFrontColor = selected == 0 ? Color.LIGHT_GRAY : Palette.yellow;
-
-            var stringHeight = 10;
-            var sx = x + 2;
-            var sy = y + 2 + stringHeight;
-
-            g.setColor(amountBackColor);
-            for (var yoff = -1; yoff <= 1; yoff++)
-                for (var xoff = -1; xoff <= 1; xoff++)
-                    g.drawString(string, sx + xoff, sy + yoff);
-            g.setColor(amountFrontColor);
-            g.drawString(string, sx, sy);
+            Utils.drawOutlinedString(g, x+2, y+2+stringHeight, amountString, amountBackColor, amountFrontColor);
 
             //
             // Show victory points
             //
-            string = String.format("%d", machine.victoryPoints());
-            sx = x + 2;
-            sy = y + 2 + SIDE_PX - stringHeight;
-            g.setColor(Palette.darkGreen);
-            for (var yoff = -1; yoff <= 1; yoff++)
-                for (var xoff = -1; xoff <= 1; xoff++)
-                    g.drawString(string, sx + xoff, sy + yoff);
-            g.setColor(Palette.green);
-            g.drawString(string, sx, sy);
+            Utils.drawOutlinedString(g, x+2, y+2+SIDE_PX-stringHeight, ""+machine.victoryPoints(), Palette.darkGreen, Palette.green);
         });
     }
 }

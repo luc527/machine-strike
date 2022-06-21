@@ -54,6 +54,27 @@ public class GameState
         return set;
     }
 
+    public static int combatPower(Machine machine, Terrain terrain, Direction direction)
+    {
+        return machine.attackPower()
+             + machine.point(direction).combatPowerOffset()
+             + terrain.combatPowerOffset();
+    }
+
+    public static int combatPower(Machine machine, Terrain terrain)
+    {
+        return machine.attackPower() + terrain.combatPowerOffset();
+    }
+
+    public static ConflictDamage conflictDamage(Piece attacker, Piece attacked, Terrain attackerTerrain, Terrain attackedTerrain)
+    {
+        // TODO check if this is correct
+        var attackerPower = combatPower(attacker.machine(), attackerTerrain, attacker.direction());
+        var attackedPower = combatPower(attacked.machine(), attackedTerrain, attacked.direction()) - attacked.machine().attackPower();
+        return new ConflictDamage( attackerPower - attackedPower, attackedPower );
+        // TODO if equal then break armor
+    }
+
     public void movePiece(int srcRow, int srcCol, int destRow, int destCol)
     {
         if (srcRow == destRow && srcCol == destCol) {

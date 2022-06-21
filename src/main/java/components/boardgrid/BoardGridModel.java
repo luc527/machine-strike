@@ -1,5 +1,6 @@
 package components.boardgrid;
 
+import logic.Utils;
 import logic.*;
 import constants.Constants;
 
@@ -40,13 +41,6 @@ public abstract class BoardGridModel
     public void setAvailablePositions(Set<Coord> availablePositions)
     { this.availablePositions = availablePositions; }
 
-    private int clamp(int x, int min, int max)
-    {
-        if (x < min) return min;
-        if (x > max) return max;
-        return x;
-    }
-
     /**
      * Attempts to move the cursor in the given direction;
      * won't move if the resulting position is unavailable.
@@ -57,15 +51,17 @@ public abstract class BoardGridModel
         var result = Coord.create(cursor);
         if (dir == Direction.WEST || dir == Direction.EAST) {
             var offset = dir == Direction.WEST ? -1 : 1;
-            result = result.withCol(clamp(cursor.col() + offset, 0, COLS - 1));
+            result = result.withCol(Utils.clamp(cursor.col() + offset, 0, COLS - 1));
         } else {
             var offset = dir == Direction.NORTH ? -1 : 1;
-            result = result.withRow(clamp(cursor.row() + offset, 0, ROWS - 1));
+            result = result.withRow(Utils.clamp(cursor.row() + offset, 0, ROWS - 1));
         }
         if (availablePositions.isEmpty() || availablePositions.contains(result)) {
             cursor = result;
         }
     }
+
+    public Board getBoard() { return board; }
 
     public void iterateTerrain(TerrainIterator it)
     {

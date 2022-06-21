@@ -53,7 +53,6 @@ public class GameGridModel extends BoardGridModel
             throw new RuntimeException("rotateCarriedPiece() called but no piece is being carried");
         }
         carriedPieceDirection = carriedPieceDirection.rotated(right ? 1 : -1);
-        System.out.println(carriedPieceDirection);
     }
 
     public Direction getCarriedPieceDirection() {
@@ -82,5 +81,22 @@ public class GameGridModel extends BoardGridModel
             throw new RuntimeException("getCarriedPiece() called but no piece is being carried");
         }
         return this.carriedPiece;
+    }
+
+    public Coord getAttackedCoord() {
+        return cursor.moved(carriedPieceDirection, ROWS-1, COLS-1);
+    }
+
+    public Piece getAttackedPiece() {
+        var attackedCoord = getAttackedCoord();
+        if (attackedCoord == null) return null;
+        var piece = pieceAt(attackedCoord);
+        if (piece == null) return null;
+        if (piece.player().equals(carriedPiece.player())) return null;
+        return piece;
+    }
+
+    public boolean isCarriedPieceAttacking() {
+        return getAttackedPiece() != null;
     }
 }

@@ -54,4 +54,16 @@ public class Coord
     {
         return Coord.create(this.row, col);
     }
+
+    public Coord moved(Direction dir, int maxRow, int maxCol) {
+        var row = row();
+        var col = col();
+        switch (dir) {
+            case WEST -> row--;
+            case EAST -> row++;
+            case NORTH -> col--;
+            case SOUTH -> col++;
+        }
+        return (row < 0 || row > maxRow || col < 0 || col > maxCol) ? null : Coord.create(row, col);
+    }
 }
