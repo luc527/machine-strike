@@ -4,6 +4,11 @@ import java.awt.*;
 
 public class Utils
 {
+    public static void drawOutlinedString(Graphics2D g, int x, int y, String text)
+    {
+        drawOutlinedString(g, x, y, text, Color.BLACK, Color.WHITE);
+    }
+
     public static void drawOutlinedString(Graphics2D g, int x, int y, String text, Color background, Color foreground)
     {
         g.setColor(background);

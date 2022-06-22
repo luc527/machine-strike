@@ -32,49 +32,6 @@ public class GameState
         return pieces[r][c];
     }
 
-    public static Set<Coord> generateAvailablePositions(int sourceRow, int sourceCol, int movementRange)
-    {
-        if (movementRange < 1) return Set.of(Coord.create(sourceRow, sourceCol));
-        var set = new HashSet<Coord>();
-
-        BiConsumer<Integer, Integer> makeRow = (blanks, row) -> {
-            var col = sourceCol - movementRange;
-            for (var j=0; j<blanks; j++) col++;
-            for (var j=0; j<2*movementRange+1-2*blanks; j++) set.add(Coord.create(row, col++));
-        };
-
-        var row = sourceRow - movementRange;
-        for (var blanks = movementRange; blanks >= 0; blanks--) {
-            makeRow.accept(blanks, row++);
-        }
-        for (var blanks = 1; blanks <= movementRange; blanks++) {
-            makeRow.accept(blanks, row++);
-        }
-
-        return set;
-    }
-
-    public static int combatPower(Machine machine, Terrain terrain, Direction direction)
-    {
-        return machine.attackPower()
-             + machine.point(direction).combatPowerOffset()
-             + terrain.combatPowerOffset();
-    }
-
-    public static int combatPower(Machine machine, Terrain terrain)
-    {
-        return machine.attackPower() + terrain.combatPowerOffset();
-    }
-
-    public static ConflictDamage conflictDamage(Piece attacker, Piece attacked, Terrain attackerTerrain, Terrain attackedTerrain)
-    {
-        // TODO check if this is correct
-        var attackerPower = combatPower(attacker.machine(), attackerTerrain, attacker.direction());
-        var attackedPower = combatPower(attacked.machine(), attackedTerrain, attacked.direction()) - attacked.machine().attackPower();
-        return new ConflictDamage( attackerPower - attackedPower, attackedPower );
-        // TODO if equal then break armor
-    }
-
     public void movePiece(int srcRow, int srcCol, int destRow, int destCol)
     {
         if (srcRow == destRow && srcCol == destCol) {

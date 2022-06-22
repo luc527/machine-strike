@@ -25,6 +25,8 @@ public abstract class BoardGridModel
     protected Coord cursor;
     protected Set<Coord> availablePositions;
 
+    protected Runnable onMove = () -> {};
+
     public BoardGridModel(Board board)
     {
         this.board = board;
@@ -40,6 +42,8 @@ public abstract class BoardGridModel
 
     public void setAvailablePositions(Set<Coord> availablePositions)
     { this.availablePositions = availablePositions; }
+
+    public void onMove(Runnable r) { this.onMove = r; }
 
     /**
      * Attempts to move the cursor in the given direction;
@@ -58,6 +62,7 @@ public abstract class BoardGridModel
         }
         if (availablePositions.isEmpty() || availablePositions.contains(result)) {
             cursor = result;
+            onMove.run();
         }
     }
 

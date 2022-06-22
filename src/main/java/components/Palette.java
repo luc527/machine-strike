@@ -31,4 +31,7 @@ public class Palette
 
     public static Color armoredPt = new Color(91, 144, 212);
     public static Color weakPt = new Color(192, 71, 71);
+
+    public static Color pink = new Color(255, 190, 220);
+    public static Color darkPink = pink.darker().darker().darker();
 }

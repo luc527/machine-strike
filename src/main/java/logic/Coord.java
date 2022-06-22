@@ -59,10 +59,10 @@ public class Coord
         var row = row();
         var col = col();
         switch (dir) {
-            case WEST -> row--;
-            case EAST -> row++;
-            case NORTH -> col--;
-            case SOUTH -> col++;
+            case WEST -> col--;
+            case EAST -> col++;
+            case NORTH -> row--;
+            case SOUTH -> row++;
         }
         return (row < 0 || row > maxRow || col < 0 || col > maxCol) ? null : Coord.create(row, col);
     }

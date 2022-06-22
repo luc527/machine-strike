@@ -4,11 +4,11 @@ package logic;
 
 public class ConflictDamage
 {
-    public int attackerDmg;
-    public int attackedDmg;
+    public int atkDamage;
+    public int defDamage;
 
-    public ConflictDamage(int attackerDmg, int attackedDmg) {
-        this.attackerDmg = attackerDmg;
-        this.attackedDmg = attackedDmg;
+    public ConflictDamage(int atkDamage, int defDamage) {
+        this.atkDamage = atkDamage;
+        this.defDamage = defDamage;
     }
 }

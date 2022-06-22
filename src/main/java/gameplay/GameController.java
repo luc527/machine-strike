@@ -45,7 +45,7 @@ public class GameController implements IGameController
         if (piece.player() != game.currentPlayer()) return false;
         selectedPiece = piece;
         selectedPieceSource = Coord.create(row, col);
-        availablePositions = GameState.generateAvailablePositions(row, col, piece.machine().movementRange());
+        availablePositions = GameLogic.generateAvailablePositions(row, col, piece.machine().movementRange());
         observers.forEach(o -> o.pieceSelected(row, col, game.pieceAt(row, col), availablePositions));
         return true;
     }

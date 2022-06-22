@@ -4,9 +4,9 @@ import java.util.List;
 
 public enum Direction
 {
-    EAST  (0, 3*Math.PI/2),
+    EAST  (0, Math.PI/2),
     NORTH (1, 0.0),
-    WEST  (2, Math.PI/2),
+    WEST  (2, 3*Math.PI/2),
     SOUTH (3, Math.PI);
 
     private final int idx;
@@ -39,17 +39,34 @@ public enum Direction
         throw new RuntimeException("Invalid direction index: " + idx);
     }
 
-    /**
-     * @param times How many times to rotate; positive for counterclockwise/left, negative for clockwise/right.
-     * @return Direction
-     */
-    public Direction rotated(int times)
+    public Direction cycle(boolean right)
     {
-        // https://stackoverflow.com/a/39740009
-        var i = this.idx;
-        i += times;
-        i += (1 - i / 4) * 4;
-        return Direction.from(i % 4);
+        if (right) {
+            switch (this) {
+                case NORTH -> { return EAST; }
+                case EAST -> { return SOUTH; }
+                case SOUTH -> { return WEST; }
+                case WEST -> { return NORTH; }
+            }
+        } else {
+            switch (this) {
+                case NORTH -> { return WEST; }
+                case WEST -> { return SOUTH; }
+                case SOUTH -> { return EAST; }
+                case EAST -> { return NORTH; }
+            }
+        }
+        throw new RuntimeException("Reached unreachable code!");
+    }
+
+    public Direction opposite() {
+        switch (this) {
+            case NORTH -> { return SOUTH; }
+            case SOUTH -> { return NORTH; }
+            case EAST -> { return WEST; }
+            case WEST -> { return EAST; }
+        }
+        throw new RuntimeException("Reached unreachable code!");
     }
 
     public static Iterable<Direction> iter()

@@ -6,6 +6,7 @@ import logic.Piece;
 import logic.Player;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -18,6 +19,7 @@ public class GameView implements GameObserver
     private final JFrame frame;
     private final GameGridModel gridModel;
     private final GameGridPanel gridPanel;
+    private final InfoPanel infoPanel;
 
     private KeyListener currentKeyListener;
 
@@ -31,7 +33,7 @@ public class GameView implements GameObserver
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        var panel = new JPanel();
+        var panel = new JPanel(new BorderLayout());
         frame.setContentPane(panel);
 
         selectionListener = new KeyAdapter() {
@@ -41,6 +43,10 @@ public class GameView implements GameObserver
                 if (!controller.selectPiece(cursor.row(), cursor.col())) return;
                 gridModel.carryPieceFrom(cursor);
             }
+        };
+
+        Runnable onMove = () -> {
+
         };
 
         placementListener = new KeyAdapter() {
@@ -63,7 +69,27 @@ public class GameView implements GameObserver
         gridModel = new GameGridModel(controller.getBoard(), controller::pieceAt);
         gridPanel = new GameGridPanel(gridModel);
 
-        panel.add(gridPanel);
+        infoPanel = new InfoPanel();
+        infoPanel.display(InfoPanel.ENTER_TO_SELECT);
+        panel.add(infoPanel, BorderLayout.LINE_END);
+
+        gridModel.onMove(this::updateInfo);
+
+        panel.add(gridPanel, BorderLayout.CENTER);
+    }
+
+    private void updateInfo()
+    {
+        if (currentKeyListener == selectionListener) {
+            infoPanel.display(InfoPanel.ENTER_TO_SELECT);
+        } else if (currentKeyListener == placementListener) {
+            if (gridModel.isCarriedPieceAttacking()) {
+                infoPanel.display(InfoPanel.ENTER_TO_PLACE | InfoPanel.K_TO_ATTACK);
+            } else {
+                infoPanel.display(InfoPanel.ENTER_TO_PLACE);
+            }
+
+        }
     }
 
     private void setKeyListener(KeyListener to)
@@ -71,6 +97,7 @@ public class GameView implements GameObserver
         gridPanel.removeKeyListener(currentKeyListener);
         gridPanel.addKeyListener(to);
         currentKeyListener = to;
+        updateInfo();
     }
 
     @Override

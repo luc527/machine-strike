@@ -4,7 +4,6 @@ import components.boardgrid.BoardGridModel;
 import logic.*;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public class PlacementGridModel extends BoardGridModel
 {
@@ -36,7 +35,7 @@ public class PlacementGridModel extends BoardGridModel
     {
         if (carriedMachineDirection == null)
             throw new RuntimeException("No carried machine to rotate (carriedMachineDirection null)");
-        carriedMachineDirection = carriedMachineDirection.rotated(right ? 1 : -1);
+        carriedMachineDirection = carriedMachineDirection.cycle(right);
     }
 
     public boolean isCarryingMachine()

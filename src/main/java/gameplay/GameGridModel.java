@@ -52,7 +52,8 @@ public class GameGridModel extends BoardGridModel
         if (carriedPiece == null) {
             throw new RuntimeException("rotateCarriedPiece() called but no piece is being carried");
         }
-        carriedPieceDirection = carriedPieceDirection.rotated(right ? 1 : -1);
+        carriedPieceDirection = carriedPieceDirection.cycle(right);
+        onMove.run();
     }
 
     public Direction getCarriedPieceDirection() {
