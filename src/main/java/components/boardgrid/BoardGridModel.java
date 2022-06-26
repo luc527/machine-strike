@@ -12,18 +12,11 @@ import java.util.Set;
  */
 public abstract class BoardGridModel
 {
-    public interface TerrainIterator
-    { void exec(int row, int col, Terrain terrain); }
-
-    public interface AvailableIterator
-    { void exec(int row, int col); }
-
     protected static final int ROWS = Constants.BOARD_ROWS;
     protected static final int COLS = Constants.BOARD_COLS;
 
     protected final Board board;
     protected Coord cursor;
-    protected Set<Coord> availablePositions;
 
     protected Runnable onMove = () -> {};
 
@@ -31,7 +24,6 @@ public abstract class BoardGridModel
     {
         this.board = board;
         cursor = Coord.create(0, 0);
-        availablePositions = Set.of();
     }
 
     public void setCursor(Coord cursor)
@@ -40,10 +32,13 @@ public abstract class BoardGridModel
     public Coord getCursor()
     { return cursor; }
 
-    public void setAvailablePositions(Set<Coord> availablePositions)
-    { this.availablePositions = availablePositions; }
-
     public void onMove(Runnable r) { this.onMove = r; }
+
+
+    public abstract boolean isAvailable(int row, int col);
+
+    public boolean isAvailable(Coord coord)
+    { return isAvailable(coord.row(), coord.col()); }
 
     /**
      * Attempts to move the cursor in the given direction;
@@ -60,30 +55,12 @@ public abstract class BoardGridModel
             var offset = dir == Direction.NORTH ? -1 : 1;
             result = result.withRow(Utils.clamp(cursor.row() + offset, 0, ROWS - 1));
         }
-        if (availablePositions.isEmpty() || availablePositions.contains(result)) {
+        if (isAvailable(result)) {
             cursor = result;
             onMove.run();
         }
     }
 
     public Board getBoard() { return board; }
-
-    public void iterateTerrain(TerrainIterator it)
-    {
-        for (var row = 0; row < ROWS; row++)
-            for (var col = 0; col < COLS; col++)
-                it.exec(row, col, board.get(row, col));
-    }
-
-    public void iterateAvailable(AvailableIterator it)
-    {
-        for (var pos : availablePositions) {
-            var row = pos.row();
-            var col = pos.col();
-            if (row >= 0 && row < ROWS && col >= 0 && col <= COLS)
-                it.exec(row, col);
-        }
-
-    }
 
 }

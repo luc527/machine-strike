@@ -62,6 +62,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
         p1gridPanel = new MachinePlacementGridPanel(p1gridModel, p1inventory, Palette.p1color);
         p2gridPanel = new MachinePlacementGridPanel(p2gridModel, p2inventory, Palette.p2color);
 
+        // And here's the board wherein the players alternate in placing the pieces
         boardModel = new PlacementGridModel(con.getBoard(), con::getPieceAt);
         boardPanel = new PlacementGridPanel(boardModel);
 
@@ -73,7 +74,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
         p1gridPanel.onMoveCursor(() -> machineStats.setMachine(p1gridModel.machineUnderCursor()).repaint());
 
-        p1gridPanel.onPressEnter(() -> {
+        p1gridPanel.onConfirm(() -> {
             var machine = p1gridModel.machineAt(p1gridModel.cursor());
             var ok = con.selectMachine(machine);
             if (!ok) {
@@ -83,14 +84,14 @@ public class PiecePlacementView implements IPiecePlacementObserver
 
         p2gridPanel.onMoveCursor(() -> machineStats.setMachine(p2gridModel.machineUnderCursor()).repaint());
 
-        p2gridPanel.onPressEnter(() -> {
+        p2gridPanel.onConfirm(() -> {
             var machine = p2gridModel.machineAt(p2gridModel.cursor());
             if (!con.selectMachine(machine)) {
                 warn("You don't have any more pieces of this type!");
             }
         });
 
-        boardPanel.onPressEnter(() -> {
+        boardPanel.onConfirm(() -> {
             var coord = boardModel.getCursor();
             var machine = boardModel.getCarriedMachine();
             var direction = boardModel.getCarriedMachineDirection();
@@ -99,7 +100,7 @@ public class PiecePlacementView implements IPiecePlacementObserver
             }
         });
 
-        boardPanel.onPressBackspace(con::cancelSelection);
+        boardPanel.onCancel(con::cancelSelection);
 
         startGameButton = new JButton("Start game");
         startGameButton.addActionListener(e -> con.startGame());

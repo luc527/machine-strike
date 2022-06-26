@@ -23,11 +23,7 @@ public class App
     }
 
     public static void main(String[] args)
-    throws IOException,
-           UnsupportedLookAndFeelException,
-           ClassNotFoundException,
-           InstantiationException,
-           IllegalAccessException
+    throws Exception
     {
         loadAssets();
 

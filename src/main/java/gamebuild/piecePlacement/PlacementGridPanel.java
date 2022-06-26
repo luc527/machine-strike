@@ -1,5 +1,6 @@
 package gamebuild.piecePlacement;
 
+
 import components.Palette;
 import components.boardgrid.BoardGridPanel;
 
@@ -10,8 +11,8 @@ import java.util.Objects;
 
 public class PlacementGridPanel extends BoardGridPanel
 {
-    private Runnable onPressEnter = () -> {};
-    private Runnable onPressBackspace = () -> {};
+    private Runnable onConfirm = () -> {};
+    private Runnable onCancel = () -> {};
 
     public PlacementGridPanel(PlacementGridModel grid)
     {
@@ -23,18 +24,19 @@ public class PlacementGridPanel extends BoardGridPanel
                 var k = e.getKeyCode();
                 if      (c == 'q')                    grid.rotateCarriedMachine(false);
                 else if (c == 'e')                    grid.rotateCarriedMachine(true);
-                else if (k == KeyEvent.VK_ENTER)      onPressEnter.run();
-                else if (k == KeyEvent.VK_BACK_SPACE) onPressBackspace.run();
+                else if (k == KeyEvent.VK_ENTER)      onConfirm.run();
+                else if (k == KeyEvent.VK_BACK_SPACE
+                      || k == KeyEvent.VK_ESCAPE)     onCancel.run();
                 repaint();
             }
         });
     }
 
-    public void onPressEnter(Runnable r)
-    { onPressEnter = Objects.requireNonNullElse(r, () -> {}); }
+    public void onConfirm(Runnable r)
+    { onConfirm = Objects.requireNonNullElse(r, () -> {}); }
 
-    public void onPressBackspace(Runnable r)
-    { onPressBackspace = Objects.requireNonNullElse(r, () -> {}); }
+    public void onCancel(Runnable r)
+    { onCancel = Objects.requireNonNullElse(r, () -> {}); }
 
     @Override
     public void paintComponent(Graphics G)

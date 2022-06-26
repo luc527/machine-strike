@@ -63,12 +63,12 @@ public class MachineSelectionView implements IMachineSelectionObserver
         p2container = createPlayerPanel(Player.PLAYER2, p2machSelPanel);
 
         p1machSelPanel.onMoveCursor(() -> stats.setMachine(p1gridModel.machineUnderCursor()).repaint());
-        p1machSelPanel.onPressEnter(() -> con.selectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
-        p1machSelPanel.onPressBackspace(() -> con.deselectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
+        p1machSelPanel.onConfirm(() -> con.selectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
+        p1machSelPanel.onCancel(() -> con.deselectMachine(Player.PLAYER1, p1gridModel.machineUnderCursor()));
 
         p2machSelPanel.onMoveCursor(() -> stats.setMachine(p2gridModel.machineUnderCursor()).repaint());
-        p2machSelPanel.onPressEnter(() -> con.selectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
-        p2machSelPanel.onPressBackspace(() -> con.deselectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
+        p2machSelPanel.onConfirm(() -> con.selectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
+        p2machSelPanel.onCancel(() -> con.deselectMachine(Player.PLAYER2, p2gridModel.machineUnderCursor()));
 
 
         var spacer = new JPanel() {

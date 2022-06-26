@@ -19,6 +19,9 @@ public class Board
             for (var j = 0; j < WIDTH; j++)
                 this.board[i][j] = board[i][j];
     }
+
+    public Terrain get(Coord coord) { return board[coord.row()][coord.col()]; }
+
     public Terrain get(int row, int col) { return board[row][col]; }
 
     public static Board fromJsonElement(JsonElement json)

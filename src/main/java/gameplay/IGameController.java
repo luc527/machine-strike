@@ -3,7 +3,7 @@ package gameplay;
 import logic.Board;
 import logic.Coord;
 import logic.Direction;
-import logic.Piece;
+import logic.IPiece;
 
 public interface IGameController
 {
@@ -11,7 +11,7 @@ public interface IGameController
 
     Board getBoard();
 
-    Piece pieceAt(Coord coord);
+    IPiece pieceAt(Coord coord);
 
     //
 
@@ -23,5 +23,7 @@ public interface IGameController
 
     boolean unselectPiece();
 
-    boolean placePiece(int row, int col, Direction dir);
+    boolean performMovement(int row, int col, Direction dir, boolean thenAttack);
+
+    boolean finishTurn();
 }

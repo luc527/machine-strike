@@ -1,16 +1,14 @@
 package gameplay;
 
 import components.Palette;
-import logic.Coord;
-import logic.Piece;
-import logic.Player;
+import logic.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Set;
+import java.util.function.Function;
 
 public class GameView implements GameObserver
 {
@@ -22,6 +20,10 @@ public class GameView implements GameObserver
     private final InfoPanel infoPanel;
 
     private KeyListener currentKeyListener;
+
+    private boolean currentPlayerMoved = false;
+    private Coord p1prevCoord = Coord.create(0, 0);
+    private Coord p2prevCoord = Coord.create(0, 0);
 
     private final KeyListener selectionListener;
     private final KeyListener placementListener;  // TODO bad name, find a better one
@@ -38,26 +40,31 @@ public class GameView implements GameObserver
 
         selectionListener = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() != KeyEvent.VK_ENTER) return;
-                var cursor = gridModel.getCursor();
-                if (!controller.selectPiece(cursor.row(), cursor.col())) return;
-                gridModel.carryPieceFrom(cursor);
+                var k = e.getKeyCode();
+                var c = e.getKeyChar();
+                if (k == KeyEvent.VK_ENTER) {
+                    var cursor = gridModel.getCursor();
+                    if (!controller.selectPiece(cursor.row(), cursor.col())) return;
+                    gridModel.carryPieceFrom(cursor);
+                } else if (c == 'f') {
+                    controller.finishTurn();
+                }
             }
-        };
-
-        Runnable onMove = () -> {
-
         };
 
         placementListener = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 var c = e.getKeyChar();
                 var k = e.getKeyCode();
-                var cursor = gridModel.getCursor();
+                var row = gridModel.getCursor().row();
+                var col = gridModel.getCursor().col();
+                var dir = gridModel.getCarriedPieceDirection();
                 if (k == KeyEvent.VK_BACK_SPACE || k == KeyEvent.VK_ESCAPE) {
                     controller.unselectPiece();
                 } else if (k == KeyEvent.VK_ENTER) {
-                    controller.placePiece(cursor.row(), cursor.col(), gridModel.getCarriedPieceDirection());
+                    controller.performMovement(row, col, dir, false);
+                } else if (c == 'k') {
+                    controller.performMovement(row, col, dir, true);
                 } else if (gridModel.isCarryingPiece()) {
                     if      (c == 'q') gridModel.rotateCarriedPiece(false);
                     else if (c == 'e') gridModel.rotateCarriedPiece(true);
@@ -80,16 +87,16 @@ public class GameView implements GameObserver
 
     private void updateInfo()
     {
+        var flags = InfoPanel.EMPTY_FLAGS;
         if (currentKeyListener == selectionListener) {
-            infoPanel.display(InfoPanel.ENTER_TO_SELECT);
+            flags |= InfoPanel.ENTER_TO_SELECT;
+            if (currentPlayerMoved) flags |= InfoPanel.F_TO_FINISH_TURN;
         } else if (currentKeyListener == placementListener) {
-            if (gridModel.isCarriedPieceAttacking()) {
-                infoPanel.display(InfoPanel.ENTER_TO_PLACE | InfoPanel.K_TO_ATTACK);
-            } else {
-                infoPanel.display(InfoPanel.ENTER_TO_PLACE);
-            }
-
+            flags |= InfoPanel.ESC_TO_DESELECT;
+            flags |= InfoPanel.ENTER_TO_PLACE;
+            if (gridModel.isCarriedPieceAttacking()) flags |= InfoPanel.K_TO_ATTACK;
         }
+        infoPanel.display(flags);
     }
 
     private void setKeyListener(KeyListener to)
@@ -103,6 +110,7 @@ public class GameView implements GameObserver
     @Override
     public void start(Player firstPlayer)
     {
+        currentPlayerMoved = false;
         frame.pack();
         frame.setVisible(true);
         gridPanel.setCursorColor(Palette.color(firstPlayer));
@@ -111,18 +119,21 @@ public class GameView implements GameObserver
     }
 
     @Override
-    public void pieceSelected(int row, int col, Piece piece, Set<Coord> availablePositions)
+    public void pieceSelected(int row, int col, IPiece piece, Function<Coord, Reachability> reachabilityFunction)
     {
+        // TODO refactor grid model so that available positions is an abstract method that each subclass just overrides,
+        //  so we don't need to do pass a set or pass a function to it
+        //  so this grid model here for instance can just can GameLogic.reachability itself, which is a lot simpler
         gridModel.carryPieceFrom(Coord.create(row, col));
-        gridModel.setAvailablePositions(availablePositions);
+        gridModel.setReachabilityFunction(reachabilityFunction);
         frame.repaint();
         setKeyListener(placementListener);
     }
 
     @Override
-    public void piecePlaced(int row, int col, Piece piece)
+    public void movementPerformed(int row, int col, IPiece piece)
     {
-        gridModel.setAvailablePositions(Set.of());
+        currentPlayerMoved = true;
         gridModel.stopCarryingPiece();
         gridModel.syncPieces(controller::pieceAt);
         frame.repaint();
@@ -132,9 +143,25 @@ public class GameView implements GameObserver
     @Override
     public void pieceUnselected()
     {
-        gridModel.setAvailablePositions(Set.of());
         gridModel.stopCarryingPiece();
         gridModel.syncPieces(controller::pieceAt);
+        frame.repaint();
+        setKeyListener(selectionListener);
+    }
+
+    @Override
+    public void turnFinished(Player nextPlayer)
+    {
+        if (nextPlayer.equals(Player.PLAYER2)) {
+            p1prevCoord = gridModel.getCursor();
+            gridModel.setCursor(p2prevCoord);
+        } else {
+            p2prevCoord = gridModel.getCursor();
+            gridModel.setCursor(p1prevCoord);
+        }
+
+        currentPlayerMoved = false;
+        gridPanel.setCursorColor(Palette.color(nextPlayer));
         frame.repaint();
         setKeyListener(selectionListener);
     }

@@ -4,6 +4,7 @@ import components.boardgrid.BoardGridModel;
 import logic.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class PlacementGridModel extends BoardGridModel
 {
@@ -13,7 +14,9 @@ public class PlacementGridModel extends BoardGridModel
     private Machine carriedMachine;
     private Direction carriedMachineDirection;
 
-    public Piece pieceAt(int row, int col)
+    private Set<Coord> availablePositions = Set.of();
+
+    public IPiece pieceAt(int row, int col)
     { return pieceProvider.apply(Coord.create(row, col)); }
 
     public PlacementGridModel(Board board, PieceProvider pieceProvider)
@@ -46,4 +49,11 @@ public class PlacementGridModel extends BoardGridModel
 
     public Direction getCarriedMachineDirection()
     { return carriedMachineDirection; }
+
+    public void setAvailablePositions(Set<Coord> availablePositions)
+    { this.availablePositions = availablePositions; }
+
+    @Override
+    public boolean isAvailable(int row, int col)
+    { return availablePositions.contains(Coord.create(row, col)); }
 }

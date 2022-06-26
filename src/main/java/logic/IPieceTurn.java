@@ -1,10 +1,14 @@
 package logic;
 
+import logic.turn.PieceTurn;
+
 public interface IPieceTurn
 {
-    boolean canMove();
+    boolean canWalk();
 
-    boolean canAttack();
+    boolean walkWouldOvercharge();
 
-    boolean canOvercharge();
+    boolean canRun();
+
+    boolean runWouldOvercharge();
 }

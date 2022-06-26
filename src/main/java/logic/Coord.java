@@ -15,7 +15,8 @@ public class Coord
     private static final int COLS = Constants.BOARD_COLS;
     private static final Coord[][] cache;
 
-    static {
+    static
+    {
         cache = new Coord[ROWS][];
         for (int row = 0; row < ROWS; row++) {
             cache[row] = new Coord[COLS];
@@ -55,7 +56,8 @@ public class Coord
         return Coord.create(this.row, col);
     }
 
-    public Coord moved(Direction dir, int maxRow, int maxCol) {
+    public Coord moved(Direction dir)
+    {
         var row = row();
         var col = col();
         switch (dir) {
@@ -64,6 +66,6 @@ public class Coord
             case NORTH -> row--;
             case SOUTH -> row++;
         }
-        return (row < 0 || row > maxRow || col < 0 || col > maxCol) ? null : Coord.create(row, col);
+        return Coord.create(row, col);
     }
 }

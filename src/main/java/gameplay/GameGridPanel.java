@@ -1,7 +1,9 @@
 package gameplay;
 
 import components.Palette;
+import logic.Coord;
 import logic.GameLogic;
+import logic.Reachability;
 import logic.Utils;
 import components.boardgrid.BoardGridPanel;
 
@@ -14,37 +16,66 @@ public class GameGridPanel extends BoardGridPanel
         super(grid);
     }
 
-    private void drawHealth(Graphics2D g, int row, int col, int health) {
+    private void drawHealth(Graphics2D g, int row, int col, int health)
+    {
         var x = SIDE_PX * col + 2;
         var y = SIDE_PX * row + SIDE_PX - 2;
         Utils.drawOutlinedString(g, x, y, ""+health, Palette.darkPink, Palette.pink);
     }
 
-    private void drawDamage(Graphics2D g, int row, int col, int dmg) {
+    private void drawDamage(Graphics2D g, int row, int col, int dmg)
+    {
         var x = SIDE_PX * col + SIDE_PX / 2 - 5;
         var y = SIDE_PX * row + SIDE_PX / 2 + 10;
         Utils.drawOutlinedString(g, x, y, "-"+dmg, Palette.darkPink, Palette.pink);
     }
 
-    private void drawCombatPower(Graphics2D g, int row, int col, int pow) {
+    private void drawCombatPower(Graphics2D g, int row, int col, int pow)
+    {
         var x = SIDE_PX * col + SIDE_PX - 5;
         var y = SIDE_PX * row + SIDE_PX - 2;
         Utils.drawOutlinedString(g, x, y, ""+pow, Palette.darkGreen, Palette.green);
     }
 
     @Override
+    public void paintAvailablePositions(Graphics2D g)
+    {
+        var grid = (GameGridModel) this.grid;
+        if (!grid.isCarryingPiece()) return;
+
+        var savedColor = g.getColor();
+
+        var inColor = Palette.transparentYellow;
+        var inRunningColor = Palette.transparentYellow.darker().darker();
+
+        for (var row = 0; row < ROWS; row++) {
+            for (var col = 0; col < COLS; col++) {
+                var reach = grid.isReachable(row, col);
+                if (reach == Reachability.OUT) continue;
+                var color = reach == Reachability.IN ? inColor : inRunningColor;
+                g.setColor(color);
+                var x = col * SIDE_PX;
+                var y = row * SIDE_PX;
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
+            }
+        }
+
+        g.setColor(savedColor);
+    }
+
+    @Override
     protected void paintComponent(Graphics G)
     {
-        super.panelPaintComponent(G);
+        panelPaintComponent(G);
 
         var g = (Graphics2D) G;
-        super.paintTerrain(g);
+        paintTerrain(g);
 
         var grid = (GameGridModel) this.grid;
 
-        super.paintAvailablePositions(g);
+        paintAvailablePositions(g);
 
-        super.paintCursor(g);
+        paintCursor(g);
 
         for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
@@ -81,8 +112,8 @@ public class GameGridPanel extends BoardGridPanel
                 drawCombatPower(g, row, col, atkCombatPower);
 
                 var dmg = GameLogic.conflictDamage(
-                        piece.machine(), direction, terrains.get(row, col),
-                        attackedPiece.machine(), terrains.get(defRow, defCol)
+                    piece.machine(), direction, terrains.get(row, col),
+                     attackedPiece.machine(), terrains.get(defRow, defCol)
                 );
 
                 if (dmg.atkDamage != 0) drawDamage(g,    row,    col, dmg.atkDamage);

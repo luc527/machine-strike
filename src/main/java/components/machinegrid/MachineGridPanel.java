@@ -24,8 +24,8 @@ public class MachineGridPanel extends JPanel
     protected final MachineGridModel grid;
     protected final Color cursorColor;
     protected boolean showCursor;
-    private Runnable onPressEnter;
-    private Runnable onPressBackspace;
+    private Runnable onConfirm;
+    private Runnable onCancel;
     private Runnable onMoveCursor;
 
     public MachineGridPanel(MachineGridModel grid, Color cursorColor)
@@ -36,13 +36,15 @@ public class MachineGridPanel extends JPanel
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-                    if (onPressEnter != null) {
-                        onPressEnter.run();
+                var c = e.getKeyChar();
+                var k = e.getKeyCode();
+                if (c == KeyEvent.VK_ENTER) {
+                    if (onConfirm != null) {
+                        onConfirm.run();
                     }
-                } else if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
-                    if (onPressBackspace != null) {
-                        onPressBackspace.run();
+                } else if (c == KeyEvent.VK_BACK_SPACE || k == KeyEvent.VK_ESCAPE) {
+                    if (onCancel != null) {
+                        onCancel.run();
                     }
                 } else {
                     switch (e.getKeyCode()) {
@@ -126,13 +128,13 @@ public class MachineGridPanel extends JPanel
         });
     }
 
-    public void onPressEnter(Runnable r)
+    public void onConfirm(Runnable r)
     {
-        this.onPressEnter = r;
+        this.onConfirm = r;
     }
 
-    public void onPressBackspace(Runnable r)
+    public void onCancel(Runnable r)
     {
-        this.onPressBackspace = r;
+        this.onCancel = r;
     }
 }

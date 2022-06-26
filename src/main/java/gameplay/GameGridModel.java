@@ -3,13 +3,16 @@ package gameplay;
 import components.boardgrid.BoardGridModel;
 import logic.*;
 
+import java.util.function.Function;
+
 public class GameGridModel extends BoardGridModel
 {
-    private final Piece[][] pieces;
+    private final IPiece[][] pieces;
 
-    private Piece carriedPiece;
+    private IPiece carriedPiece;
     private Direction carriedPieceDirection;
     private Coord carriedPieceOriginalPosition;
+    private Function<Coord, Reachability> reachabilityFn = x -> Reachability.IN;
 
     public GameGridModel(Board board, PieceProvider pieceProvider)
     {
@@ -32,13 +35,14 @@ public class GameGridModel extends BoardGridModel
 
     }
 
-    public Piece pieceAt(Coord coord)
+    public IPiece pieceAt(Coord coord)
     { return pieces[coord.row()][coord.col()]; }
 
-    public Piece pieceAt(int row, int col)
+    public IPiece pieceAt(int row, int col)
     { return pieces[row][col]; }
 
-    public boolean carryPieceFrom(Coord coord) {
+    public boolean carryPieceFrom(Coord coord)
+    {
         var piece = pieceAt(coord);
         if (piece == null) return false;
         carriedPiece = piece;
@@ -48,7 +52,8 @@ public class GameGridModel extends BoardGridModel
         return true;
     }
 
-    public void rotateCarriedPiece(boolean right) {
+    public void rotateCarriedPiece(boolean right)
+    {
         if (carriedPiece == null) {
             throw new RuntimeException("rotateCarriedPiece() called but no piece is being carried");
         }
@@ -56,14 +61,16 @@ public class GameGridModel extends BoardGridModel
         onMove.run();
     }
 
-    public Direction getCarriedPieceDirection() {
+    public Direction getCarriedPieceDirection()
+    {
         if (carriedPiece == null) {
             throw new RuntimeException("getCarriedPieceDirection() called but no piece is being carried");
         }
         return carriedPieceDirection;
     }
 
-    public void stopCarryingPiece() {
+    public void stopCarryingPiece()
+    {
         if (carriedPiece == null) {
             throw new RuntimeException("stopCarryingPiece() called but no piece is being carried");
         }
@@ -77,27 +84,47 @@ public class GameGridModel extends BoardGridModel
     public boolean isCarryingPiece()
     { return carriedPiece != null; }
 
-    public Piece getCarriedPiece() {
+    public IPiece getCarriedPiece()
+    {
         if (carriedPiece == null) {
             throw new RuntimeException("getCarriedPiece() called but no piece is being carried");
         }
         return this.carriedPiece;
     }
 
-    public Coord getAttackedCoord() {
-        return cursor.moved(carriedPieceDirection, ROWS-1, COLS-1);
+    public Coord getAttackedCoord()
+    {
+        return cursor.moved(carriedPieceDirection);
     }
 
-    public Piece getAttackedPiece() {
+    public IPiece getAttackedPiece()
+    {
         var attackedCoord = getAttackedCoord();
-        if (attackedCoord == null) return null;
+        if (!GameLogic.inbounds(attackedCoord)) return null;
         var piece = pieceAt(attackedCoord);
         if (piece == null) return null;
         if (piece.player().equals(carriedPiece.player())) return null;
         return piece;
     }
 
-    public boolean isCarriedPieceAttacking() {
+    public boolean isCarriedPieceAttacking()
+    {
         return getAttackedPiece() != null;
+    }
+
+    public void setReachabilityFunction(Function<Coord, Reachability> isReachable)
+    {
+        this.reachabilityFn = isReachable;
+    }
+
+    @Override
+    public boolean isAvailable(int row, int col)
+    {
+        return !isCarryingPiece() || !reachabilityFn.apply(Coord.create(row, col)).out();
+    }
+
+    public Reachability isReachable(int row, int col)
+    {
+        return reachabilityFn.apply(Coord.create(row, col));
     }
 }

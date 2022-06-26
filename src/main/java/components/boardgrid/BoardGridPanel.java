@@ -60,27 +60,34 @@ public class BoardGridPanel extends JPanel
     protected void paintTerrain(Graphics2D g)
     {
         var savedColor = g.getColor();
-        grid.iterateTerrain((row, col, terrain) -> {
-            var y = row * SIDE_PX;
-            var x = col * SIDE_PX;
-            var terrainColor = TerrainColorMap.get(terrain);
-            g.setColor(terrainColor);
-            g.fillRect(x, y, SIDE_PX, SIDE_PX);
-            g.setColor(terrainColor.darker());
-            g.drawRect(x, y, SIDE_PX, SIDE_PX);
-        });
+        for (var row = 0; row < ROWS; row++) {
+            for (var col = 0; col < COLS; col++) {
+                var terrain = grid.getBoard().get(row, col);
+                var y = row * SIDE_PX;
+                var x = col * SIDE_PX;
+                var terrainColor = TerrainColorMap.get(terrain);
+                g.setColor(terrainColor);
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
+                g.setColor(terrainColor.darker());
+                g.drawRect(x, y, SIDE_PX, SIDE_PX);
+            }
+        }
         g.setColor(savedColor);
     }
 
     protected void paintAvailablePositions(Graphics2D g)
     {
         var savedColor = g.getColor();
-        grid.iterateAvailable((row, col) -> {
-            var y = row * SIDE_PX;
-            var x = col * SIDE_PX;
-            g.setColor(Palette.transparentYellow);
-            g.fillRect(x, y, SIDE_PX, SIDE_PX);
-        });
+        for (var row = 0; row < ROWS; row++) {
+            for (var col = 0; col < COLS; col++) {
+                if (grid.isAvailable(row, col)) {
+                    var y = row * SIDE_PX;
+                    var x = col * SIDE_PX;
+                    g.setColor(Palette.transparentYellow);
+                    g.fillRect(x, y, SIDE_PX, SIDE_PX);
+                }
+            }
+        }
         g.setColor(savedColor);
     }
 
