@@ -76,6 +76,8 @@ public class GameView implements GameObserver
         gridModel = new GameGridModel(controller.getBoard(), controller::pieceAt);
         gridPanel = new GameGridPanel(gridModel);
 
+        gridModel.setConflictResultFunction(controller::conflict);
+
         infoPanel = new InfoPanel();
         infoPanel.display(InfoPanel.ENTER_TO_SELECT);
         panel.add(infoPanel, BorderLayout.LINE_END);

@@ -2,6 +2,7 @@ package gameplay;
 
 import components.boardgrid.BoardGridModel;
 import logic.*;
+import logic.turn.ConflictResult;
 
 import java.util.function.Function;
 
@@ -13,6 +14,12 @@ public class GameGridModel extends BoardGridModel
     private Direction carriedPieceDirection;
     private Coord carriedPieceOriginalPosition;
     private Function<Coord, Reachability> reachabilityFn = x -> Reachability.IN;
+
+    public interface ConflictResultFunction {
+        ConflictResult apply(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
+    }
+
+    private ConflictResultFunction conflictResultFn;
 
     public GameGridModel(Board board, PieceProvider pieceProvider)
     {
@@ -117,6 +124,11 @@ public class GameGridModel extends BoardGridModel
         this.reachabilityFn = isReachable;
     }
 
+    public void setConflictResultFunction(ConflictResultFunction fn)
+    {
+        this.conflictResultFn = fn;
+    }
+
     @Override
     public boolean isAvailable(int row, int col)
     {
@@ -126,5 +138,10 @@ public class GameGridModel extends BoardGridModel
     public Reachability isReachable(int row, int col)
     {
         return reachabilityFn.apply(Coord.create(row, col));
+    }
+
+    public ConflictResult getConflictResult(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
+    {
+        return this.conflictResultFn.apply(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
     }
 }

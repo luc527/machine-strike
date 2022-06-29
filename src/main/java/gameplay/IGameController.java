@@ -4,6 +4,7 @@ import logic.Board;
 import logic.Coord;
 import logic.Direction;
 import logic.IPiece;
+import logic.turn.ConflictResult;
 
 public interface IGameController
 {
@@ -12,6 +13,8 @@ public interface IGameController
     Board getBoard();
 
     IPiece pieceAt(Coord coord);
+
+    ConflictResult conflict(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
 
     //
 

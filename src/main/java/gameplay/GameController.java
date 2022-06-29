@@ -1,6 +1,7 @@
 package gameplay;
 
 import logic.*;
+import logic.turn.ConflictResult;
 import logic.turn.MovResponse;
 
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ public class GameController implements IGameController
     @Override
     public IPiece pieceAt(Coord coord)
     { return game.pieceAt(coord.row(), coord.col()); }
+
+    @Override
+    public ConflictResult conflict(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
+    { return game.conflict(atkCoord, defCoord, atkPiece, defPiece, atkDirection); }
 
     @Override
     public void startGame()

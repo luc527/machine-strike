@@ -37,6 +37,13 @@ public class GameGridPanel extends BoardGridPanel
         Utils.drawOutlinedString(g, x, y, ""+pow, Palette.darkGreen, Palette.green);
     }
 
+    private void drawOverchargeWarning(Graphics2D g, int row, int col)
+    {
+        var x = SIDE_PX * col + 7;
+        var y = SIDE_PX * row + 17;
+        Utils.drawOutlinedString(g, x, y, "OV!", Palette.darkYellow, Palette.yellow);
+    }
+
     @Override
     public void paintAvailablePositions(Graphics2D g)
     {
@@ -93,12 +100,25 @@ public class GameGridPanel extends BoardGridPanel
         if (grid.isCarryingPiece()) {
             var piece = grid.getCarriedPiece();
             var direction = grid.getCarriedPieceDirection();
-            var row = grid.getCursor().row();
-            var col = grid.getCursor().col();
+            var cursor = grid.getCursor();
+            var row = cursor.row();
+            var col = cursor.col();
             var cy = SIDE_PX * row;
             var cx = SIDE_PX * col;
             super.drawMachine(piece.machine(), direction, g, cx, cy);
-            drawHealth(g, row, col, piece.health());
+
+            var health = 0;
+            var reach = grid.isReachable(row, col);
+            var overcharge = (reach.in() && piece.turn().walkWouldOvercharge())
+                          || (reach.inRunning() && piece.turn().runWouldOvercharge());
+            if (overcharge) {
+                drawOverchargeWarning(g, row, col);
+                drawDamage(g, row, col, GameLogic.OVERCHARGE_DAMAGE);
+                health = piece.health() - GameLogic.OVERCHARGE_DAMAGE;
+            } else {
+                health = piece.health();
+            }
+            drawHealth(g, row, col, health);
 
             if (grid.isCarriedPieceAttacking()) {
                 var attackedPiece = grid.getAttackedPiece();
@@ -111,13 +131,22 @@ public class GameGridPanel extends BoardGridPanel
                 var atkCombatPower = GameLogic.combatPower(piece.machine(), terrains.get(row, col), direction);
                 drawCombatPower(g, row, col, atkCombatPower);
 
-                var dmg = GameLogic.conflictDamage(
-                    piece.machine(), direction, terrains.get(row, col),
-                     attackedPiece.machine(), terrains.get(defRow, defCol)
-                );
+                var conflict = grid.getConflictResult(cursor, attackedCoord, piece, attackedPiece, direction);
 
-                if (dmg.atkDamage != 0) drawDamage(g,    row,    col, dmg.atkDamage);
-                if (dmg.defDamage != 0) drawDamage(g, defRow, defCol, dmg.defDamage);
+                if (conflict.atkDamage() != 0) drawDamage(g,    row,    col, conflict.atkDamage());
+                if (conflict.defDamage() != 0) drawDamage(g, defRow, defCol, conflict.defDamage());
+                if (conflict.knockback()) {
+                    var arrow = "";
+                    switch (direction) {
+                        case NORTH -> arrow = "^";
+                        case SOUTH -> arrow = "v";
+                        case WEST  -> arrow = "<";
+                        case EAST  -> arrow = ">";
+                    }
+                    var x = SIDE_PX * defCol + SIDE_PX / 2 - 3;
+                    var y = SIDE_PX * defRow + 10;
+                    Utils.drawOutlinedString(g, x, y, arrow);
+                }
             } else {
                 var combatPower = GameLogic.combatPower(piece.machine(), grid.getBoard().get(row, col));
                 drawCombatPower(g, row, col, combatPower);

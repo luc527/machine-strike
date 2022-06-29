@@ -1,6 +1,7 @@
 package logic;
 
 import constants.Constants;
+import logic.turn.ConflictResult;
 import logic.turn.MovResponse;
 
 import java.util.ArrayList;
@@ -47,6 +48,55 @@ public class GameState
     private void setPiece(int r, int c, Piece p) { matrix[r][c] = p; }
     private void setPiece(Coord c, Piece p) { setPiece(c.row(), c.col(), p); }
 
+    public ConflictResult conflict(
+        Coord atkCoord, Coord defCoord,
+        IPiece atkPiece, IPiece defPiece,
+        Direction atkDirection
+    ) {
+        var atkTerrain = board.get(atkCoord);
+        var defTerrain = board.get(defCoord);
+        var atkMachine = atkPiece.machine();
+        var defMachine = defPiece.machine();
+
+        // To find out which point of the defending piece is being attacked (defPoint),
+        // we start with it set as if the defending piece was laying north,
+        // then correct it considering the actual rotation of the defending piece
+        var defPieceDirection = defPiece.direction();
+        var defPoint = atkDirection.opposite();
+        while (defPieceDirection != Direction.NORTH) {
+            defPieceDirection = defPieceDirection.cycle(false);
+            defPoint = defPoint.cycle(true);
+        }
+
+        var atkCombatPower = atkMachine.attackPower() + atkTerrain.combatPowerOffset() + atkMachine.point(Direction.NORTH).combatPowerOffset();
+        var defCombatPower = defTerrain.combatPowerOffset() + defMachine.point(defPoint).combatPowerOffset();
+
+        var diff = atkCombatPower - defCombatPower;
+
+        var atkDamage = 0;  // Damage to the attacking piece
+        var defDamage = 0;  // Damage to the defending piece
+        var knockback = false;
+
+        if (diff < 0) {
+            atkDamage = -diff;
+        } else if (diff > 0) {
+            defDamage = diff;
+        } else {
+            atkDamage = 1;
+            defDamage = 1;
+
+            var coordBehind = defCoord.moved(atkDirection);
+            var canMoveBack = GameLogic.inbounds(coordBehind) && getPiece(coordBehind) == null;
+            if (canMoveBack) {
+                knockback = true;
+            } else {
+                defDamage++;
+            }
+        }
+
+        return new ConflictResult(atkDamage, defDamage, knockback);
+    }
+
     public boolean finishTurn()
     {
         if (!currentPlayerMoved) return false;
@@ -76,6 +126,9 @@ public class GameState
         if (piece == null) return MovResponse.FROM_EMPTY;
         if (!piece.player().equals(currentPlayer)) return MovResponse.PLAYER_MISMATCH;
 
+        var dirChanged = dir != piece.direction();
+        if (to.equals(from) && !thenAttack && !dirChanged) return MovResponse.DIDNT_MOVE;
+
         if (!to.equals(from) && getPiece(to) != null) return MovResponse.TO_NOT_EMPTY;
 
         if (!thenAttack) {
@@ -94,14 +147,17 @@ public class GameState
             if (moveRes != MovResponse.OK) return moveRes;
 
             if (!speculative) {
-                var dmg = GameLogic.conflictDamage(
-                    piece.machine(), dir, board.get(to),
-                    defPiece.machine(), board.get(defCoord)
-                );
-                defPiece.decreaseHealth(dmg.defDamage);
-                if (defPiece.dead()) setPiece(defCoord, null);
+                var conflict = conflict(from, to, piece, defPiece, dir);
+                System.out.println("Actual conflict " + conflict);
+                defPiece.decreaseHealth(conflict.defDamage());
+                if (defPiece.dead()) {
+                    setPiece(defCoord, null);
+                } else if (conflict.knockback()) {
+                    setPiece(defCoord, null);
+                    setPiece(defCoord.moved(dir), defPiece);
+                }
                 // TODO check for win
-                piece.decreaseHealth(dmg.atkDamage);
+                piece.decreaseHealth(conflict.atkDamage());
                 if (piece.dead()) setPiece(to, null);
                 // TODO check for win
 
@@ -125,10 +181,10 @@ public class GameState
         var range = piece.machine().movementRange();
         var reach = GameLogic.reachability(from, to, range);
 
-        if (reach == Reachability.OUT) return MovResponse.OUT_OF_REACH;
+        if (reach.out()) return MovResponse.OUT_OF_REACH;
 
-        var walk = reach == Reachability.IN;
-        var run = reach == Reachability.IN_RUNNING;
+        var walk = reach.in();
+        var run = reach.inRunning();
 
         if (run && !turn.canRun()) return MovResponse.OUT_OF_REACH;
         if (walk && !turn.canWalk()) return MovResponse.OUT_OF_REACH;
@@ -142,7 +198,7 @@ public class GameState
             if (walk) turn.walk();
 
             if (turn.overcharged()) {
-                piece.decreaseHealth(2);
+                piece.decreaseHealth(GameLogic.OVERCHARGE_DAMAGE);
                 if (piece.dead()) {
                     setPiece(to, null);
                     // TODO check for win

@@ -1,10 +1,12 @@
 package logic;
 
 import constants.Constants;
-import logic.turn.ConflictDamage;
+import logic.turn.ConflictResult;
 
 public class GameLogic
 {
+
+    public static final int OVERCHARGE_DAMAGE = 2;
 
     public static Reachability reachability(Coord center, Coord coord, int movementRange)
     {
@@ -22,34 +24,6 @@ public class GameLogic
     public static int combatPower(Machine machine, Terrain terrain)
     {
         return machine.attackPower() + terrain.combatPowerOffset();
-    }
-
-    public static ConflictDamage conflictDamage(
-        Machine atkMachine, Direction atkDirection, Terrain atkTerrain,
-        Machine defMachine, Terrain defTerrain
-    ) {
-
-        // TODO verify calculations...
-
-        var defDirection = atkDirection.opposite();
-        var atkPower = combatPower(atkMachine, atkTerrain, atkDirection);
-        var defPower = combatPower(defMachine, defTerrain, defDirection) - defMachine.attackPower();
-        var diff = atkPower - defPower;
-
-        var atkDamage = 0;
-        var defDamage = 0;
-        var breakArmor = false;
-
-        if (diff < 0) {
-            atkDamage = -diff;
-        } else if (diff > 0) {
-            defDamage = diff;
-        } else {
-            breakArmor = true;
-            atkDamage = -1;
-            defDamage = -1;
-        }
-        return new ConflictDamage(atkDamage, defDamage, breakArmor);
     }
 
     public static boolean inbounds(Coord coord)

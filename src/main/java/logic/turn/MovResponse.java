@@ -14,5 +14,5 @@ public enum MovResponse
     ATK_EMPTY,
     ATK_SAME_PLAYER,
 
-    OK,
+    OK, DIDNT_MOVE,
 }
