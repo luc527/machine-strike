@@ -6,6 +6,8 @@ import constants.Constants;
 
 import java.util.Set;
 
+// TODO: acho que as setIsAvailabla (ou sla o nome) são uma forma de strategy, antotar com o :PatternUsed se for o caso
+
 /**
  * Logically organizes the board into a grid wherein a cursor can move.
  * Encapsulates the board (terrains) and the cursor, and the positions available for the cursor.
