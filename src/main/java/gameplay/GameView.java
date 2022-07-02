@@ -2,6 +2,7 @@ package gameplay;
 
 import components.Palette;
 import logic.*;
+import logic.turn.ITurn;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,11 +111,12 @@ public class GameView implements GameObserver
     }
 
     @Override
-    public void start(Player firstPlayer)
+    public void start(Player firstPlayer, ITurn firstPlayerTurn)
     {
         currentPlayerMoved = false;
         frame.pack();
         frame.setVisible(true);
+        gridModel.setCurrentTurn(firstPlayerTurn);
         gridPanel.setCursorColor(Palette.color(firstPlayer));
         gridPanel.setFocused(true);
         setKeyListener(selectionListener);
@@ -152,7 +154,7 @@ public class GameView implements GameObserver
     }
 
     @Override
-    public void turnFinished(Player nextPlayer)
+    public void turnFinished(Player nextPlayer, ITurn nextPlayerTurn)
     {
         if (nextPlayer.equals(Player.PLAYER2)) {
             p1prevCoord = gridModel.getCursor();
@@ -162,6 +164,7 @@ public class GameView implements GameObserver
             gridModel.setCursor(p1prevCoord);
         }
 
+        gridModel.setCurrentTurn(nextPlayerTurn);
         currentPlayerMoved = false;
         gridPanel.setCursorColor(Palette.color(nextPlayer));
         frame.repaint();

@@ -40,7 +40,7 @@ public class GameController implements IGameController
 
     @Override
     public void startGame()
-    { observers.forEach(o -> o.start(game.currentPlayer())); }
+    { observers.forEach(o -> o.start(game.currentPlayer(), game.currentTurn())); }
 
     @Override
     public boolean selectPiece(int row, int col)
@@ -54,7 +54,7 @@ public class GameController implements IGameController
 
         // Reachability modulated according to the piece turn
         Function<Coord, Reachability> isReachable = coord -> {
-            var turn = piece.turn();
+            var turn = game.currentTurn();
             if (!turn.canWalk()) return Reachability.OUT;
             var reach = GameLogic.reachability(pieceCoord, coord, movementRange);
             if (!turn.canRun() && reach.inRunning()) return Reachability.OUT;
@@ -86,8 +86,6 @@ public class GameController implements IGameController
         var to = Coord.create(row, col);
         var res = game.performMovement(from, to, dir, thenAttack);
 
-        System.out.println(res);
-
         if (res == MovResponse.OK) {
             observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
             selectedPiece = null;
@@ -102,7 +100,7 @@ public class GameController implements IGameController
     public boolean finishTurn()
     {
         if (!game.finishTurn()) return false;
-        observers.forEach(o -> o.turnFinished(game.currentPlayer()));
+        observers.forEach(o -> o.turnFinished(game.currentPlayer(), game.currentTurn()));
         return true;
     }
 }

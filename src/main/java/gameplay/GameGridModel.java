@@ -3,6 +3,7 @@ package gameplay;
 import components.boardgrid.BoardGridModel;
 import logic.*;
 import logic.turn.ConflictResult;
+import logic.turn.ITurn;
 
 import java.util.function.Function;
 
@@ -14,6 +15,7 @@ public class GameGridModel extends BoardGridModel
     private Direction carriedPieceDirection;
     private Coord carriedPieceOriginalPosition;
     private Function<Coord, Reachability> reachabilityFn = x -> Reachability.IN;
+    private ITurn currentTurn;
 
     public interface ConflictResultFunction {
         ConflictResult apply(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
@@ -144,4 +146,10 @@ public class GameGridModel extends BoardGridModel
     {
         return this.conflictResultFn.apply(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
     }
+
+    public void setCurrentTurn(ITurn turn)
+    { this.currentTurn = turn; }
+
+    public ITurn getCurrentTurn()
+    { return this.currentTurn; }
 }

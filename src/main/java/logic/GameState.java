@@ -2,7 +2,9 @@ package logic;
 
 import constants.Constants;
 import logic.turn.ConflictResult;
+import logic.turn.ITurn;
 import logic.turn.MovResponse;
+import logic.turn.Turn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +21,18 @@ public class GameState
     private Player currentPlayer;
     private boolean currentPlayerMoved;
 
+    private Turn p1turn;
+    private Turn p2turn;
+
     public GameState(Player startingPlayer, Board board, Piece[][] startingPieces)
     {
         this.currentPlayer = startingPlayer;
         this.currentPlayerMoved = false;
         this.board = board;
         this.pieces = new ArrayList<>();
+
+        this.p1turn = new Turn();
+        this.p2turn = new Turn();
 
         this.matrix = new Piece[ROWS][COLS];
         for (var row = 0; row < ROWS; row++)
@@ -36,17 +44,22 @@ public class GameState
 
     }
 
-    public Player currentPlayer() { return currentPlayer; }
-    public Board board() { return board; }
+    private Turn getTurn(Player p) { return p == Player.PLAYER1 ? p1turn : p2turn; }
 
     private Piece getPiece(int r, int c) { return matrix[r][c]; }
     private Piece getPiece(Coord c) { return getPiece(c.row(), c.col()); }
 
-    public IPiece pieceAt(int r, int c) { return getPiece(r, c); }
-    public IPiece pieceAt(Coord c) { return getPiece(c); }
-
     private void setPiece(int r, int c, Piece p) { matrix[r][c] = p; }
     private void setPiece(Coord c, Piece p) { setPiece(c.row(), c.col(), p); }
+
+    public Player currentPlayer() { return currentPlayer; }
+    public Board board() { return board; }
+
+    public ITurn turn(Player p) { return getTurn(p); }
+    public ITurn currentTurn() { return turn(currentPlayer); }
+
+    public IPiece pieceAt(int r, int c) { return getPiece(r, c); }
+    public IPiece pieceAt(Coord c) { return getPiece(c); }
 
     public ConflictResult conflict(
         Coord atkCoord, Coord defCoord,
@@ -102,7 +115,8 @@ public class GameState
         if (!currentPlayerMoved) return false;
         currentPlayer = currentPlayer.next();
         currentPlayerMoved = false;
-        for (var piece : pieces) piece.getTurn().reset();
+        p1turn.reset();
+        p2turn.reset();
         return true;
     }
 
@@ -174,7 +188,7 @@ public class GameState
         boolean speculative
     ) {
         var piece = getPiece(from);
-        var turn = piece.getTurn();
+        var turn = getTurn(currentPlayer);
 
         if (!turn.canWalk()) return MovResponse.NO_MOVES_LEFT;
 
@@ -210,5 +224,4 @@ public class GameState
 
         return MovResponse.OK;
     }
-
 }

@@ -10,7 +10,5 @@ public interface IPiece
 
     Player player();
 
-    IPieceTurn turn();
-
     boolean dead();
 }

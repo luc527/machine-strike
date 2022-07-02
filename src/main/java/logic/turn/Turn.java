@@ -1,8 +1,6 @@
 package logic.turn;
 
-import logic.IPieceTurn;
-
-public class PieceTurn implements IPieceTurn
+public class Turn implements ITurn
 {
     private int k = 0;
 
@@ -20,7 +18,7 @@ public class PieceTurn implements IPieceTurn
     {
         var knext = k + 1;
         if (knext > 3)
-            throw new UnsupportedOperationException("Exhausted piece moves");
+            throw new UnsupportedOperationException("Exhausted player moves");
         k = knext;
     }
 
@@ -28,10 +26,12 @@ public class PieceTurn implements IPieceTurn
     {
         var knext = k + 2;
         if (knext > 3)
-            throw new UnsupportedOperationException("Exhausted piece moves");
+            throw new UnsupportedOperationException("Exhausted player moves");
         k = knext;
     }
 
     public void reset()
     { k = 0; }
+
+    public String toString() { return String.format("Turn{ k = %d/3 }", k); }
 }

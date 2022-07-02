@@ -1,9 +1,9 @@
-package logic;
+package logic.turn;
 
-import logic.turn.PieceTurn;
-
-public interface IPieceTurn
+public interface ITurn
 {
+    boolean overcharged();
+
     boolean canWalk();
 
     boolean walkWouldOvercharge();

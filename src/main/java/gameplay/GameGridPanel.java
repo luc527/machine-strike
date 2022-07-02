@@ -41,7 +41,7 @@ public class GameGridPanel extends BoardGridPanel
     {
         var x = SIDE_PX * col + 7;
         var y = SIDE_PX * row + 17;
-        Utils.drawOutlinedString(g, x, y, "OV!", Palette.darkYellow, Palette.yellow);
+        Utils.drawOutlinedString(g, x, y, "!!!", Palette.darkYellow, Palette.yellow);
     }
 
     @Override
@@ -109,8 +109,9 @@ public class GameGridPanel extends BoardGridPanel
 
             var health = 0;
             var reach = grid.isReachable(row, col);
-            var overcharge = (reach.in() && piece.turn().walkWouldOvercharge())
-                          || (reach.inRunning() && piece.turn().runWouldOvercharge());
+            var turn = grid.getCurrentTurn();
+            var overcharge = (reach.in() && turn.walkWouldOvercharge())
+                          || (reach.inRunning() && turn.runWouldOvercharge());
             if (overcharge) {
                 drawOverchargeWarning(g, row, col);
                 drawDamage(g, row, col, GameLogic.OVERCHARGE_DAMAGE);
