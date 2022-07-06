@@ -2,10 +2,10 @@ package gameplay;
 
 import components.boardgrid.BoardGridModel;
 import logic.*;
-import logic.turn.ConflictResult;
-import logic.turn.ITurn;
-
+import logic.ConflictDamage;
 import java.util.function.Function;
+
+// :PatternUsed Strategy: the reachability and conflict result functions are strategies
 
 public class GameGridModel extends BoardGridModel
 {
@@ -15,13 +15,11 @@ public class GameGridModel extends BoardGridModel
     private Direction carriedPieceDirection;
     private Coord carriedPieceOriginalPosition;
     private Function<Coord, Reachability> reachabilityFn = x -> Reachability.IN;
-    private ITurn currentTurn;
+    private ConflictResultFunction conflictResultFn;
 
     public interface ConflictResultFunction {
-        ConflictResult apply(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
+        ConflictDamage apply(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
     }
-
-    private ConflictResultFunction conflictResultFn;
 
     public GameGridModel(Board board, PieceProvider pieceProvider)
     {
@@ -78,6 +76,15 @@ public class GameGridModel extends BoardGridModel
         return carriedPieceDirection;
     }
 
+
+    public Coord getCarriedPieceSource()
+    {
+        if (carriedPiece == null) {
+            throw new RuntimeException("getCarriedPieceSource() called but no piece is being carried");
+        }
+        return carriedPieceOriginalPosition;
+    }
+
     public void stopCarryingPiece()
     {
         if (carriedPiece == null) {
@@ -101,26 +108,6 @@ public class GameGridModel extends BoardGridModel
         return this.carriedPiece;
     }
 
-    public Coord getAttackedCoord()
-    {
-        return cursor.moved(carriedPieceDirection);
-    }
-
-    public IPiece getAttackedPiece()
-    {
-        var attackedCoord = getAttackedCoord();
-        if (!GameLogic.inbounds(attackedCoord)) return null;
-        var piece = pieceAt(attackedCoord);
-        if (piece == null) return null;
-        if (piece.player().equals(carriedPiece.player())) return null;
-        return piece;
-    }
-
-    public boolean isCarriedPieceAttacking()
-    {
-        return getAttackedPiece() != null;
-    }
-
     public void setReachabilityFunction(Function<Coord, Reachability> isReachable)
     {
         this.reachabilityFn = isReachable;
@@ -142,14 +129,8 @@ public class GameGridModel extends BoardGridModel
         return reachabilityFn.apply(Coord.create(row, col));
     }
 
-    public ConflictResult getConflictResult(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
+    public ConflictDamage getConflictResult(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
     {
         return this.conflictResultFn.apply(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
     }
-
-    public void setCurrentTurn(ITurn turn)
-    { this.currentTurn = turn; }
-
-    public ITurn getCurrentTurn()
-    { return this.currentTurn; }
 }

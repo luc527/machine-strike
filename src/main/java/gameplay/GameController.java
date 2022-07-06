@@ -1,8 +1,7 @@
 package gameplay;
 
 import logic.*;
-import logic.turn.ConflictResult;
-import logic.turn.MovResponse;
+import logic.MovResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,20 +26,12 @@ public class GameController implements IGameController
     { observers.add(observer); }
 
     @Override
-    public Board getBoard()
-    { return game.board(); }
-
-    @Override
-    public IPiece pieceAt(Coord coord)
-    { return game.pieceAt(coord.row(), coord.col()); }
-
-    @Override
-    public ConflictResult conflict(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
-    { return game.conflict(atkCoord, defCoord, atkPiece, defPiece, atkDirection); }
+    public IGameState getGameState()
+    { return game; }
 
     @Override
     public void startGame()
-    { observers.forEach(o -> o.start(game.currentPlayer(), game.currentTurn())); }
+    { observers.forEach(o -> o.start(game.currentPlayer())); }
 
     @Override
     public boolean selectPiece(int row, int col)
@@ -53,8 +44,9 @@ public class GameController implements IGameController
         var movementRange = piece.machine().movementRange();
 
         // Reachability modulated according to the piece turn
+        // TODO consider whether this belongs implemented in the controller
         Function<Coord, Reachability> isReachable = coord -> {
-            var turn = game.currentTurn();
+            var turn = piece.stamina();
             if (!turn.canWalk()) return Reachability.OUT;
             var reach = GameLogic.reachability(pieceCoord, coord, movementRange);
             if (!turn.canRun() && reach.inRunning()) return Reachability.OUT;
@@ -73,18 +65,18 @@ public class GameController implements IGameController
         if (selectedPiece == null) return false;
         observers.forEach(GameObserver::pieceUnselected);
 
-        //TODO are these =null really needed? also check for placePiece
+        //TODO are these =null really needed?
         selectedPiece = null;
         selectedPieceSource = null;
         return true;
     }
 
     @Override
-    public boolean performMovement(int row, int col, Direction dir, boolean thenAttack)
+    public boolean performMovement(int row, int col, Direction dir)
     {
         var from = selectedPieceSource;
         var to = Coord.create(row, col);
-        var res = game.performMovement(from, to, dir, thenAttack);
+        var res = game.performMovement(from, to, dir, false);
 
         if (res == MovResponse.OK) {
             observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
@@ -97,10 +89,28 @@ public class GameController implements IGameController
     }
 
     @Override
+    public boolean performAttack(int row, int col, Direction dir)
+    {
+        var from = selectedPieceSource;
+        var to   = Coord.create(row, col);
+        var res  = game.performAttack(from, to, dir);
+
+        System.out.println(res);
+
+        if (res == MovResponse.OK) {
+            // TODO attackPerformed? or simplify and just do gameChanged or something like that
+            observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
+            selectedPiece = null;
+            selectedPieceSource = null;
+            return true;
+        } else return false;
+    }
+
+    @Override
     public boolean finishTurn()
     {
         if (!game.finishTurn()) return false;
-        observers.forEach(o -> o.turnFinished(game.currentPlayer(), game.currentTurn()));
+        observers.forEach(o -> o.turnFinished(game.currentPlayer()));
         return true;
     }
 }

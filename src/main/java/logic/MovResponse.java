@@ -1,4 +1,4 @@
-package logic.turn;
+package logic;
 
 public enum MovResponse
 {
@@ -9,10 +9,12 @@ public enum MovResponse
     TO_NOT_EMPTY,
     NO_MOVES_LEFT,
     OUT_OF_REACH,
+    DIDNT_MOVE,
 
     ATK_OUT_OF_BOUNDS,
     ATK_EMPTY,
-    ATK_SAME_PLAYER,
+    ATK_FRIEND,
+    LANDS_ON_NOT_EMPTY,
 
-    OK, DIDNT_MOVE,
+    OK,
 }

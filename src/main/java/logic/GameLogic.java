@@ -1,7 +1,6 @@
 package logic;
 
 import constants.Constants;
-import logic.turn.ConflictResult;
 
 public class GameLogic
 {

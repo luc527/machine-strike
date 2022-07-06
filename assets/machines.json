@@ -78,8 +78,8 @@
     "type": "dash",
     "name": "Tower",
     "attackPower": 2,
-    "attackRange": 2,
-    "movementRange": 2,
+    "attackRange": 3,
+    "movementRange": 3,
     "victoryPoints": 1,
     "health": 4,
     "points": {
@@ -135,7 +135,7 @@
     }
   },
   {
-    "type": "clubs",
+    "type": "swoop",
     "name": "Clubs",
     "attackPower": 3,
     "attackRange": 3,

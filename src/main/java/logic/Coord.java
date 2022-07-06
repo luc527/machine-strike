@@ -58,14 +58,29 @@ public class Coord
 
     public Coord moved(Direction dir)
     {
+        return moved(dir, 1);
+    }
+
+
+    public Coord moved(Direction dir, int n)
+    {
         var row = row();
         var col = col();
         switch (dir) {
-            case WEST -> col--;
-            case EAST -> col++;
-            case NORTH -> row--;
-            case SOUTH -> row++;
+            case WEST -> col -= n;
+            case EAST -> col += n;
+            case NORTH -> row -= n;
+            case SOUTH -> row += n;
         }
         return Coord.create(row, col);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Coord{" +
+            "row=" + row +
+            ", col=" + col +
+            '}';
     }
 }

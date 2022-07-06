@@ -1,32 +1,23 @@
 package gameplay;
 
-import logic.Board;
-import logic.Coord;
-import logic.Direction;
-import logic.IPiece;
-import logic.turn.ConflictResult;
+import logic.*;
 
 public interface IGameController
 {
-    //
+    void attach(GameObserver observer);
 
-    Board getBoard();
-
-    IPiece pieceAt(Coord coord);
-
-    ConflictResult conflict(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
-
-    //
+    IGameState getGameState();
 
     void startGame();
-
-    void attach(GameObserver observer);
 
     boolean selectPiece(int row, int col);
 
     boolean unselectPiece();
 
-    boolean performMovement(int row, int col, Direction dir, boolean thenAttack);
+    boolean performMovement(int row, int col, Direction dir);
+
+    boolean performAttack(int row, int col, Direction dir);
 
     boolean finishTurn();
+
 }

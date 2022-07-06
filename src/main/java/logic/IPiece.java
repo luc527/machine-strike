@@ -11,4 +11,6 @@ public interface IPiece
     Player player();
 
     boolean dead();
+
+    IPIeceStamina stamina();
 }

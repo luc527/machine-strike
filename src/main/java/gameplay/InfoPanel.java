@@ -21,6 +21,7 @@ public class InfoPanel extends JPanel
     };
 
     public InfoPanel() {
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         for (var label : labels) add(label);
     }
@@ -32,4 +33,10 @@ public class InfoPanel extends JPanel
         repaint();
     }
 
+    @Override
+    public Dimension getPreferredSize()
+    {
+        var dim = super.getPreferredSize();
+        return new Dimension(200, dim.height);
+    }
 }

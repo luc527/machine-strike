@@ -2,6 +2,8 @@ package logic;
 // TODO somehow encode types (melee, gunner etc.), by subclassing or enum depending on what makes sense
 
 import com.google.gson.JsonElement;
+import logic.attackType.MachineType;
+import logic.attackType.MachineTypeFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -36,6 +38,7 @@ public class Machine
         }
     }
 
+    private final MachineType machineType;
     private final String name;
     private final int attackPower;
     private final int attackRange;
@@ -44,8 +47,9 @@ public class Machine
     private final int victoryPoints;
     private final Point[] points = new Point[4];
 
-    public Machine(String name, int attackPower, int attackRange, int movementRange, int victoryPoints, int health, Point[] points)
+    public Machine(MachineType machineType, String name, int attackPower, int attackRange, int movementRange, int victoryPoints, int health, Point[] points)
     {
+        this.machineType = machineType;
         this.name = name;
         this.attackPower = attackPower;
         this.attackRange = attackRange;
@@ -65,6 +69,7 @@ public class Machine
     public int victoryPoints() { return this.victoryPoints; }
     public int health() { return this.health; }
     public Point point(Direction dir) { return this.points[dir.idx()]; }
+    public MachineType attackType() { return this.machineType; }
 
     public static Machine fromJsonElement(JsonElement json)
     {
@@ -76,6 +81,9 @@ public class Machine
         var victoryPoints = obj.get("victoryPoints").getAsJsonPrimitive().getAsInt();
         var health = obj.get("health").getAsJsonPrimitive().getAsInt();
 
+        var typeString = obj.get("type").getAsJsonPrimitive().getAsString();
+        var type = MachineTypeFactory.make(typeString, attackRange);
+
         var pointsObj = obj.get("points").getAsJsonObject();
         var points = new Point[4];
         points[Direction.NORTH.idx()] = Point.from(pointsObj.get("north").getAsJsonPrimitive().getAsString());
@@ -83,21 +91,22 @@ public class Machine
         points[Direction.WEST.idx()] = Point.from(pointsObj.get("west").getAsJsonPrimitive().getAsString());
         points[Direction.SOUTH.idx()] = Point.from(pointsObj.get("south").getAsJsonPrimitive().getAsString());
 
-        return new Machine(name, attackPower, attackRange, movementRange, victoryPoints, health, points);
+        return new Machine(type, name, attackPower, attackRange, movementRange, victoryPoints, health, points);
     }
 
     @Override
     public String toString()
     {
         return "logic.Machine{" +
-                "name='" + name + '\'' +
-                ", attackPower=" + attackPower +
-                ", attackRange=" + attackRange +
-                ", movementRange=" + movementRange +
-                ", victoryPoints=" + victoryPoints +
-                ", health=" + health +
-                ", points=" + Arrays.toString(points) +
-                '}';
+            "machineType='" + machineType + '\'' +
+            ", name='" + name + '\'' +
+            ", attackPower=" + attackPower +
+            ", attackRange=" + attackRange +
+            ", movementRange=" + movementRange +
+            ", victoryPoints=" + victoryPoints +
+            ", health=" + health +
+            ", points=" + Arrays.toString(points) +
+            '}';
     }
 
     @Override
