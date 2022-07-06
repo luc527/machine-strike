@@ -16,7 +16,12 @@ public class GameState implements IGameState
     private final List<Piece> pieces;
 
     private Player currentPlayer;
-    private int currentPlayerMoves;
+    private int currentPlayerMoves = 0;
+
+    private int p1victoryPoints = 0;
+    private int p2victoryPoints = 0;
+
+    private Player winner = null;
 
     public GameState(Player startingPlayer, Board board, Piece[][] startingPieces)
     {
@@ -37,6 +42,16 @@ public class GameState implements IGameState
 
     public Piece getPiece(int r, int c) { return matrix[r][c]; }
     public Piece getPiece(Coord c) { return getPiece(c.row(), c.col()); }
+
+    public Board board() { return board; }
+    public Player currentPlayer() { return currentPlayer; }
+    public IPiece pieceAt(int r, int c) { return getPiece(r, c); }
+    public IPiece pieceAt(Coord c) { return getPiece(c); }
+
+    public boolean playerRanOutOfMoves() { return currentPlayerMoves >= MAX_MOVES_PER_PLAYER; }
+
+    public int victoryPoints(Player p) { return p == Player.PLAYER1 ? p1victoryPoints : p2victoryPoints; }
+
     public void setPiece(int r, int c, Piece p) { matrix[r][c] = p; }
     public void setPiece(Coord c, Piece p) { setPiece(c.row(), c.col(), p); }
 
@@ -46,13 +61,6 @@ public class GameState implements IGameState
         setPiece(src, null);
         setPiece(dst, piece);
     }
-
-    public Board board() { return board; }
-    public Player currentPlayer() { return currentPlayer; }
-    public IPiece pieceAt(int r, int c) { return getPiece(r, c); }
-    public IPiece pieceAt(Coord c) { return getPiece(c); }
-
-    public boolean playerRanOutOfMoves() { return currentPlayerMoves >= MAX_MOVES_PER_PLAYER; }
 
     public ConflictDamage getConflictDamages(
         Coord atkCoord, Coord defCoord,
@@ -74,8 +82,8 @@ public class GameState implements IGameState
             defPoint = defPoint.cycle(true);
         }
 
-        var atkCombatPower = atkMachine.attackPower() + atkTerrain.combatPowerOffset() + atkMachine.point(Direction.NORTH).combatPowerOffset();
-        var defCombatPower = defTerrain.combatPowerOffset() + defMachine.point(defPoint).combatPowerOffset();
+        var atkCombatPower = atkMachine.attackPower() + atkMachine.attackType().combatPowerOffset(atkTerrain) + atkMachine.point(Direction.NORTH).combatPowerOffset();
+        var defCombatPower = defMachine.attackType().combatPowerOffset(defTerrain) + defMachine.point(defPoint).combatPowerOffset();
 
         var diff = atkCombatPower - defCombatPower;
 
@@ -105,6 +113,7 @@ public class GameState implements IGameState
 
     public boolean finishTurn()
     {
+        if (winner != null) throw new RuntimeException("Game has already been won by " + winner);
         if (currentPlayerMoves == 0) return false;
         currentPlayer = currentPlayer.next();
         currentPlayerMoves = 0;
@@ -114,6 +123,7 @@ public class GameState implements IGameState
 
     public MovResponse performMovement(Coord from, Coord to, Direction dir, boolean precedingAttack)
     {
+        if (winner != null) throw new RuntimeException("Game has already been won by " + winner);
         if (playerRanOutOfMoves()) return MovResponse.NO_MOVES_LEFT;
 
         if (!GameLogic.inbounds(from)) return MovResponse.FROM_OUT_OF_BOUNDS;
@@ -155,6 +165,7 @@ public class GameState implements IGameState
         if (turn.overcharged()) {
             dealDamage(to, GameLogic.OVERCHARGE_DAMAGE);
         }
+        checkForWinner();
 
         return MovResponse.OK;
     }
@@ -166,10 +177,12 @@ public class GameState implements IGameState
      */
     public MovResponse performAttack(Coord from, Coord to, Direction dir)
     {
+        if (winner != null) throw new RuntimeException("Game has already been won by " + winner);
         var moveBefore = !to.equals(from);
 
         if (moveBefore) {
             var res = performMovement(from, to, dir, true);
+            checkForWinner();
             if (res != MovResponse.OK) return res;
         }
 
@@ -198,6 +211,8 @@ public class GameState implements IGameState
 
         if (!moveBefore) currentPlayerMoves++;
 
+        checkForWinner();
+
         return MovResponse.OK;
     }
 
@@ -207,6 +222,50 @@ public class GameState implements IGameState
         piece.decreaseHealth(damage);
         if (piece.dead()) {
             setPiece(coord, null);
+            var vp = piece.machine().victoryPoints();
+            if (piece.player().equals(Player.PLAYER1)) {
+                p2victoryPoints += vp;
+            } else {
+                p1victoryPoints += vp;
+            }
         }
+        checkForWinner();
     }
+
+    public Player checkForWinner()
+    {
+        if (winner != null) return winner;
+
+        var p1canWin = false;
+        var p2canWin = false;
+
+        if (p1victoryPoints >= 7) p1canWin = true;
+        if (p2victoryPoints >= 7) p2canWin = true;
+
+        var p1hasPieces = false;
+        var p2hasPieces = false;
+
+        for (var piece : pieces) {
+            if (piece.dead()) continue;
+            if (piece.player().equals(Player.PLAYER1)) p1hasPieces = true;
+            if (piece.player().equals(Player.PLAYER2)) p2hasPieces = true;
+        }
+
+        if (!p1hasPieces) p2canWin = true;
+        if (!p2hasPieces) p1canWin = true;
+
+        if (p1canWin && p2canWin) {
+            winner = currentPlayer;
+        } else if (p1canWin) {
+            winner = Player.PLAYER1;
+        } else if (p2canWin) {
+            winner = Player.PLAYER2;
+        }
+        return winner;
+    }
+
+    public boolean hasWinner() { return winner != null; }
+
+    public Player getWinner() { return winner; }
+
 }

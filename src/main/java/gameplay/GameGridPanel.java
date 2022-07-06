@@ -149,7 +149,7 @@ public class GameGridPanel extends BoardGridPanel
 
                         if (numAttacked > 1) attackingPieceDamage = 0;
                         else attackingPieceDamage = conflict.atkDamage();
-                        // Otherwise there's no *one* correct conflict damage, but a different one for every pair
+                        // Because there's no *one* correct conflict damage, but a different one for every pair
                     }
                 }
             };

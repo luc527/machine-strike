@@ -15,4 +15,6 @@ public interface GameObserver
     void pieceUnselected();
 
     void turnFinished(Player nextPlayer);
+
+    void gameWonBy(Player winner);
 }

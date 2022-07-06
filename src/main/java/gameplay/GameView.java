@@ -21,6 +21,7 @@ public class GameView implements GameObserver
     private final GameGridModel gridModel;
     private final GameGridPanel gridPanel;
     private final InfoPanel infoPanel;
+    private final VictoryPointsPanel vpPanel;
 
     private boolean currentPlayerMoved = false;
     private Coord p1prevCoord = Coord.create(0, 0);
@@ -85,6 +86,9 @@ public class GameView implements GameObserver
         infoPanel.display(InfoPanel.ENTER_TO_SELECT);
         panel.add(infoPanel, BorderLayout.LINE_START);
 
+        vpPanel = new VictoryPointsPanel();
+        panel.add(vpPanel, BorderLayout.PAGE_START);
+
         var machStats = new MachineStatsPanel();
         panel.add(machStats, BorderLayout.LINE_END);
 
@@ -127,6 +131,8 @@ public class GameView implements GameObserver
             }
         }
         infoPanel.display(flags);
+
+        vpPanel.setVP(game.victoryPoints(Player.PLAYER1), game.victoryPoints(Player.PLAYER2));
     }
 
     private void setKeyListener(KeyListener to)
@@ -191,5 +197,14 @@ public class GameView implements GameObserver
         gridPanel.setCursorColor(Palette.color(nextPlayer));
         frame.repaint();
         setKeyListener(selectionListener);
+    }
+
+    @Override
+    public void gameWonBy(Player winner)
+    {
+        gridPanel.setFocused(false);
+        setKeyListener(new KeyAdapter() {});
+        var msg = String.format("The winner is %s!", winner.equals(Player.PLAYER1) ? "Player 1" : "Player 2");
+        JOptionPane.showMessageDialog(frame, msg, "Winner!", JOptionPane.INFORMATION_MESSAGE);
     }
 }

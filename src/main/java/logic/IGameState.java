@@ -20,4 +20,10 @@ public interface IGameState
     );
 
     boolean playerRanOutOfMoves();
+
+    int victoryPoints(Player p);
+
+    boolean hasWinner();
+
+    Player getWinner();
 }

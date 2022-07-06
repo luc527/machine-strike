@@ -82,6 +82,10 @@ public class GameController implements IGameController
             observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
             selectedPiece = null;
             selectedPieceSource = null;
+
+            if (game.hasWinner()) {
+                observers.forEach(o -> o.gameWonBy(game.getWinner()));
+            }
             return true;
         } else {
             return false;
@@ -95,13 +99,15 @@ public class GameController implements IGameController
         var to   = Coord.create(row, col);
         var res  = game.performAttack(from, to, dir);
 
-        System.out.println(res);
-
         if (res == MovResponse.OK) {
             // TODO attackPerformed? or simplify and just do gameChanged or something like that
             observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
             selectedPiece = null;
             selectedPieceSource = null;
+
+            if (game.hasWinner()) {
+                observers.forEach(o -> o.gameWonBy(game.getWinner()));
+            }
             return true;
         } else return false;
     }

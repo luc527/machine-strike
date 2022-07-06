@@ -33,6 +33,9 @@ public abstract class MachineType
 
     public abstract String name();
 
+    public int combatPowerOffset(Terrain terrain)
+    { return terrain.combatPowerOffset(); }
+
     public Coord attackerFinalPosition()
     { return this.attackerFinalPosition; }
 
