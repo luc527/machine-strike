@@ -2,6 +2,7 @@ package gameplay;
 
 import components.MachineStatsPanel;
 import components.Palette;
+import gameplay.playState.PlayState;
 import logic.*;
 
 import javax.swing.*;
@@ -23,13 +24,12 @@ public class GameView implements GameObserver
     private final InfoPanel infoPanel;
     private final VictoryPointsPanel vpPanel;
 
-    private boolean currentPlayerMoved = false;
     private Coord p1prevCoord = Coord.create(0, 0);
     private Coord p2prevCoord = Coord.create(0, 0);
 
+    private PlayState playState;
+
     private KeyListener currentKeyListener;
-    private final KeyListener selectionListener;
-    private final KeyListener placementListener;  // TODO bad name, find a better one
 
     public GameView(IGameController controller)
     {
@@ -42,48 +42,16 @@ public class GameView implements GameObserver
         var panel = new JPanel(new BorderLayout());
         frame.setContentPane(panel);
 
-        selectionListener = new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                var k = e.getKeyCode();
-                var c = e.getKeyChar();
-                if (k == KeyEvent.VK_ENTER && !game.playerRanOutOfMoves()) {
-                    var cursor = gridModel.getCursor();
-                    if (!controller.selectPiece(cursor.row(), cursor.col())) return;
-                    gridModel.carryPieceFrom(cursor);
-                } else if (c == 'f') {
-                    controller.finishTurn();
-                }
-            }
-        };
-
-        placementListener = new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                var c = e.getKeyChar();
-                var k = e.getKeyCode();
-                var row = gridModel.getCursor().row();
-                var col = gridModel.getCursor().col();
-                var dir = gridModel.getCarriedPieceDirection();
-                if (k == KeyEvent.VK_BACK_SPACE || k == KeyEvent.VK_ESCAPE) {
-                    controller.unselectPiece();
-                } else if (k == KeyEvent.VK_ENTER) {
-                    controller.performMovement(row, col, dir);
-                } else if (c == 'k') {
-                    controller.performAttack(row, col, dir);
-                }else if (gridModel.isCarryingPiece()) {
-                    if      (c == 'q') gridModel.rotateCarriedPiece(false);
-                    else if (c == 'e') gridModel.rotateCarriedPiece(true);
-                    frame.repaint();
-                }
-            }
-        };
-
         gridModel = new GameGridModel(game.board(), game::pieceAt);
         gridPanel = new GameGridPanel(gridModel);
 
         gridModel.setConflictResultFunction(game::getConflictDamages);
 
+        playState = PlayState.initialState(game, controller, gridModel, frame);
+        setKeyListener(playState.getKeyListener());
+
         infoPanel = new InfoPanel();
-        infoPanel.display(InfoPanel.ENTER_TO_SELECT);
+        infoPanel.display(playState.getInfoPanelFlags());
         panel.add(infoPanel, BorderLayout.LINE_START);
 
         vpPanel = new VictoryPointsPanel();
@@ -109,29 +77,7 @@ public class GameView implements GameObserver
 
     private void updateInfo()
     {
-        var flags = InfoPanel.EMPTY_FLAGS;
-        if (currentKeyListener == selectionListener) {
-            flags |= InfoPanel.ENTER_TO_SELECT;
-            if (currentPlayerMoved) flags |= InfoPanel.F_TO_FINISH_TURN;
-        } else if (currentKeyListener == placementListener) {
-            flags |= InfoPanel.ESC_TO_DESELECT;
-            flags |= InfoPanel.ENTER_TO_PLACE;
-
-            var coord = gridModel.getCursor();
-            var piece = gridModel.getCarriedPiece();
-            var dir   = gridModel.getCarriedPieceDirection();
-            var attack = piece.machine().attackType();
-
-            // TODO also check whether the piece is not running, since we can't run AND attack
-            var isAttacking = attack.isAttacking(gridModel::pieceAt, coord, piece, dir);
-            var isRunning   = gridModel.isReachable(coord.row(), coord.col()).inRunning();
-
-            if (isAttacking && !isRunning) {
-                flags |= InfoPanel.K_TO_ATTACK;
-            }
-        }
-        infoPanel.display(flags);
-
+        infoPanel.display(playState.getInfoPanelFlags());
         vpPanel.setVP(game.victoryPoints(Player.PLAYER1), game.victoryPoints(Player.PLAYER2));
     }
 
@@ -140,18 +86,15 @@ public class GameView implements GameObserver
         gridPanel.removeKeyListener(currentKeyListener);
         gridPanel.addKeyListener(to);
         currentKeyListener = to;
-        updateInfo();
     }
 
     @Override
     public void start(Player firstPlayer)
     {
-        currentPlayerMoved = false;
         frame.pack();
         frame.setVisible(true);
         gridPanel.setCursorColor(Palette.color(firstPlayer));
         gridPanel.setFocused(true);
-        setKeyListener(selectionListener);
     }
 
     @Override
@@ -160,17 +103,23 @@ public class GameView implements GameObserver
         gridModel.carryPieceFrom(Coord.create(row, col));
         gridModel.setReachabilityFunction(reachabilityFunction);
         frame.repaint();
-        setKeyListener(placementListener);
+        updateState(playState.startMove());
+    }
+
+    private void updateState(PlayState state)
+    {
+        this.playState = state;
+        setKeyListener(state.getKeyListener());
+        updateInfo();
     }
 
     @Override
     public void movementPerformed(int row, int col, IPiece piece)
     {
-        currentPlayerMoved = true;
         gridModel.stopCarryingPiece();
         gridModel.syncPieces(game::pieceAt);
         frame.repaint();
-        setKeyListener(selectionListener);
+        updateState(playState.finishMove());
     }
 
     @Override
@@ -179,7 +128,7 @@ public class GameView implements GameObserver
         gridModel.stopCarryingPiece();
         gridModel.syncPieces(game::pieceAt);
         frame.repaint();
-        setKeyListener(selectionListener);
+        updateState(playState.finishMove());
     }
 
     @Override
@@ -193,10 +142,8 @@ public class GameView implements GameObserver
             gridModel.setCursor(p1prevCoord);
         }
 
-        currentPlayerMoved = false;
         gridPanel.setCursorColor(Palette.color(nextPlayer));
         frame.repaint();
-        setKeyListener(selectionListener);
     }
 
     @Override

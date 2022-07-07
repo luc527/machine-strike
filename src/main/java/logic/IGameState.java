@@ -26,4 +26,6 @@ public interface IGameState
     boolean hasWinner();
 
     Player getWinner();
+
+    int currentPlayerMoves();
 }

@@ -48,6 +48,7 @@ public class GameState implements IGameState
     public IPiece pieceAt(int r, int c) { return getPiece(r, c); }
     public IPiece pieceAt(Coord c) { return getPiece(c); }
 
+    public int currentPlayerMoves() { return currentPlayerMoves; }
     public boolean playerRanOutOfMoves() { return currentPlayerMoves >= MAX_MOVES_PER_PLAYER; }
 
     public int victoryPoints(Player p) { return p == Player.PLAYER1 ? p1victoryPoints : p2victoryPoints; }
