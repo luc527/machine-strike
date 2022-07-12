@@ -10,8 +10,8 @@ public class RamMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> getAttackedCoords(Coord from, Direction dir)
-    { return List.of(from.moved(dir)); }
+    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
+    { return firstInAttackRange(game, from, dir); }
 
     @Override
     public boolean attacksFriends()
@@ -24,17 +24,14 @@ public class RamMachineType extends MachineType
     @Override
     public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        // Copy-pasted from MeleeMachineType
-
-        var atkPiece = game.getPiece(atkCoord);
-        var defCoord = atkCoord.moved(atkDirection);
-
-        if (!GameState.inbounds(defCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
-
-        var defPiece = game.getPiece(defCoord);
-
-        if (defPiece == null) return MovResponse.ATK_EMPTY;
-        if (defPiece.player().equals(atkPiece.player())) return MovResponse.ATK_FRIEND;
+        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
+        if (defCoordList.isEmpty()) {
+            // See MeleeMachineType
+            return MovResponse.ATK_EMPTY;
+        }
+        var defCoord = defCoordList.get(0);
+        var defPiece = game.pieceAt(defCoord);
+        var atkPiece = game.pieceAt(atkCoord);
 
         var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
         game.dealDamage(defCoord, getAttackingPieceDamage(game, combatPowerDiff));

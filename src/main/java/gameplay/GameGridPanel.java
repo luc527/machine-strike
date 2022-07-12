@@ -143,25 +143,10 @@ public class GameGridPanel extends BoardGridPanel
 
             var machtype = piece.machine().type();
 
-            var visitor = new AttackVisitor()
-            {
-                public final List<Coord> coordsInAttackRange = new ArrayList<>();
-                public final List<Coord> attackedCoords = new ArrayList<>();
+            var attackedCoords = machtype.attackedCoords(game, cursor, direction);
+            var isAttacking = !attackedCoords.isEmpty();
 
-                public void visitCoordsInAttackRange(Coord coord, Optional<IPiece> optPiece) {
-                    coordsInAttackRange.add(coord);
-                    // TODO test, I think isReachable is not working right
-                    var run = grid.isReachable(coord.row(), coord.col()).inRunning();
-                    if (optPiece.isPresent() && !run) {
-                        attackedCoords.add(coord);
-                    }
-                }
-            };
-            machtype.accept(visitor, grid::pieceAt, cursor, piece, direction);
-
-            var isAttacking = !visitor.attackedCoords.isEmpty();
-
-            var paintedCoords = isAttacking ? visitor.attackedCoords : visitor.coordsInAttackRange;
+            var paintedCoords = isAttacking ? attackedCoords : machtype.coordsInAttackRange(game, cursor, direction);
             g.setColor(Palette.transparentRed);
             for (var coord : paintedCoords) {
                 var x = coord.col() * SIDE_PX;
@@ -173,7 +158,7 @@ public class GameGridPanel extends BoardGridPanel
 
             if (isAttacking) {
                 var diff = 0;
-                for (var defCoord : visitor.attackedCoords) {
+                for (var defCoord : attackedCoords) {
                     var defRow = defCoord.row();
                     var defCol = defCoord.col();
                     diff = game.getCombatPowerDiff(cursor, piece, direction, defCoord);

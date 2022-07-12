@@ -2,18 +2,18 @@ package logic.attackType;
 
 import logic.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// :PatternUsed Visitor
 
-// TODO some things will be equal for all attack types:
-//  some pieces may die which will result in victory points obtained
-//  so there should be a method for retrieving those informations
-//  since perform already returns MovResponse, maybe something like
-//  getLastAttackResult, idk
-//  although this introduces state in something that was otherwise "pure" (except for modifying the pieces)
-//  or, rather, that had *no internal state*
+
+// TODO!!!! CONSIDER REACHABILITY IN ATTACKEDCOORDS
+// Maybe it'd be more orthogonal to implement a .filterAttackedCoords(List<Coord> coordsInAttackRange)
+// that each MachineType implements
+// that will filter for the first/last in attack range, coords containing enemy pieces and so on
+
+
 
 public abstract class MachineType
 {
@@ -25,7 +25,19 @@ public abstract class MachineType
         this.attackRange = attackRange;
     }
 
-    public abstract List<Coord> getAttackedCoords(Coord from, Direction dir);
+    public List<Coord> coordsInAttackRange(IGameState game, Coord from, Direction dir)
+    {
+        var list = new ArrayList<Coord>(attackRange);
+        var curr = from.moved(dir);
+        for (var i = 0; i < attackRange; i++) {
+            if (!GameState.inbounds(curr)) break;
+            list.add(curr);
+            curr = curr.moved(dir);
+        }
+        return list;
+    }
+
+    public abstract List<Coord> attackedCoords(IGameState game, Coord from, Direction dir);
 
     public abstract boolean attacksFriends();
 
@@ -45,38 +57,41 @@ public abstract class MachineType
     public Coord attackerFinalPosition()
     { return this.attackerFinalPosition; }
 
-    public void accept(AttackVisitor visitor, PieceProvider pieceAt, Coord atkCoord, IPiece atkPiece, Direction dir)
+    // Common implementation for getAttackedCoords
+    // ! TODO These could be implemented as strategies
+    protected List<Coord> firstInAttackRange(IGameState game, Coord from, Direction dir)
     {
-        if (atkPiece == null) return;
-
-        var defCoords = getAttackedCoords(atkCoord, dir);
-        for (var defCoord : defCoords) {
-            var inbounds = GameState.inbounds(defCoord);
-            if (!inbounds) continue;
-
-            var defPiece = pieceAt.apply(defCoord);
-
-            Optional<IPiece> optPiece = Optional.empty();
-            if (defPiece != null) {
-                var enemy = !defPiece.player().equals(atkPiece.player());
-                if (enemy || attacksFriends()) optPiece = Optional.of(defPiece);
+        var atkPiece = game.pieceAt(from);
+        var defCoord = from.moved(dir);
+        for (int i = 0; i < attackRange; i++) {
+            if (!GameState.inbounds(defCoord)) {
+                break;
             }
-
-            visitor.visitCoordsInAttackRange(defCoord, optPiece);
+            var defPiece = game.pieceAt(defCoord);
+            if (defPiece != null && !defPiece.player().equals(atkPiece.player())) {
+                return List.of(defCoord);
+            }
+            defCoord = defCoord.moved(dir);
         }
+        return List.of();
     }
 
-    public boolean isAttacking(PieceProvider pieceAt, Coord atkCoord, IPiece atkPiece, Direction dir)
+    protected List<Coord> lastInAttackRange(IGameState game, Coord from, Direction dir)
     {
-        var visitor = new AttackVisitor() {
-            public boolean attacked = false;
-            public void visitCoordsInAttackRange(Coord coord, Optional<IPiece> piece) {
-                attacked = attacked || piece.isPresent();
+        var atkPiece   = game.pieceAt(from);
+        var curCoord   = from.moved(dir);
+        Coord defCoord = null;
+
+        for (int i = 0; i < attackRange; i++) {
+            if (!GameState.inbounds(curCoord)) {
+                break;
             }
-        };
-
-        accept(visitor, pieceAt, atkCoord, atkPiece, dir);
-
-        return visitor.attacked;
+            var curPiece = game.pieceAt(curCoord);
+            if (curPiece != null && !curPiece.player().equals(atkPiece.player())) {
+                defCoord = curCoord;
+            }
+            curCoord = curCoord.moved(dir);
+        }
+        return defCoord == null ? List.of() : List.of(defCoord);
     }
 }

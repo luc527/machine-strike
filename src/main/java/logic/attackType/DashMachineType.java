@@ -11,15 +11,24 @@ public class DashMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> getAttackedCoords(Coord from, Direction dir)
+    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
     {
-        var attackedCoords = new ArrayList<Coord>(attackRange - 1);
-        var coord = from;
-        for (var i = 0; i < attackRange - 1; i++) {
+        // All positions in attack range (having a piece)
+        // attackRange - 1 because that's the position where the piece lands
+
+        var list = new ArrayList<Coord>(attackRange - 1);
+        var coord = from.moved(dir);
+        for (var i = 0; i < attackRange-1; i++) {
+            if (!GameState.inbounds(coord)) {
+                break;
+            }
+            var defPiece = game.pieceAt(coord);
+            if (defPiece != null) {
+                list.add(coord);
+            }
             coord = coord.moved(dir);
-            attackedCoords.add(coord);
         }
-        return attackedCoords;
+        return list;
     }
 
     @Override
@@ -39,23 +48,29 @@ public class DashMachineType extends MachineType
     @Override
     public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var atkPiece = game.getPiece(atkCoord);
+        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
+        if (defCoordList.isEmpty()) {
+            // See MeleeMachineType
+            return MovResponse.ATK_EMPTY;
+        }
+        var atkPiece = game.pieceAt(atkCoord);
 
         var landingCoord = atkCoord.moved(atkDirection, attackRange);
-        if (!GameState.inbounds(landingCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
-        if (game.pieceAt(landingCoord) != null) return MovResponse.LANDS_ON_NOT_EMPTY;
+        if (!GameState.inbounds(landingCoord)) {
+            return MovResponse.ATK_OUT_OF_BOUNDS;
+        }
+        if (game.pieceAt(landingCoord) != null) {
+            return MovResponse.LANDS_ON_NOT_EMPTY;
+        }
 
-        for (var defCoord : getAttackedCoords(atkCoord, atkDirection)) {
+        for (var defCoord : defCoordList) {
             var defPiece = game.getPiece(defCoord);
-            if (defPiece == null) continue;
             defPiece.setDirection(defPiece.direction().cycle(true).cycle(true)); // Rotate 180º
-
             var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
             game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
         }
 
         game.movePiece(atkCoord, landingCoord);
-
         this.attackerFinalPosition = landingCoord;
 
         return MovResponse.OK;
