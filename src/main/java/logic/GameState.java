@@ -7,6 +7,7 @@ import java.util.List;
 
 public class GameState implements IGameState
 {
+    public static final int OVERCHARGE_DAMAGE = 2;
     private static final int ROWS = Constants.BOARD_ROWS;
     private static final int COLS = Constants.BOARD_COLS;
     private static final int MAX_MOVES_PER_PLAYER = 2;
@@ -40,6 +41,54 @@ public class GameState implements IGameState
 
     }
 
+    private static Reachability reachability(Coord center, Coord coord, int movementRange)
+    {
+        var dist = Math.abs(center.row() - coord.row()) + Math.abs(center.col() - coord.col());
+        if (dist > movementRange + 1) return Reachability.OUT;
+        if (dist == movementRange + 1) return Reachability.IN_RUNNING;
+        return Reachability.IN;
+    }
+
+    public static boolean inbounds(Coord coord)
+    {
+        return inbounds(coord.row(), coord.col());
+    }
+
+    public static boolean inbounds(int row, int col)
+    {
+        return row >= 0 && row < Constants.BOARD_ROWS
+            && col >= 0 && col < Constants.BOARD_COLS;
+    }
+
+    public static Direction getDefendingPoint(Direction atkDirection, Direction defDirection)
+    {
+        var defPoint = atkDirection.opposite();
+        while (defDirection != Direction.NORTH) {
+            defDirection = defDirection.cycle(false);
+            defPoint     = defPoint.cycle(true);
+        }
+        return defPoint;
+    }
+
+    public int getCombatPower(Machine machine, Terrain terrain)
+    {
+        return machine.attackPower()
+             + machine.type().combatPowerOffset(terrain);
+    }
+
+    public static int getAttackingCombatPower(Machine atkMachine, Terrain atkTerrain)
+    {
+        return atkMachine.attackPower()
+             + atkMachine.type().combatPowerOffset(atkTerrain)
+             + atkMachine.point(Direction.NORTH).combatPowerOffset();  // Pieces always attack from their front/north
+    }
+
+    public static int getDefendingCombatPower(Machine defMachine, Terrain defTerrain, Direction defPoint)
+    {
+        return defMachine.type().combatPowerOffset(defTerrain)
+             + defMachine.point(defPoint).combatPowerOffset();
+    }
+
     public Piece getPiece(int r, int c) { return matrix[r][c]; }
     public Piece getPiece(Coord c) { return getPiece(c.row(), c.col()); }
 
@@ -63,53 +112,41 @@ public class GameState implements IGameState
         setPiece(dst, piece);
     }
 
-    public ConflictDamage getConflictDamages(
-        Coord atkCoord, Coord defCoord,
-        IPiece atkPiece, IPiece defPiece,
-        Direction atkDirection
-    ) {
+    public int getCombatPowerDiff(Coord atkCoord, IPiece atkPiece, Direction atkDirection, Coord defCoord)
+    {
         var atkTerrain = board.get(atkCoord);
         var defTerrain = board.get(defCoord);
+
         var atkMachine = atkPiece.machine();
+        var defPiece = pieceAt(defCoord);
         var defMachine = defPiece.machine();
 
-        // To find out which point of the defending piece is being attacked (defPoint),
-        // we start with it set as if the defending piece was laying north,
-        // then correct it considering the actual rotation of the defending piece
-        var defPieceDirection = defPiece.direction();
-        var defPoint = atkDirection.opposite();
-        while (defPieceDirection != Direction.NORTH) {
-            defPieceDirection = defPieceDirection.cycle(false);
-            defPoint = defPoint.cycle(true);
-        }
+        var defPoint = getDefendingPoint(atkDirection, defPiece.direction());
+        var atkCombatPower = getAttackingCombatPower(atkMachine, atkTerrain);
+        var defCombatPower = getDefendingCombatPower(defMachine, defTerrain, defPoint);
 
-        var atkCombatPower = atkMachine.attackPower() + atkMachine.attackType().combatPowerOffset(atkTerrain) + atkMachine.point(Direction.NORTH).combatPowerOffset();
-        var defCombatPower = defMachine.attackType().combatPowerOffset(defTerrain) + defMachine.point(defPoint).combatPowerOffset();
+        return atkCombatPower - defCombatPower;
+    }
 
-        var diff = atkCombatPower - defCombatPower;
+    public int getAttackingPieceDamage(int diff)
+    {
+        return diff < 0 ? -diff : 0;
+    }
 
-        var atkDamage = 0;  // Damage to the attacking piece
-        var defDamage = 0;  // Damage to the defending piece
-        var knockback = false;
+    public int getDefendingPieceDamage(int diff)
+    {
+        return diff > 0 ? diff : 0;
+    }
 
-        if (diff < 0) {
-            atkDamage = -diff;
-        } else if (diff > 0) {
-            defDamage = diff;
-        } else {
-            atkDamage = 1;
-            defDamage = 1;
-
-            var coordBehind = defCoord.moved(atkDirection);
-            var canMoveBack = GameLogic.inbounds(coordBehind) && getPiece(coordBehind) == null;
-            if (canMoveBack) {
-                knockback = true;
-            } else {
-                defDamage++;
-            }
-        }
-
-        return new ConflictDamage(atkDamage, defDamage, knockback);
+    public Reachability reachabilityConsideringStamina(Coord from, Coord to)
+    {
+        var piece = pieceAt(from);
+        if (piece == null) throw new RuntimeException("Testing reachability w/ stamina from a coordinate without piece!");
+        var stamina = piece.stamina();
+        if (!stamina.canWalk()) return Reachability.OUT;
+        var reach = reachability(from, to, piece.machine().movementRange());
+        if (reach.inRunning() && !stamina.canRun()) return Reachability.OUT;
+        return reach;
     }
 
     public boolean finishTurn()
@@ -127,8 +164,8 @@ public class GameState implements IGameState
         if (winner != null) throw new RuntimeException("Game has already been won by " + winner);
         if (playerRanOutOfMoves()) return MovResponse.NO_MOVES_LEFT;
 
-        if (!GameLogic.inbounds(from)) return MovResponse.FROM_OUT_OF_BOUNDS;
-        if (!GameLogic.inbounds(to)) return MovResponse.TO_OUT_OF_BOUNDS;
+        if (!inbounds(from)) return MovResponse.FROM_OUT_OF_BOUNDS;
+        if (!inbounds(to)) return MovResponse.TO_OUT_OF_BOUNDS;
 
         var piece = getPiece(from);
         if (piece == null) return MovResponse.FROM_EMPTY;
@@ -146,7 +183,7 @@ public class GameState implements IGameState
         if (!canWalk) return MovResponse.NO_MOVES_LEFT;
 
         var range = piece.machine().movementRange();
-        var reach = GameLogic.reachability(from, to, range);
+        var reach = reachability(from, to, range);
         if (reach.out()) return MovResponse.OUT_OF_REACH;
 
         var walk = reach.in();
@@ -164,7 +201,7 @@ public class GameState implements IGameState
         if (run)  turn.run();
 
         if (turn.overcharged()) {
-            dealDamage(to, GameLogic.OVERCHARGE_DAMAGE);
+            dealDamage(to, OVERCHARGE_DAMAGE);
         }
         checkForWinner();
 
@@ -198,7 +235,7 @@ public class GameState implements IGameState
         var turn = atkPiece.getStamina();
         if (!turn.canAttack()) return MovResponse.NO_MOVES_LEFT;
 
-        var attack = atkPiece.machine().attackType();
+        var attack = atkPiece.machine().type();
 
         var res = attack.performAttack(this, atkCoord, dir);
         if (res != MovResponse.OK) return res;
@@ -206,7 +243,7 @@ public class GameState implements IGameState
         turn.attack();
         if (turn.overcharged()) {
             var attackerCoord = attack.attackerFinalPosition();
-            dealDamage(attackerCoord, GameLogic.OVERCHARGE_DAMAGE);
+            dealDamage(attackerCoord, OVERCHARGE_DAMAGE);
         }
 
 

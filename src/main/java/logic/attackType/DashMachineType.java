@@ -27,6 +27,10 @@ public class DashMachineType extends MachineType
     { return true; }
 
     @Override
+    public int getAttackingPieceDamage(IGameState game, int diff)
+    { return 0; }
+
+    @Override
     public String toString() { return "DashAttack("+attackRange+")"; }
 
     @Override
@@ -38,15 +42,16 @@ public class DashMachineType extends MachineType
         var atkPiece = game.getPiece(atkCoord);
 
         var landingCoord = atkCoord.moved(atkDirection, attackRange);
-        if (!GameLogic.inbounds(landingCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
+        if (!GameState.inbounds(landingCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
         if (game.pieceAt(landingCoord) != null) return MovResponse.LANDS_ON_NOT_EMPTY;
 
         for (var defCoord : getAttackedCoords(atkCoord, atkDirection)) {
             var defPiece = game.getPiece(defCoord);
             if (defPiece == null) continue;
             defPiece.setDirection(defPiece.direction().cycle(true).cycle(true)); // Rotate 180º
-            var conflict = game.getConflictDamages(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
-            game.dealDamage(defCoord, conflict.defDamage());
+
+            var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
+            game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
         }
 
         game.movePiece(atkCoord, landingCoord);

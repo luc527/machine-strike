@@ -8,7 +8,7 @@ public interface GameObserver
 {
     void start(Player firstPlayer);
 
-    void pieceSelected(int row, int col, IPiece piece, Function<Coord, Reachability> isReachable);
+    void pieceSelected(int row, int col, IPiece piece);
 
     void movementPerformed(int row, int col, IPiece piece);
 

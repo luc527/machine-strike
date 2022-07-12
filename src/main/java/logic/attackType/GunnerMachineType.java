@@ -25,6 +25,14 @@ public class GunnerMachineType extends MachineType
     { return false; }
 
     @Override
+    public int getAttackingPieceDamage(IGameState game, int diff)
+    { return diff == 0 ? 1 : super.getAttackingPieceDamage(game, diff); }
+
+    @Override
+    public int getDefendingPieceDamage(IGameState game, int diff)
+    { return diff == 0 ? 1 : super.getDefendingPieceDamage(game, diff); }
+
+    @Override
     public String toString()
     { return "GunnerMachineType("+attackRange+")"; }
 
@@ -41,22 +49,21 @@ public class GunnerMachineType extends MachineType
         for (var i = 0; i < attackRange; i++)
             defCoord = defCoord.moved(atkDirection);
 
-        if (!GameLogic.inbounds(defCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
+        if (!GameState.inbounds(defCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
 
         var defPiece = game.getPiece(defCoord);
 
         if (defPiece == null) return MovResponse.ATK_EMPTY;
         if (defPiece.player().equals(atkPiece.player())) return MovResponse.ATK_FRIEND;
 
-        var conflict = game.getConflictDamages(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
+        var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
+        game.dealDamage(atkCoord, getAttackingPieceDamage(game, combatPowerDiff));
+        game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
 
-        game.dealDamage(defCoord, conflict.defDamage());
-
-        if (!defPiece.dead() && conflict.knockback()) {
+        // Knockback
+        if (!defPiece.dead() && combatPowerDiff == 0) {
             game.movePiece(defCoord, defCoord.moved(atkDirection));
         }
-
-        game.dealDamage(atkCoord, conflict.atkDamage());
 
         this.attackerFinalPosition = atkCoord;
 

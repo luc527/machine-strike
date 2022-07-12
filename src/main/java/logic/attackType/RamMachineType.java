@@ -29,17 +29,16 @@ public class RamMachineType extends MachineType
         var atkPiece = game.getPiece(atkCoord);
         var defCoord = atkCoord.moved(atkDirection);
 
-        if (!GameLogic.inbounds(defCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
+        if (!GameState.inbounds(defCoord)) return MovResponse.ATK_OUT_OF_BOUNDS;
 
         var defPiece = game.getPiece(defCoord);
 
         if (defPiece == null) return MovResponse.ATK_EMPTY;
         if (defPiece.player().equals(atkPiece.player())) return MovResponse.ATK_FRIEND;
 
-        var conflict = game.getConflictDamages(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
-
-        game.dealDamage(defCoord, conflict.defDamage());
-        game.dealDamage(atkCoord, conflict.atkDamage());
+        var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
+        game.dealDamage(defCoord, getAttackingPieceDamage(game, combatPowerDiff));
+        game.dealDamage(atkCoord, getDefendingPieceDamage(game, combatPowerDiff));
 
         // This is where the Ram attack type differs: there's always knockback
         // and the attacking piece moves onto the square left by the defending piece
@@ -47,7 +46,7 @@ public class RamMachineType extends MachineType
         var defKnocked = false;
         if (!defPiece.dead()) {
             var knockCoord = defCoord.moved(atkDirection);
-            if (GameLogic.inbounds(knockCoord)) {
+            if (GameState.inbounds(knockCoord)) {
                 game.movePiece(defCoord, knockCoord);
                 defKnocked = true;
             }

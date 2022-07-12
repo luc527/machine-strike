@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface AttackVisitor
 {
-    void visitAttack(Coord coord, Optional<IPiece> piece);
+    void visitCoordsInAttackRange(Coord coord, Optional<IPiece> piece);
 }

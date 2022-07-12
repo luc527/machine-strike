@@ -8,7 +8,6 @@ import logic.IGameState;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 public class MovingPlayState extends PlayState
 {
@@ -54,7 +53,7 @@ public class MovingPlayState extends PlayState
         var coord = grid.getCursor();
         var piece = grid.getCarriedPiece();
         var dir   = grid.getCarriedPieceDirection();
-        var attack = piece.machine().attackType();
+        var attack = piece.machine().type();
 
         var isAttacking = attack.isAttacking(grid::pieceAt, coord, piece, dir);
         var isRunning   = grid.isReachable(coord.row(), coord.col()).inRunning();

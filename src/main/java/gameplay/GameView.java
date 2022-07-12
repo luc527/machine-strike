@@ -42,10 +42,8 @@ public class GameView implements GameObserver
         var panel = new JPanel(new BorderLayout());
         frame.setContentPane(panel);
 
-        gridModel = new GameGridModel(game.board(), game::pieceAt);
+        gridModel = new GameGridModel(game.board(), game);
         gridPanel = new GameGridPanel(gridModel);
-
-        gridModel.setConflictResultFunction(game::getConflictDamages);
 
         playState = PlayState.initialState(game, controller, gridModel, frame);
         setKeyListener(playState.getKeyListener());
@@ -98,10 +96,9 @@ public class GameView implements GameObserver
     }
 
     @Override
-    public void pieceSelected(int row, int col, IPiece piece, Function<Coord, Reachability> reachabilityFunction)
+    public void pieceSelected(int row, int col, IPiece piece)
     {
         gridModel.carryPieceFrom(Coord.create(row, col));
-        gridModel.setReachabilityFunction(reachabilityFunction);
         frame.repaint();
         updateState(playState.startMove());
     }
@@ -117,7 +114,7 @@ public class GameView implements GameObserver
     public void movementPerformed(int row, int col, IPiece piece)
     {
         gridModel.stopCarryingPiece();
-        gridModel.syncPieces(game::pieceAt);
+        gridModel.syncPieces();
         frame.repaint();
         updateState(playState.finishMove());
     }
@@ -126,7 +123,7 @@ public class GameView implements GameObserver
     public void pieceUnselected()
     {
         gridModel.stopCarryingPiece();
-        gridModel.syncPieces(game::pieceAt);
+        gridModel.syncPieces();
         frame.repaint();
         updateState(playState.finishMove());
     }

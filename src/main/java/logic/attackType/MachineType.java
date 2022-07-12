@@ -36,6 +36,12 @@ public abstract class MachineType
     public int combatPowerOffset(Terrain terrain)
     { return terrain.combatPowerOffset(); }
 
+    public int getAttackingPieceDamage(IGameState game, int combatPowerDiff)
+    { return game.getAttackingPieceDamage(combatPowerDiff); }
+
+    public int getDefendingPieceDamage(IGameState game, int combatPowerDiff)
+    { return game.getDefendingPieceDamage(combatPowerDiff); }
+
     public Coord attackerFinalPosition()
     { return this.attackerFinalPosition; }
 
@@ -45,7 +51,7 @@ public abstract class MachineType
 
         var defCoords = getAttackedCoords(atkCoord, dir);
         for (var defCoord : defCoords) {
-            var inbounds = GameLogic.inbounds(defCoord);
+            var inbounds = GameState.inbounds(defCoord);
             if (!inbounds) continue;
 
             var defPiece = pieceAt.apply(defCoord);
@@ -56,7 +62,7 @@ public abstract class MachineType
                 if (enemy || attacksFriends()) optPiece = Optional.of(defPiece);
             }
 
-            visitor.visitAttack(defCoord, optPiece);
+            visitor.visitCoordsInAttackRange(defCoord, optPiece);
         }
     }
 
@@ -64,7 +70,7 @@ public abstract class MachineType
     {
         var visitor = new AttackVisitor() {
             public boolean attacked = false;
-            public void visitAttack(Coord coord, Optional<IPiece> piece) {
+            public void visitCoordsInAttackRange(Coord coord, Optional<IPiece> piece) {
                 attacked = attacked || piece.isPresent();
             }
         };

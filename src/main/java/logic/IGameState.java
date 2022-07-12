@@ -12,13 +12,6 @@ public interface IGameState
 
     IPiece pieceAt(Coord coord);
 
-    // TODO refactor after implementing the AttackPerformers
-    ConflictDamage getConflictDamages(
-        Coord atkCoord, Coord defCoord,
-        IPiece atkPiece, IPiece defPiece,
-        Direction atkDirection
-    );
-
     boolean playerRanOutOfMoves();
 
     int victoryPoints(Player p);
@@ -28,4 +21,15 @@ public interface IGameState
     Player getWinner();
 
     int currentPlayerMoves();
+
+    int getCombatPower(Machine machine, Terrain terrain);
+
+    int getCombatPowerDiff(Coord atkCoord, IPiece atkPiece, Direction atkDirection, Coord defCoord);
+
+    int getAttackingPieceDamage(int combatPowerDiff);
+
+    int getDefendingPieceDamage(int combatPowerDiff);
+
+    Reachability reachabilityConsideringStamina(Coord from, Coord to);
 }
+

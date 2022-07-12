@@ -69,7 +69,7 @@ public class Machine
     public int victoryPoints() { return this.victoryPoints; }
     public int health() { return this.health; }
     public Point point(Direction dir) { return this.points[dir.idx()]; }
-    public MachineType attackType() { return this.machineType; }
+    public MachineType type() { return this.machineType; }
 
     public static Machine fromJsonElement(JsonElement json)
     {

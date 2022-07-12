@@ -65,7 +65,7 @@ public class MachineStatsPanel extends JPanel
 
         machineImage.setIcon(new ImageIcon(MachineImageMap.get(machine)));
         name.setText("<html><b>Name:</b> "+machine.name()+"</html>");
-        type.setText("<html><b>Type:</b> "+machine.attackType().name()+"</html>");
+        type.setText("<html><b>Type:</b> "+machine.type().name()+"</html>");
         attackPower.setText("<html><b>Atk power:</b> "+machine.attackPower()+"</html>");
         attackRange.setText("<html><b>Atk range:</b> "+machine.attackRange()+"</html>");
         movementRange.setText("<html><b>Mov range:</b> "+machine.movementRange()+"</html>");

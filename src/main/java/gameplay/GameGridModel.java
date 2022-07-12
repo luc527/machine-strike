@@ -2,61 +2,53 @@ package gameplay;
 
 import components.boardgrid.BoardGridModel;
 import logic.*;
-import logic.ConflictDamage;
-import java.util.function.Function;
-
-// :PatternUsed Strategy: the reachability and conflict result functions are strategies
 
 public class GameGridModel extends BoardGridModel
 {
     private final IPiece[][] pieces;
 
+    private final IGameState game;
+
     private IPiece carriedPiece;
     private Direction carriedPieceDirection;
     private Coord carriedPieceOriginalPosition;
-    private Function<Coord, Reachability> reachabilityFn = x -> Reachability.IN;
-    private ConflictResultFunction conflictResultFn;
 
-    public interface ConflictResultFunction {
-        ConflictDamage apply(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection);
-    }
-
-    public GameGridModel(Board board, PieceProvider pieceProvider)
+    public GameGridModel(Board board, IGameState game)
     {
         super(board);
+
+        this.game = game;
 
         pieces = new Piece[ROWS][];
         for (var row = 0; row < ROWS; row++)
             pieces[row] = new Piece[COLS];
 
-        syncPieces(pieceProvider);
+        syncPieces();
     }
 
-    public void syncPieces(PieceProvider pieceProvider)
+    public void syncPieces()
     {
-        for (var row = 0; row < ROWS; row++)
+        for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
-                var piece = pieceProvider.apply(Coord.create(row, col));
+                var piece = game.pieceAt(row, col);
                 pieces[row][col] = piece;
             }
-
+        }
     }
 
-    public IPiece pieceAt(Coord coord)
-    { return pieces[coord.row()][coord.col()]; }
+    public IGameState game() { return game; }
 
-    public IPiece pieceAt(int row, int col)
-    { return pieces[row][col]; }
+    public IPiece pieceAt(Coord coord) { return pieces[coord.row()][coord.col()]; }
+    public IPiece pieceAt(int row, int col) { return pieces[row][col]; }
 
-    public boolean carryPieceFrom(Coord coord)
+    public void carryPieceFrom(Coord coord)
     {
         var piece = pieceAt(coord);
-        if (piece == null) return false;
+        if (piece == null) return;
         carriedPiece = piece;
         carriedPieceOriginalPosition = coord;
         carriedPieceDirection = carriedPiece.direction();
         pieces[coord.row()][coord.col()] = null;
-        return true;
     }
 
     public void rotateCarriedPiece(boolean right)
@@ -108,29 +100,19 @@ public class GameGridModel extends BoardGridModel
         return this.carriedPiece;
     }
 
-    public void setReachabilityFunction(Function<Coord, Reachability> isReachable)
-    {
-        this.reachabilityFn = isReachable;
-    }
-
-    public void setConflictResultFunction(ConflictResultFunction fn)
-    {
-        this.conflictResultFn = fn;
-    }
-
     @Override
     public boolean isAvailable(int row, int col)
     {
-        return !isCarryingPiece() || !reachabilityFn.apply(Coord.create(row, col)).out();
+        var from = carriedPieceOriginalPosition;
+        var to   = Coord.create(row, col);
+        return !isCarryingPiece() || !game.reachabilityConsideringStamina(from, to).out();
     }
 
     public Reachability isReachable(int row, int col)
     {
-        return reachabilityFn.apply(Coord.create(row, col));
+        var from = carriedPieceOriginalPosition;
+        var to   = Coord.create(row, col);
+        return game.reachabilityConsideringStamina(from, to);
     }
 
-    public ConflictDamage getConflictResult(Coord atkCoord, Coord defCoord, IPiece atkPiece, IPiece defPiece, Direction atkDirection)
-    {
-        return this.conflictResultFn.apply(atkCoord, defCoord, atkPiece, defPiece, atkDirection);
-    }
 }

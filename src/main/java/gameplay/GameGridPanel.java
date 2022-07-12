@@ -6,6 +6,8 @@ import components.boardgrid.BoardGridPanel;
 import logic.attackType.AttackVisitor;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class GameGridPanel extends BoardGridPanel
@@ -89,7 +91,10 @@ public class GameGridPanel extends BoardGridPanel
 
     private void paintMachinesCombatPower(Graphics2D g)
     {
+        // TODO this is not working, I'm not seeing the machines' combat powers on screen
         var grid = (GameGridModel) this.grid;
+        var game = grid.game();
+        var board = game.board();
 
         for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
@@ -97,7 +102,8 @@ public class GameGridPanel extends BoardGridPanel
                 var y = row * SIDE_PX;
                 var piece = grid.pieceAt(row, col);
                 if (piece == null) continue;
-                var combatPower = GameLogic.combatPower(piece.machine(), grid.getBoard().get(row, col));
+                var machine = piece.machine();
+                var combatPower = game.getCombatPower(machine, board.get(row, col));
                 drawCombatPower(g, x, y, combatPower);
             }
         }
@@ -115,47 +121,74 @@ public class GameGridPanel extends BoardGridPanel
         paintMachines(g);
 
         var grid = (GameGridModel) this.grid;
+        var game = grid.game();
 
         if (grid.isCarryingPiece()) {
+
             var piece = grid.getCarriedPiece();
+            var machine = piece.machine();
             var direction = grid.getCarriedPieceDirection();
+
             var cursor = grid.getCursor();
             var row = cursor.row();
             var col = cursor.col();
+
             var cy = SIDE_PX * row;
             var cx = SIDE_PX * col;
-            super.drawMachine(piece.machine(), direction, g, cx, cy);
 
-            var combatPower = GameLogic.combatPower(piece.machine(), grid.getBoard().get(row, col));
+            super.drawMachine(machine, direction, g, cx, cy);
+
+            var combatPower = game.getCombatPower(machine, game.board().get(row, col));
             drawCombatPower(g, row, col, combatPower);
 
-            var attack = piece.machine().attackType();
-            var visitor = new AttackVisitor() {
-                public int attackingPieceDamage = 0;
-                private int numAttacked = 0;
-                public void visitAttack(Coord coord, Optional<IPiece> optPiece) {
-                    var y = coord.row() * SIDE_PX;
-                    var x = coord.col() * SIDE_PX;
-                    g.setColor(Palette.transparentRed);
-                    g.fillRect(x, y, SIDE_PX, SIDE_PX);
+            var machtype = piece.machine().type();
 
-                    var run = grid.isReachable(row, col).inRunning();
+            var visitor = new AttackVisitor()
+            {
+                public final List<Coord> coordsInAttackRange = new ArrayList<>();
+                public final List<Coord> attackedCoords = new ArrayList<>();
 
+                public void visitCoordsInAttackRange(Coord coord, Optional<IPiece> optPiece) {
+                    coordsInAttackRange.add(coord);
+                    // TODO test, I think isReachable is not working right
+                    var run = grid.isReachable(coord.row(), coord.col()).inRunning();
                     if (optPiece.isPresent() && !run) {
-                        numAttacked++;
-                        var defPiece = optPiece.get();
-                        var conflict = grid.getConflictResult(cursor, coord, piece, defPiece, direction);
-                        drawDamage(g, coord.row(), coord.col(), conflict.defDamage());
-
-                        if (numAttacked > 1) attackingPieceDamage = 0;
-                        else attackingPieceDamage = conflict.atkDamage();
-                        // Because there's no *one* correct conflict damage, but a different one for every pair
+                        attackedCoords.add(coord);
                     }
                 }
             };
-            attack.accept(visitor, grid::pieceAt, cursor, piece, direction);
+            machtype.accept(visitor, grid::pieceAt, cursor, piece, direction);
 
-            var carriedPieceDamage = visitor.attackingPieceDamage;
+            var isAttacking = !visitor.attackedCoords.isEmpty();
+
+            var paintedCoords = isAttacking ? visitor.attackedCoords : visitor.coordsInAttackRange;
+            g.setColor(Palette.transparentRed);
+            for (var coord : paintedCoords) {
+                var x = coord.col() * SIDE_PX;
+                var y = coord.row() * SIDE_PX;
+                g.fillRect(x, y, SIDE_PX, SIDE_PX);
+            }
+
+            var carriedPieceDamage = 0;
+
+            if (isAttacking) {
+                var diff = 0;
+                for (var defCoord : visitor.attackedCoords) {
+                    var defRow = defCoord.row();
+                    var defCol = defCoord.col();
+                    diff = game.getCombatPowerDiff(cursor, piece, direction, defCoord);
+                    var defDamage = machtype.getDefendingPieceDamage(game, diff);
+
+                    //temporaryTODOremove
+                    var reach = grid.isReachable(defRow, defCol);
+                    System.out.println(reach);
+                    var draw = defDamage > 0 && reach.inRunning();
+
+                    if (draw) drawDamage(g, defRow, defCol, defDamage);
+                }
+                // Uses the last diff, should't be a problem
+                carriedPieceDamage += machtype.getAttackingPieceDamage(game, diff);
+            }
 
             var overcharge = false;
             var turn = piece.stamina();
@@ -165,7 +198,6 @@ public class GameGridPanel extends BoardGridPanel
 
             var moved = !cursor.equals(grid.getCarriedPieceSource());
 
-            var isAttacking = attack.isAttacking(grid::pieceAt, cursor, piece, direction);
             if (isAttacking) {
                 overcharge = overcharge
                           || (!moved && turn.attackWouldOvercharge())
@@ -173,16 +205,14 @@ public class GameGridPanel extends BoardGridPanel
             }
 
             if (overcharge) {
-                carriedPieceDamage += GameLogic.OVERCHARGE_DAMAGE;
+                carriedPieceDamage += GameState.OVERCHARGE_DAMAGE;
                 drawOverchargeWarning(g, row, col);
             }
             if (carriedPieceDamage != 0) drawDamage(g, row, col, carriedPieceDamage);
 
             drawHealth(g, row, col, piece.health());
         }
-
         paintMachinesCombatPower(g);
-
     }
 
 }

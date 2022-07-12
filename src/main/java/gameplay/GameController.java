@@ -43,19 +43,9 @@ public class GameController implements IGameController
         var pieceCoord = Coord.create(row, col);
         var movementRange = piece.machine().movementRange();
 
-        // Reachability modulated according to the piece turn
-        // TODO consider whether this belongs implemented in the controller
-        Function<Coord, Reachability> isReachable = coord -> {
-            var turn = piece.stamina();
-            if (!turn.canWalk()) return Reachability.OUT;
-            var reach = GameLogic.reachability(pieceCoord, coord, movementRange);
-            if (!turn.canRun() && reach.inRunning()) return Reachability.OUT;
-            return reach;
-        };
-
         this.selectedPiece = piece;
         this.selectedPieceSource = Coord.create(row, col);
-        observers.forEach(o -> o.pieceSelected(row, col, game.pieceAt(row, col), isReachable));
+        observers.forEach(o -> o.pieceSelected(row, col, game.pieceAt(row, col)));
         return true;
     }
 
