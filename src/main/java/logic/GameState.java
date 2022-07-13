@@ -220,17 +220,20 @@ public class GameState implements IGameState
 
         if (moveBefore) {
             var res = performMovement(from, to, dir, true);
-            checkForWinner();
-            if (res != MovResponse.OK) return res;
+            if (res != MovResponse.OK || winner != null) {
+                return res;
+            }
         }
+
+        // TODO problem with this implementation: if the move can be performed fine, but the attack not,
+        //  then the move will be performed but the attack wont
+        //  when it should be like a transaction (atomic, either the whole thing works or nothing happens)
 
         var atkCoord = to;
         var atkPiece = getPiece(atkCoord);
 
-        // The piece might've died if the movement was overcharged
+        // The piece might've died if the movement was overcharged, so we can't attack anymore
         if (atkPiece == null) return MovResponse.OK;
-
-        atkPiece.setDirection(dir);
 
         var turn = atkPiece.getStamina();
         if (!turn.canAttack()) return MovResponse.NO_MOVES_LEFT;
@@ -243,9 +246,11 @@ public class GameState implements IGameState
         turn.attack();
         if (turn.overcharged()) {
             var attackerCoord = attack.attackerFinalPosition();
-            dealDamage(attackerCoord, OVERCHARGE_DAMAGE);
+            // Piece might've died in the attack
+            if (!atkPiece.dead()) {
+                dealDamage(attackerCoord, OVERCHARGE_DAMAGE);
+            }
         }
-
 
         if (!moveBefore) currentPlayerMoves++;
 

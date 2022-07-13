@@ -53,12 +53,11 @@ public class MovingPlayState extends PlayState
         var coord = grid.getCursor();
         var piece = grid.getCarriedPiece();
         var dir   = grid.getCarriedPieceDirection();
-        var attack = piece.machine().type();
 
-        var isAttacking = attack.isAttacking(grid::pieceAt, coord, piece, dir);
-        var isRunning   = grid.isReachable(coord.row(), coord.col()).inRunning();
+        var canAttackFromHere = piece.machine().type().canAttackFrom(game, coord, piece, dir);
+        var isRunning         = grid.isReachable(coord.row(), coord.col()).inRunning();
 
-        if (isAttacking && !isRunning) {
+        if (canAttackFromHere && !isRunning) {
             flags |= InfoPanel.K_TO_ATTACK;
         }
         return flags;

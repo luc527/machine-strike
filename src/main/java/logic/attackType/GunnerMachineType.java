@@ -12,8 +12,8 @@ public class GunnerMachineType extends MachineType
     }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
-    { return lastInAttackRange(game, from, dir); }
+    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
+    { return lastInAttackRange(game, from, piece, dir); }
 
     @Override
     public boolean attacksFriends()

@@ -4,16 +4,6 @@ import logic.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-
-
-// TODO!!!! CONSIDER REACHABILITY IN ATTACKEDCOORDS
-// Maybe it'd be more orthogonal to implement a .filterAttackedCoords(List<Coord> coordsInAttackRange)
-// that each MachineType implements
-// that will filter for the first/last in attack range, coords containing enemy pieces and so on
-
-
 
 public abstract class MachineType
 {
@@ -37,13 +27,24 @@ public abstract class MachineType
         return list;
     }
 
-    public abstract List<Coord> attackedCoords(IGameState game, Coord from, Direction dir);
+    // We have two modes of checking for attacked coords:
+    // One where you pass the piece, and one where you don't.
+    // The first is to be used when visualizing the attack, when you haven't performed the preceding move yet.
+    // The other one is implemented in terms of the first one, with the piece being the one at the given coord.
+
+    public abstract List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir);
+
+    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
+    { return attackedCoords(game, from, game.pieceAt(from), dir); }
 
     public abstract boolean attacksFriends();
 
     public abstract MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection);
 
     public abstract String name();
+
+    public boolean canAttackFrom(IGameState game, Coord from, IPiece piece, Direction dir)
+    { return !attackedCoords(game, from, piece, dir).isEmpty(); }
 
     public int combatPowerOffset(Terrain terrain)
     { return terrain.combatPowerOffset(); }
@@ -59,16 +60,19 @@ public abstract class MachineType
 
     // Common implementation for getAttackedCoords
     // ! TODO These could be implemented as strategies
+
     protected List<Coord> firstInAttackRange(IGameState game, Coord from, Direction dir)
+    { return firstInAttackRange(game, from, game.pieceAt(from), dir); }
+
+    protected List<Coord> firstInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
     {
-        var atkPiece = game.pieceAt(from);
         var defCoord = from.moved(dir);
         for (int i = 0; i < attackRange; i++) {
             if (!GameState.inbounds(defCoord)) {
                 break;
             }
             var defPiece = game.pieceAt(defCoord);
-            if (defPiece != null && !defPiece.player().equals(atkPiece.player())) {
+            if (defPiece != null && (attacksFriends() || !defPiece.player().equals(piece.player()))) {
                 return List.of(defCoord);
             }
             defCoord = defCoord.moved(dir);
@@ -77,8 +81,10 @@ public abstract class MachineType
     }
 
     protected List<Coord> lastInAttackRange(IGameState game, Coord from, Direction dir)
+    { return lastInAttackRange(game, from, game.pieceAt(from), dir); }
+
+    protected List<Coord> lastInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
     {
-        var atkPiece   = game.pieceAt(from);
         var curCoord   = from.moved(dir);
         Coord defCoord = null;
 
@@ -87,11 +93,12 @@ public abstract class MachineType
                 break;
             }
             var curPiece = game.pieceAt(curCoord);
-            if (curPiece != null && !curPiece.player().equals(atkPiece.player())) {
+            if (curPiece != null && (attacksFriends() || !curPiece.player().equals(piece.player()))) {
                 defCoord = curCoord;
             }
             curCoord = curCoord.moved(dir);
         }
         return defCoord == null ? List.of() : List.of(defCoord);
     }
+
 }

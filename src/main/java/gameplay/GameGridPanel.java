@@ -135,7 +135,6 @@ public class GameGridPanel extends BoardGridPanel
 
             var cy = SIDE_PX * row;
             var cx = SIDE_PX * col;
-
             super.drawMachine(machine, direction, g, cx, cy);
 
             var combatPower = game.getCombatPower(machine, game.board().get(row, col));
@@ -143,8 +142,15 @@ public class GameGridPanel extends BoardGridPanel
 
             var machtype = piece.machine().type();
 
-            var attackedCoords = machtype.attackedCoords(game, cursor, direction);
-            var isAttacking = !attackedCoords.isEmpty();
+            var stamina = piece.stamina();
+            var reach = grid.isReachable(row, col);
+
+            var isAttacking = false;
+            List<Coord> attackedCoords = List.of();
+            if (stamina.canAttack() && !reach.inRunning()) {
+                attackedCoords = machtype.attackedCoords(game, cursor, piece, direction);
+                isAttacking = !attackedCoords.isEmpty();
+            }
 
             var paintedCoords = isAttacking ? attackedCoords : machtype.coordsInAttackRange(game, cursor, direction);
             g.setColor(Palette.transparentRed);
@@ -164,36 +170,31 @@ public class GameGridPanel extends BoardGridPanel
                     diff = game.getCombatPowerDiff(cursor, piece, direction, defCoord);
                     var defDamage = machtype.getDefendingPieceDamage(game, diff);
 
-                    //temporaryTODOremove
-                    var reach = grid.isReachable(defRow, defCol);
-                    System.out.println(reach);
-                    var draw = defDamage > 0 && reach.inRunning();
-
-                    if (draw) drawDamage(g, defRow, defCol, defDamage);
+                    drawDamage(g, defRow, defCol, defDamage);
                 }
                 // Uses the last diff, should't be a problem
                 carriedPieceDamage += machtype.getAttackingPieceDamage(game, diff);
             }
 
             var overcharge = false;
-            var turn = piece.stamina();
-            var reach = grid.isReachable(row, col);
-            overcharge = (reach.in() && turn.walkWouldOvercharge())
-                      || (reach.inRunning() && turn.runWouldOvercharge());
+            overcharge = (reach.in() && stamina.walkWouldOvercharge())
+                      || (reach.inRunning() && stamina.runWouldOvercharge());
 
             var moved = !cursor.equals(grid.getCarriedPieceSource());
 
             if (isAttacking) {
                 overcharge = overcharge
-                          || (!moved && turn.attackWouldOvercharge())
-                          || ( moved && turn.walkAndAttackWouldOvercharge());
+                          || (!moved && stamina.attackWouldOvercharge())
+                          || ( moved && stamina.walkAndAttackWouldOvercharge());
             }
 
             if (overcharge) {
                 carriedPieceDamage += GameState.OVERCHARGE_DAMAGE;
                 drawOverchargeWarning(g, row, col);
             }
-            if (carriedPieceDamage != 0) drawDamage(g, row, col, carriedPieceDamage);
+            if (carriedPieceDamage != 0) {
+                drawDamage(g, row, col, carriedPieceDamage);
+            }
 
             drawHealth(g, row, col, piece.health());
         }

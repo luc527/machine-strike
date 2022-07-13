@@ -11,7 +11,7 @@ public class DashMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
+    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
     {
         // All positions in attack range (having a piece)
         // attackRange - 1 because that's the position where the piece lands

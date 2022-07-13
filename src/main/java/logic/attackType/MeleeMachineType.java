@@ -10,8 +10,8 @@ public class MeleeMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
-    { return firstInAttackRange(game, from, dir); }
+    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
+    { return firstInAttackRange(game, from, piece, dir); }
 
     @Override
     public boolean attacksFriends() { return false; }
