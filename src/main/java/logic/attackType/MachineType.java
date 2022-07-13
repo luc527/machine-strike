@@ -61,9 +61,6 @@ public abstract class MachineType
     // Common implementation for getAttackedCoords
     // ! TODO These could be implemented as strategies
 
-    protected List<Coord> firstInAttackRange(IGameState game, Coord from, Direction dir)
-    { return firstInAttackRange(game, from, game.pieceAt(from), dir); }
-
     protected List<Coord> firstInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
     {
         var defCoord = from.moved(dir);
@@ -79,9 +76,6 @@ public abstract class MachineType
         }
         return List.of();
     }
-
-    protected List<Coord> lastInAttackRange(IGameState game, Coord from, Direction dir)
-    { return lastInAttackRange(game, from, game.pieceAt(from), dir); }
 
     protected List<Coord> lastInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
     {
