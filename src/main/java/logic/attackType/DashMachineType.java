@@ -32,15 +32,13 @@ public class DashMachineType extends MachineType
     }
 
     @Override
-    public boolean attacksFriends()
-    { return true; }
+    public boolean attacksFriends() { return true; }
 
     @Override
-    public int getAttackingPieceDamage(IGameState game, int diff)
-    { return 0; }
+    public boolean knockbackOnEqualCombatPower() { return false; }
 
     @Override
-    public String toString() { return "DashAttack("+attackRange+")"; }
+    public int getAttackingPieceDamage(IGameState game, int diff) { return 0; }
 
     @Override
     public String name() { return "Dash"; }
@@ -50,8 +48,7 @@ public class DashMachineType extends MachineType
     {
         var defCoordList = attackedCoords(game, atkCoord, atkDirection);
         if (defCoordList.isEmpty()) {
-            // See MeleeMachineType
-            return MovResponse.ATK_EMPTY;
+            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
         }
         var atkPiece = game.pieceAt(atkCoord);
 

@@ -3,12 +3,9 @@ package gameplay;
 import components.Palette;
 import logic.*;
 import components.boardgrid.BoardGridPanel;
-import logic.attackType.AttackVisitor;
 
 import java.awt.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class GameGridPanel extends BoardGridPanel
 {
@@ -152,7 +149,7 @@ public class GameGridPanel extends BoardGridPanel
                 isAttacking = !attackedCoords.isEmpty();
             }
 
-            var paintedCoords = isAttacking ? attackedCoords : machtype.coordsInAttackRange(game, cursor, direction);
+            var paintedCoords = isAttacking ? attackedCoords : machtype.coordsInAttackRange(cursor, direction);
             g.setColor(Palette.transparentRed);
             for (var coord : paintedCoords) {
                 var x = coord.col() * SIDE_PX;

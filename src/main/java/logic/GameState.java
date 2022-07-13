@@ -243,6 +243,12 @@ public class GameState implements IGameState
         var res = attack.performAttack(this, atkCoord, dir);
         if (res != MovResponse.OK) return res;
 
+        if (!atkPiece.dead()) {
+            // If the piece moved beforehand, this is redundant,
+            // but not every attack is preceded by a movement
+            atkPiece.setDirection(dir);
+        }
+
         turn.attack();
         if (turn.overcharged()) {
             var attackerCoord = attack.attackerFinalPosition();

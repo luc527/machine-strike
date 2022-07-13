@@ -44,10 +44,12 @@ public class App
         builder.addPiece(new Piece(Machines.get("Peon"), Direction.EAST, Player.PLAYER1), 7, 4);
         builder.addPiece(new Piece(Machines.get("Spades"), Direction.NORTH, Player.PLAYER1), 7, 7);
         builder.addPiece(new Piece(Machines.get("Bishop"), Direction.SOUTH, Player.PLAYER1), 6, 0);
+        builder.addPiece(new Piece(Machines.get("King"), Direction.SOUTH, Player.PLAYER1), 7, 0);
 
         builder.addPiece(new Piece(Machines.get("Hearts"), Direction.SOUTH, Player.PLAYER2), 1, 6);
         builder.addPiece(new Piece(Machines.get("Knight"), Direction.WEST, Player.PLAYER2), 0, 3);
         builder.addPiece(new Piece(Machines.get("Tower"), Direction.EAST, Player.PLAYER2), 0, 6);
+        builder.addPiece(new Piece(Machines.get("Queen"), Direction.EAST, Player.PLAYER2), 0, 5);
 
         var game = builder.build();
         var con = new GameController(game);

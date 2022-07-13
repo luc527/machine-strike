@@ -2,6 +2,7 @@ package logic.attackType;
 
 public class MachineTypeFactory
 {
+
     public static MachineType make(String type, int attackRange)
     {
         switch (type) {
@@ -9,8 +10,9 @@ public class MachineTypeFactory
             case "gunner" -> { return new GunnerMachineType(attackRange); }
             case "ram" -> { return new RamMachineType(attackRange); }
             case "dash" -> { return new DashMachineType(attackRange); }
-            default -> { return new MeleeMachineType(attackRange); }
-            // TODO RuntimeException for unsupported types
+            case "swoop" -> { return new SwoopMachineType(attackRange); }
+            case "pull" -> { return new PullMachineType(attackRange); }
         }
+        throw new RuntimeException("Unknown machine type '"+type+"'");
     }
 }

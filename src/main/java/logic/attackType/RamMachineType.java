@@ -14,12 +14,12 @@ public class RamMachineType extends MachineType
     { return firstInAttackRange(game, from, piece, dir); }
 
     @Override
-    public boolean attacksFriends()
-    { return false; }
-
-    @Override
     public String toString()
     { return "MeeleeAttack("+attackRange+")"; }
+
+    @Override
+    public boolean knockbackOnEqualCombatPower()
+    { return false; }
 
     @Override
     public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
@@ -27,18 +27,16 @@ public class RamMachineType extends MachineType
         var defCoordList = attackedCoords(game, atkCoord, atkDirection);
         if (defCoordList.isEmpty()) {
             // See MeleeMachineType
-            return MovResponse.ATK_EMPTY;
+            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
         }
         var defCoord = defCoordList.get(0);
-        var defPiece = game.pieceAt(defCoord);
-        var atkPiece = game.pieceAt(atkCoord);
 
-        var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
-        game.dealDamage(defCoord, getAttackingPieceDamage(game, combatPowerDiff));
-        game.dealDamage(atkCoord, getDefendingPieceDamage(game, combatPowerDiff));
+        var res = performBasicAttack(game, atkCoord, atkDirection, defCoord);
+        if (res != MovResponse.OK) return res;
 
         // This is where the Ram attack type differs: there's always knockback
         // and the attacking piece moves onto the square left by the defending piece
+        var defPiece = game.pieceAt(defCoord);
 
         var defKnocked = false;
         if (!defPiece.dead()) {
@@ -49,6 +47,7 @@ public class RamMachineType extends MachineType
             }
         }
 
+        var atkPiece = game.pieceAt(atkCoord);
         attackerFinalPosition = atkCoord;
         if (!atkPiece.dead() && defKnocked) {
             game.movePiece(atkCoord, defCoord);

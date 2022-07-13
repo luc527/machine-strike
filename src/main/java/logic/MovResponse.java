@@ -11,9 +11,8 @@ public enum MovResponse
     OUT_OF_REACH,
     DIDNT_MOVE,
 
+    NO_ATTACKED_PIECE_IN_RANGE,
     ATK_OUT_OF_BOUNDS,
-    ATK_EMPTY,
-    ATK_FRIEND,
     LANDS_ON_NOT_EMPTY,
 
     OK,

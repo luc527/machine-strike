@@ -5,17 +5,24 @@ import logic.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO fix! regarding performBasicAttack, the types using this function
+//  can't know whether a knockback happened or not, so this is even more
+//  reason for, at least internally, encapsulate MovResponse withint a MovResult
+//  or something like that that says the resulting positions of each piece
+
 public abstract class MachineType
 {
     protected int attackRange;
+
     protected Coord attackerFinalPosition;
+    // Stores the position the attacking piece ended up at after performAttack, TODO refac so it's part of the return value
 
     public MachineType(int attackRange)
     {
         this.attackRange = attackRange;
     }
 
-    public List<Coord> coordsInAttackRange(IGameState game, Coord from, Direction dir)
+    public List<Coord> coordsInAttackRange(Coord from, Direction dir)
     {
         var list = new ArrayList<Coord>(attackRange);
         var curr = from.moved(dir);
@@ -34,14 +41,15 @@ public abstract class MachineType
 
     public abstract List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir);
 
-    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
-    { return attackedCoords(game, from, game.pieceAt(from), dir); }
-
-    public abstract boolean attacksFriends();
-
     public abstract MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection);
 
     public abstract String name();
+
+    public boolean attacksFriends()
+    { return false; }
+
+    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
+    { return attackedCoords(game, from, game.pieceAt(from), dir); }
 
     public boolean canAttackFrom(IGameState game, Coord from, IPiece piece, Direction dir)
     { return !attackedCoords(game, from, piece, dir).isEmpty(); }
@@ -50,13 +58,44 @@ public abstract class MachineType
     { return terrain.combatPowerOffset(); }
 
     public int getAttackingPieceDamage(IGameState game, int combatPowerDiff)
-    { return game.getAttackingPieceDamage(combatPowerDiff); }
+    {
+        return combatPowerDiff == 0 && knockbackOnEqualCombatPower()
+             ? 1
+             : game.getAttackingPieceDamage(combatPowerDiff);
+    }
 
     public int getDefendingPieceDamage(IGameState game, int combatPowerDiff)
-    { return game.getDefendingPieceDamage(combatPowerDiff); }
+    {
+        return combatPowerDiff == 0 && knockbackOnEqualCombatPower()
+             ? 1
+             : game.getDefendingPieceDamage(combatPowerDiff);
+    }
+
 
     public Coord attackerFinalPosition()
     { return this.attackerFinalPosition; }
+
+    protected MovResponse performBasicAttack(GameState game, Coord atkCoord, Direction atkDirection, Coord defCoord)
+    {
+        var defPiece = game.getPiece(defCoord);
+        var atkPiece = game.getPiece(atkCoord);
+
+        var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
+
+        game.dealDamage(atkCoord, getAttackingPieceDamage(game, combatPowerDiff));
+        game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
+
+        if (combatPowerDiff == 0 && knockbackOnEqualCombatPower() && !defPiece.dead()) {
+            if (combatPowerDiff == 0 && !defPiece.dead()) {
+                game.movePiece(defCoord, defCoord.moved(atkDirection));
+            }
+        }
+        this.attackerFinalPosition = atkCoord;
+        return MovResponse.OK;
+    }
+
+    protected boolean knockbackOnEqualCombatPower()
+    { return true; }
 
     // Common implementation for getAttackedCoords
     // ! TODO These could be implemented as strategies
