@@ -17,13 +17,8 @@ public class MeleeMachineType extends MachineType
     public String name() { return "Melee"; }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
-        if (defCoordList.isEmpty()) {
-            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
-        }
-        var defCoord = defCoordList.get(0);
-        return performBasicAttack(game, atkCoord, atkDirection, defCoord);
+        return performBasicAttack(game, atkCoord, atkDirection);
     }
 }

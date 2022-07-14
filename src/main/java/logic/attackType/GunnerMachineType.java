@@ -16,18 +16,9 @@ public class GunnerMachineType extends MachineType
     { return lastInAttackRange(game, from, piece, dir); }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        // This implementation is the same as in MeleeMachineType
-
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
-        if (defCoordList.isEmpty()) {
-            // See MeleeMachineType
-            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
-        }
-        var defCoord = defCoordList.get(0);
-
-        return performBasicAttack(game, atkCoord, atkDirection, defCoord);
+        return performBasicAttack(game, atkCoord, atkDirection);
     }
 
     @Override

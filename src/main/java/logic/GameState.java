@@ -240,8 +240,8 @@ public class GameState implements IGameState
 
         var attack = atkPiece.machine().type();
 
-        var res = attack.performAttack(this, atkCoord, dir);
-        if (res != MovResponse.OK) return res;
+        var result = attack.performAttack(this, atkCoord, dir);
+        if (!result.success()) return result.response();
 
         if (!atkPiece.dead()) {
             // If the piece moved beforehand, this is redundant,
@@ -251,7 +251,7 @@ public class GameState implements IGameState
 
         turn.attack();
         if (turn.overcharged()) {
-            var attackerCoord = attack.attackerFinalPosition();
+            var attackerCoord = result.attackingPieceCoord();
             // Piece might've died in the attack
             if (!atkPiece.dead()) {
                 dealDamage(attackerCoord, OVERCHARGE_DAMAGE);
@@ -281,7 +281,7 @@ public class GameState implements IGameState
         checkForWinner();
     }
 
-    public Player checkForWinner()
+    private Player checkForWinner()
     {
         if (winner != null) return winner;
 

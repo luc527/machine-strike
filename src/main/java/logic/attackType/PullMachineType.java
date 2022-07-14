@@ -21,20 +21,21 @@ public class PullMachineType extends MachineType
     { return terrain.equals(Terrain.MARSH) ? 1 : terrain.combatPowerOffset(); }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
-        if (defCoordList.isEmpty()) return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
-        var defCoord = defCoordList.get(0);
-        var res = performBasicAttack(game, atkCoord, atkDirection, defCoord);
-        if (res != MovResponse.OK) return res;
+        var result = performBasicAttack(game, atkCoord, atkDirection);
+        if (!result.success()) return result;
 
-        var defPiece = game.pieceAt(defCoord);
+        var defCoord = result.defendingPieceCoords().get(0);
+        var defFinalCoord = defCoord;
+
+        var defPiece = result.defendingPieces().get(0);
         if (!defPiece.dead()) {
             // Pull attacked piece
-            game.movePiece(defCoord, atkCoord.moved(atkDirection));
+            defFinalCoord = atkCoord.moved(atkDirection);
+            game.movePiece(defCoord, defFinalCoord);
         }
-        return MovResponse.OK;
+        return new MovResult(atkCoord, List.of(defFinalCoord), result.defendingPieces());
     }
 
     @Override

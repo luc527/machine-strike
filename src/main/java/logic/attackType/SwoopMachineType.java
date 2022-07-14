@@ -24,32 +24,25 @@ public class SwoopMachineType extends MachineType
     }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
-        if (defCoordList.isEmpty()) {
-            // See MeleeResponse
-            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
-        }
-        var defCoord = defCoordList.get(0);
-        var res = performBasicAttack(game, atkCoord, atkDirection, defCoord);
-        if (res != MovResponse.OK) return res;
+        var result = performBasicAttack(game, atkCoord, atkDirection);
+        if (!result.success()) return result;
 
+        var defCoord = result.defendingPieceCoords().get(0);
         var atkPiece = game.pieceAt(atkCoord);
 
         // Swoop always moves next to the attacked piece
+        var atkFinalCoord = atkCoord;
         if (!atkPiece.dead()) {
-            var finalCoord = atkCoord;
-            var nextSpace = finalCoord.moved(atkDirection);
+            var nextSpace = atkFinalCoord.moved(atkDirection);
             while (GameState.inbounds(nextSpace) && !nextSpace.equals(defCoord)) {
-                finalCoord = nextSpace;
+                atkFinalCoord = nextSpace;
                 nextSpace = nextSpace.moved(atkDirection);
             }
-            game.movePiece(atkCoord, finalCoord);
-
-            this.attackerFinalPosition = finalCoord;
+            game.movePiece(atkCoord, atkFinalCoord);
         }
 
-        return MovResponse.OK;
+        return new MovResult(atkFinalCoord, result.defendingPieceCoords(), result.defendingPieces());
     }
 }

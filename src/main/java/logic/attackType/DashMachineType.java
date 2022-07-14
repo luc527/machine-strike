@@ -44,33 +44,34 @@ public class DashMachineType extends MachineType
     public String name() { return "Dash"; }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
         var defCoordList = attackedCoords(game, atkCoord, atkDirection);
         if (defCoordList.isEmpty()) {
-            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
+            return new MovResult(MovResponse.NO_ATTACKED_PIECE_IN_RANGE);
         }
         var atkPiece = game.pieceAt(atkCoord);
 
         var landingCoord = atkCoord.moved(atkDirection, attackRange);
         if (!GameState.inbounds(landingCoord)) {
-            return MovResponse.ATK_OUT_OF_BOUNDS;
+            return new MovResult(MovResponse.ATK_OUT_OF_BOUNDS);
         }
         if (game.pieceAt(landingCoord) != null) {
-            return MovResponse.LANDS_ON_NOT_EMPTY;
+            return new MovResult(MovResponse.LANDS_ON_NOT_EMPTY);
         }
 
+        var defPieceList = new ArrayList<IPiece>(defCoordList.size());
         for (var defCoord : defCoordList) {
             var defPiece = game.getPiece(defCoord);
+            defPieceList.add(defPiece);
             defPiece.setDirection(defPiece.direction().cycle(true).cycle(true)); // Rotate 180º
             var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
             game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
         }
 
         game.movePiece(atkCoord, landingCoord);
-        this.attackerFinalPosition = landingCoord;
 
-        return MovResponse.OK;
+        return new MovResult(landingCoord, defCoordList, defPieceList);
     }
 
 }

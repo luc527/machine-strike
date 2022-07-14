@@ -22,39 +22,32 @@ public class RamMachineType extends MachineType
     { return false; }
 
     @Override
-    public MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection)
+    public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
-        if (defCoordList.isEmpty()) {
-            // See MeleeMachineType
-            return MovResponse.NO_ATTACKED_PIECE_IN_RANGE;
-        }
-        var defCoord = defCoordList.get(0);
+        var result = performBasicAttack(game, atkCoord, atkDirection);
+        if (!result.success()) return result;
 
-        var res = performBasicAttack(game, atkCoord, atkDirection, defCoord);
-        if (res != MovResponse.OK) return res;
-
-        // This is where the Ram attack type differs: there's always knockback
-        // and the attacking piece moves onto the square left by the defending piece
-        var defPiece = game.pieceAt(defCoord);
+        var defCoord = result.defendingPieceCoords().get(0);
+        var defPiece = result.defendingPieces().get(0);
 
         var defKnocked = false;
+        var defFinalCoord = defCoord;
         if (!defPiece.dead()) {
-            var knockCoord = defCoord.moved(atkDirection);
-            if (GameState.inbounds(knockCoord)) {
-                game.movePiece(defCoord, knockCoord);
+            defFinalCoord = defCoord.moved(atkDirection);
+            if (GameState.inbounds(defFinalCoord)) {
+                game.movePiece(defCoord, defFinalCoord);
                 defKnocked = true;
             }
         }
 
         var atkPiece = game.pieceAt(atkCoord);
-        attackerFinalPosition = atkCoord;
+        var atkFinalCoord = atkCoord;
         if (!atkPiece.dead() && defKnocked) {
             game.movePiece(atkCoord, defCoord);
-            attackerFinalPosition = defCoord;
+            atkFinalCoord = defCoord;
         }
 
-        return MovResponse.OK;
+        return new MovResult(atkFinalCoord, List.of(defFinalCoord), result.defendingPieces());
     }
 
     @Override

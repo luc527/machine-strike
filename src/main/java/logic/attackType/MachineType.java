@@ -14,9 +14,6 @@ public abstract class MachineType
 {
     protected int attackRange;
 
-    protected Coord attackerFinalPosition;
-    // Stores the position the attacking piece ended up at after performAttack, TODO refac so it's part of the return value
-
     public MachineType(int attackRange)
     {
         this.attackRange = attackRange;
@@ -41,7 +38,7 @@ public abstract class MachineType
 
     public abstract List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir);
 
-    public abstract MovResponse performAttack(GameState game, Coord atkCoord, Direction atkDirection);
+    public abstract MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection);
 
     public abstract String name();
 
@@ -71,34 +68,37 @@ public abstract class MachineType
              : game.getDefendingPieceDamage(combatPowerDiff);
     }
 
-
-    public Coord attackerFinalPosition()
-    { return this.attackerFinalPosition; }
-
-    protected MovResponse performBasicAttack(GameState game, Coord atkCoord, Direction atkDirection, Coord defCoord)
+    protected MovResult performBasicAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
+        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
+        if (defCoordList.isEmpty()) {
+            return new MovResult(MovResponse.NO_ATTACKED_PIECE_IN_RANGE);
+        }
+        var defCoord = defCoordList.get(0);
+
         var defPiece = game.getPiece(defCoord);
         var atkPiece = game.getPiece(atkCoord);
+
+        assert defPiece != null;
+        assert atkPiece != null;
 
         var combatPowerDiff = game.getCombatPowerDiff(atkCoord, atkPiece, atkDirection, defCoord);
 
         game.dealDamage(atkCoord, getAttackingPieceDamage(game, combatPowerDiff));
         game.dealDamage(defCoord, getDefendingPieceDamage(game, combatPowerDiff));
 
+        var defFinalCoord = defCoord;
         if (combatPowerDiff == 0 && knockbackOnEqualCombatPower() && !defPiece.dead()) {
-            if (combatPowerDiff == 0 && !defPiece.dead()) {
-                game.movePiece(defCoord, defCoord.moved(atkDirection));
-            }
+            defFinalCoord = defCoord.moved(atkDirection);
+            game.movePiece(defCoord, defFinalCoord);
         }
-        this.attackerFinalPosition = atkCoord;
-        return MovResponse.OK;
+        return new MovResult(atkCoord, List.of(defFinalCoord), List.of(defPiece));
     }
 
     protected boolean knockbackOnEqualCombatPower()
     { return true; }
 
     // Common implementation for getAttackedCoords
-    // ! TODO These could be implemented as strategies
 
     protected List<Coord> firstInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
     {
