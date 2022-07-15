@@ -22,7 +22,6 @@ public class BoardGridPanel extends JPanel
     protected boolean showCursor;
     private Color cursorColor;
 
-    // :PatternUsed dependency injection (not really a pattern but whatever)
     public BoardGridPanel(BoardGridModel grid)
     {
         this.grid = grid;

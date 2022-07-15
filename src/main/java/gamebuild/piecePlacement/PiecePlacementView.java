@@ -18,8 +18,6 @@ public class PiecePlacementView implements IPiecePlacementObserver
     private final JFrame frame;
     private final JLabel warnLabel;
 
-    private final IPiecePlacementController con;
-
     private final MachineGridPanel p1gridPanel;
     private final MachineGridPanel p2gridPanel;
     private final MachineGridModel p1gridModel;
@@ -38,7 +36,6 @@ public class PiecePlacementView implements IPiecePlacementObserver
     public PiecePlacementView(IPiecePlacementController con)
     {
         con.attach(this);
-        this.con = con;
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

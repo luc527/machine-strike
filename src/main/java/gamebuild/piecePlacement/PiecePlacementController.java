@@ -126,7 +126,7 @@ public class PiecePlacementController implements IPiecePlacementController
     @Override
     public void startGame()
     {
-        observers.forEach(o -> o.gameStarted());
+        observers.forEach(IPiecePlacementObserver::gameStarted);
         var game = gameBuilder.build();
         var gameController = new GameController(game);
         new GameView(gameController);

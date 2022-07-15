@@ -9,8 +9,8 @@ public enum Terrain
     HILL(2, 'h'),
     MOUNTAIN(3, 'H');
 
-    private int combatPowerOffset;
-    private char repr;
+    private final int combatPowerOffset;
+    private final char repr;
 
     Terrain(int combatPowerOffset, char repr)
     {

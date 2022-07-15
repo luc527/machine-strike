@@ -5,7 +5,6 @@ import logic.MovResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class GameController implements IGameController
 {
@@ -50,19 +49,18 @@ public class GameController implements IGameController
     }
 
     @Override
-    public boolean unselectPiece()
+    public void unselectPiece()
     {
-        if (selectedPiece == null) return false;
+        if (selectedPiece == null) return;
         observers.forEach(GameObserver::pieceUnselected);
 
         //TODO are these =null really needed?
         selectedPiece = null;
         selectedPieceSource = null;
-        return true;
     }
 
     @Override
-    public boolean performMovement(int row, int col, Direction dir)
+    public void performMovement(int row, int col, Direction dir)
     {
         var from = selectedPieceSource;
         var to = Coord.create(row, col);
@@ -76,9 +74,7 @@ public class GameController implements IGameController
             if (game.hasWinner()) {
                 observers.forEach(o -> o.gameWonBy(game.getWinner()));
             }
-            return true;
         } else {
-            return false;
         }
     }
 
@@ -103,10 +99,9 @@ public class GameController implements IGameController
     }
 
     @Override
-    public boolean finishTurn()
+    public void finishTurn()
     {
-        if (!game.finishTurn()) return false;
+        if (!game.finishTurn()) return;
         observers.forEach(o -> o.turnFinished(game.currentPlayer()));
-        return true;
     }
 }

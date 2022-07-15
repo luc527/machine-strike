@@ -12,12 +12,12 @@ public interface IGameController
 
     boolean selectPiece(int row, int col);
 
-    boolean unselectPiece();
+    void unselectPiece();
 
-    boolean performMovement(int row, int col, Direction dir);
+    void performMovement(int row, int col, Direction dir);
 
     boolean performAttack(int row, int col, Direction dir);
 
-    boolean finishTurn();
+    void finishTurn();
 
 }
