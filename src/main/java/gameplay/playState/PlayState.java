@@ -3,6 +3,7 @@ package gameplay.playState;
 // :PatternUsed State
 
 import gameplay.GameGridModel;
+import gameplay.GameView;
 import gameplay.IGameController;
 import logic.IGameState;
 
@@ -11,8 +12,8 @@ import java.awt.event.KeyListener;
 
 public abstract class PlayState
 {
-    public static PlayState initialState(IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame) {
-        return new SelectionPlayState(game, controller, grid, gameFrame);
+    public static PlayState initialState(GameView gameView, IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame) {
+        return new SelectionPlayState(gameView, game, controller, grid, gameFrame);
     }
 
     protected KeyListener keyListener;
@@ -23,11 +24,11 @@ public abstract class PlayState
 
     // State transition methods
 
-    public PlayState finishMove() {
+    public void finishMove() {
         throw new UnsupportedOperationException("Illegal state transition");
     }
 
-    public PlayState startMove() {
+    public void startMove() {
         throw new UnsupportedOperationException("Illegal state transition");
     }
 }

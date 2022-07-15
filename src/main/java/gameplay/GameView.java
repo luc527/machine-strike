@@ -45,15 +45,14 @@ public class GameView implements GameObserver
         gridModel = new GameGridModel(game.board(), game);
         gridPanel = new GameGridPanel(gridModel);
 
-        playState = PlayState.initialState(game, controller, gridModel, frame);
-        setKeyListener(playState.getKeyListener());
-
         infoPanel = new InfoPanel();
-        infoPanel.display(playState.getInfoPanelFlags());
         panel.add(infoPanel, BorderLayout.LINE_START);
 
         vpPanel = new VictoryPointsPanel();
         panel.add(vpPanel, BorderLayout.PAGE_START);
+
+        // this depends on vpPanel, infoPanel being instantiated
+        updateState(PlayState.initialState(this, game, controller, gridModel, frame));
 
         var machStats = new MachineStatsPanel();
         panel.add(machStats, BorderLayout.LINE_END);
@@ -100,10 +99,10 @@ public class GameView implements GameObserver
     {
         gridModel.carryPieceFrom(Coord.create(row, col));
         frame.repaint();
-        updateState(playState.startMove());
+        playState.startMove();
     }
 
-    private void updateState(PlayState state)
+    public void updateState(PlayState state)
     {
         this.playState = state;
         setKeyListener(state.getKeyListener());
@@ -116,7 +115,7 @@ public class GameView implements GameObserver
         gridModel.stopCarryingPiece();
         gridModel.syncPieces();
         frame.repaint();
-        updateState(playState.finishMove());
+        playState.finishMove();
     }
 
     @Override
@@ -125,7 +124,7 @@ public class GameView implements GameObserver
         gridModel.stopCarryingPiece();
         gridModel.syncPieces();
         frame.repaint();
-        updateState(playState.finishMove());
+        playState.finishMove();
     }
 
     @Override

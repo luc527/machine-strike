@@ -1,6 +1,7 @@
 package gameplay.playState;
 
 import gameplay.GameGridModel;
+import gameplay.GameView;
 import gameplay.IGameController;
 import gameplay.InfoPanel;
 import logic.IGameState;
@@ -11,13 +12,15 @@ import java.awt.event.KeyEvent;
 
 public class SelectionPlayState extends PlayState
 {
+    private final GameView gameView;
     private final IGameState game;
     private final IGameController controller;
     private final GameGridModel grid;
     private final JFrame gameFrame;
 
-    public SelectionPlayState(IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame)
+    public SelectionPlayState(GameView gameView, IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame)
     {
+        this.gameView = gameView;
         this.game = game;
         this.controller = controller;
         this.grid = grid;
@@ -47,8 +50,8 @@ public class SelectionPlayState extends PlayState
     }
 
     @Override
-    public PlayState startMove()
+    public void startMove()
     {
-        return new MovingPlayState(game, controller, grid, gameFrame);
+        gameView.updateState(new MovingPlayState(gameView, game, controller, grid, gameFrame));
     }
 }

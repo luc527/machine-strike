@@ -2,6 +2,9 @@ package logic;
 
 // Read-only interface
 
+import gameplay.playState.MovingPlayState;
+import gameplay.playState.PlayState;
+
 public interface IGameState
 {
     Board board();

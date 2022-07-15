@@ -1,6 +1,7 @@
 package gameplay.playState;
 
 import gameplay.GameGridModel;
+import gameplay.GameView;
 import gameplay.IGameController;
 import gameplay.InfoPanel;
 import logic.IGameState;
@@ -11,13 +12,15 @@ import java.awt.event.KeyEvent;
 
 public class MovingPlayState extends PlayState
 {
+    private final GameView gameView;
     private final IGameState game;
     private final IGameController controller;
     private final GameGridModel grid;
     private final JFrame gameFrame;
 
-    MovingPlayState(IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame)
+    MovingPlayState(GameView gameView, IGameState game, IGameController controller, GameGridModel grid, JFrame gameFrame)
     {
+        this.gameView = gameView;
         this.game = game;
         this.controller = controller;
         this.grid = grid;
@@ -35,7 +38,7 @@ public class MovingPlayState extends PlayState
                     controller.performMovement(row, col, dir);
                 } else if (c == 'k') {
                     controller.performAttack(row, col, dir);
-                }else if (grid.isCarryingPiece()) {
+                } else if (grid.isCarryingPiece()) {
                     if      (c == 'q') grid.rotateCarriedPiece(false);
                     else if (c == 'e') grid.rotateCarriedPiece(true);
                     gameFrame.repaint();
@@ -63,8 +66,8 @@ public class MovingPlayState extends PlayState
         return flags;
     }
 
-    public PlayState finishMove()
+    public void finishMove()
     {
-        return new SelectionPlayState(game, controller, grid, gameFrame);
+        gameView.updateState(new SelectionPlayState(gameView, game, controller, grid, gameFrame));
     }
 }
