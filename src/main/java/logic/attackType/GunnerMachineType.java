@@ -12,8 +12,8 @@ public class GunnerMachineType extends MachineType
     }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
-    { return lastInAttackRange(game, from, piece, dir); }
+    public List<Coord> attackedCoords(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
+    { return lastInAttackRange(pieceAt, from, piece, dir); }
 
     @Override
     public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)

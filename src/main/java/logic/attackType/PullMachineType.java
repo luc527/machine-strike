@@ -10,8 +10,8 @@ public class PullMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
-    { return firstInAttackRange(game, from, piece, dir); }
+    public List<Coord> attackedCoords(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
+    { return firstInAttackRange(pieceAt, from, piece, dir); }
 
     @Override
     public boolean knockbackOnEqualCombatPower() { return false; }

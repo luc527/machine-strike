@@ -145,7 +145,7 @@ public class GameGridPanel extends BoardGridPanel
             var isAttacking = false;
             List<Coord> attackedCoords = List.of();
             if (stamina.canAttack() && !reach.inRunning()) {
-                attackedCoords = machtype.attackedCoords(game, cursor, piece, direction);
+                attackedCoords = machtype.attackedCoords(grid::pieceAt, cursor, piece, direction);
                 isAttacking = !attackedCoords.isEmpty();
             }
 

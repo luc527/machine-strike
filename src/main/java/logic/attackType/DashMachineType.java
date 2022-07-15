@@ -11,7 +11,7 @@ public class DashMachineType extends MachineType
     { super(attackRange); }
 
     @Override
-    public List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir)
+    public List<Coord> attackedCoords(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
     {
         // All positions in attack range (having a piece)
         // attackRange - 1 because that's the position where the piece lands
@@ -22,7 +22,7 @@ public class DashMachineType extends MachineType
             if (!GameState.inbounds(coord)) {
                 break;
             }
-            var defPiece = game.pieceAt(coord);
+            var defPiece = pieceAt.apply(coord);
             if (defPiece != null) {
                 list.add(coord);
             }
@@ -46,7 +46,7 @@ public class DashMachineType extends MachineType
     @Override
     public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
+        var defCoordList = attackedCoords(game::pieceAt, atkCoord, atkDirection);
         if (defCoordList.isEmpty()) {
             return new MovResult(MovResponse.NO_ATTACKED_PIECE_IN_RANGE);
         }

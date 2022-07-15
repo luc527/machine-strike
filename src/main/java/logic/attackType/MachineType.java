@@ -36,7 +36,7 @@ public abstract class MachineType
     // The first is to be used when visualizing the attack, when you haven't performed the preceding move yet.
     // The other one is implemented in terms of the first one, with the piece being the one at the given coord.
 
-    public abstract List<Coord> attackedCoords(IGameState game, Coord from, IPiece piece, Direction dir);
+    public abstract List<Coord> attackedCoords(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir);
 
     public abstract MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection);
 
@@ -45,11 +45,11 @@ public abstract class MachineType
     public boolean attacksFriends()
     { return false; }
 
-    public List<Coord> attackedCoords(IGameState game, Coord from, Direction dir)
-    { return attackedCoords(game, from, game.pieceAt(from), dir); }
+    public List<Coord> attackedCoords(PieceProvider pieceAt, Coord from, Direction dir)
+    { return attackedCoords(pieceAt, from, pieceAt.apply(from), dir); }
 
-    public boolean canAttackFrom(IGameState game, Coord from, IPiece piece, Direction dir)
-    { return !attackedCoords(game, from, piece, dir).isEmpty(); }
+    public boolean canAttackFrom(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
+    { return !attackedCoords(pieceAt, from, piece, dir).isEmpty(); }
 
     public int combatPowerOffset(Terrain terrain)
     { return terrain.combatPowerOffset(); }
@@ -70,7 +70,7 @@ public abstract class MachineType
 
     protected MovResult performBasicAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
-        var defCoordList = attackedCoords(game, atkCoord, atkDirection);
+        var defCoordList = attackedCoords(game::pieceAt, atkCoord, atkDirection);
         if (defCoordList.isEmpty()) {
             return new MovResult(MovResponse.NO_ATTACKED_PIECE_IN_RANGE);
         }
@@ -100,14 +100,14 @@ public abstract class MachineType
 
     // Common implementation for getAttackedCoords
 
-    protected List<Coord> firstInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
+    protected List<Coord> firstInAttackRange(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
     {
         var defCoord = from.moved(dir);
         for (int i = 0; i < attackRange; i++) {
             if (!GameState.inbounds(defCoord)) {
                 break;
             }
-            var defPiece = game.pieceAt(defCoord);
+            var defPiece = pieceAt.apply(defCoord);
             if (defPiece != null && (attacksFriends() || !defPiece.player().equals(piece.player()))) {
                 return List.of(defCoord);
             }
@@ -116,7 +116,7 @@ public abstract class MachineType
         return List.of();
     }
 
-    protected List<Coord> lastInAttackRange(IGameState game, Coord from, IPiece piece, Direction dir)
+    protected List<Coord> lastInAttackRange(PieceProvider pieceAt, Coord from, IPiece piece, Direction dir)
     {
         var curCoord   = from.moved(dir);
         Coord defCoord = null;
@@ -125,7 +125,7 @@ public abstract class MachineType
             if (!GameState.inbounds(curCoord)) {
                 break;
             }
-            var curPiece = game.pieceAt(curCoord);
+            var curPiece = pieceAt.apply(curCoord);
             if (curPiece != null && (attacksFriends() || !curPiece.player().equals(piece.player()))) {
                 defCoord = curCoord;
             }
