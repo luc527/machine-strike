@@ -8,11 +8,7 @@ import logic.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.function.Function;
-
-// TODO use state pattern for selectionListener/placementListener
 
 public class GameView implements GameObserver
 {
@@ -110,7 +106,7 @@ public class GameView implements GameObserver
     }
 
     @Override
-    public void movementPerformed(int row, int col, IPiece piece)
+    public void gameStateChanged()
     {
         gridModel.stopCarryingPiece();
         gridModel.syncPieces();

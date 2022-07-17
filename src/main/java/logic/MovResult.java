@@ -31,8 +31,7 @@ public class MovResult
         this.defPieces = null;
     }
 
-    // If !success(), then neither attackingPieceCoord() nor defendingPieceCoords()
-    // make sense to use
+    // If !success(), then neither attackingPieceCoord() nor defendingPieceCoords() make sense to use
 
     public boolean success() { return res == MovResponse.OK; }
 

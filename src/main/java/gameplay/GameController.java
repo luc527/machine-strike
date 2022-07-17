@@ -54,7 +54,6 @@ public class GameController implements IGameController
         if (selectedPiece == null) return;
         observers.forEach(GameObserver::pieceUnselected);
 
-        //TODO are these =null really needed?
         selectedPiece = null;
         selectedPieceSource = null;
     }
@@ -65,37 +64,32 @@ public class GameController implements IGameController
         var from = selectedPieceSource;
         var to = Coord.create(row, col);
         var res = game.performMovement(from, to, dir, false);
+        if (res != MovResponse.OK) return;
 
-        if (res == MovResponse.OK) {
-            observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
-            selectedPiece = null;
-            selectedPieceSource = null;
+        observers.forEach(GameObserver::gameStateChanged);
+        selectedPiece = null;
+        selectedPieceSource = null;
 
-            if (game.hasWinner()) {
-                observers.forEach(o -> o.gameWonBy(game.getWinner()));
-            }
-        } else {
+        if (game.hasWinner()) {
+            observers.forEach(o -> o.gameWonBy(game.getWinner()));
         }
     }
 
     @Override
-    public boolean performAttack(int row, int col, Direction dir)
+    public void performAttack(int row, int col, Direction dir)
     {
         var from = selectedPieceSource;
         var to   = Coord.create(row, col);
         var res  = game.performAttack(from, to, dir);
+        if (res != MovResponse.OK) return;
 
-        if (res == MovResponse.OK) {
-            // TODO attackPerformed? or simplify and just do gameChanged or something like that
-            observers.forEach(o -> o.movementPerformed(row, col, game.pieceAt(row, col)));
-            selectedPiece = null;
-            selectedPieceSource = null;
+        observers.forEach(GameObserver::gameStateChanged);
+        selectedPiece = null;
+        selectedPieceSource = null;
 
-            if (game.hasWinner()) {
-                observers.forEach(o -> o.gameWonBy(game.getWinner()));
-            }
-            return true;
-        } else return false;
+        if (game.hasWinner()) {
+            observers.forEach(o -> o.gameWonBy(game.getWinner()));
+        }
     }
 
     @Override

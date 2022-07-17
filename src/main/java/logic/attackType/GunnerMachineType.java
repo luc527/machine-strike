@@ -17,9 +17,7 @@ public class GunnerMachineType extends MachineType
 
     @Override
     public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
-    {
-        return performBasicAttack(game, atkCoord, atkDirection);
-    }
+    { return performBasicAttack(game, atkCoord, atkDirection); }
 
     @Override
     public String name() { return "Gunner"; }

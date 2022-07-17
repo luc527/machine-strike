@@ -75,7 +75,7 @@ public class MachineStatsPanel extends JPanel
         var armored = new ArrayList<String>();
         var weak    = new ArrayList<String>();
         var neutral = new ArrayList<String>();
-        for (var dir : Direction.iter()) {
+        for (var dir : Direction.all()) {
             var pt = machine.point(dir);
             switch (pt) {
                 case ARMORED -> armored.add(dir.toString());

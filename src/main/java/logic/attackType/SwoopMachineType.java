@@ -24,6 +24,9 @@ public class SwoopMachineType extends MachineType
     }
 
     @Override
+    public boolean walksOn(Terrain terrain) { return true; }
+
+    @Override
     public MovResult performAttack(GameState game, Coord atkCoord, Direction atkDirection)
     {
         var result = performBasicAttack(game, atkCoord, atkDirection);
@@ -35,12 +38,14 @@ public class SwoopMachineType extends MachineType
         // Swoop always moves next to the attacked piece
         var atkFinalCoord = atkCoord;
         if (!atkPiece.dead()) {
-            var nextSpace = atkFinalCoord.moved(atkDirection);
+            var nextSpace = atkCoord.moved(atkDirection);
             while (GameState.inbounds(nextSpace) && !nextSpace.equals(defCoord)) {
-                atkFinalCoord = nextSpace;
                 nextSpace = nextSpace.moved(atkDirection);
             }
-            game.movePiece(atkCoord, atkFinalCoord);
+            if (walksOn(game.board().get(nextSpace))) {
+                game.movePiece(atkCoord, nextSpace);
+                atkFinalCoord = nextSpace;
+            }
         }
 
         return new MovResult(atkFinalCoord, result.defendingPieceCoords(), result.defendingPieces());

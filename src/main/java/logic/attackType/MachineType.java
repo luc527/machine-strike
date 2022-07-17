@@ -5,11 +5,6 @@ import logic.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO fix! regarding performBasicAttack, the types using this function
-//  can't know whether a knockback happened or not, so this is even more
-//  reason for, at least internally, encapsulate MovResponse withint a MovResult
-//  or something like that that says the resulting positions of each piece
-
 public abstract class MachineType
 {
     protected int attackRange;
@@ -89,14 +84,23 @@ public abstract class MachineType
 
         var defFinalCoord = defCoord;
         if (combatPowerDiff == 0 && knockbackOnEqualCombatPower() && !defPiece.dead()) {
-            defFinalCoord = defCoord.moved(atkDirection);
-            game.movePiece(defCoord, defFinalCoord);
+            var knockedCoord = defCoord.moved(atkDirection);
+            if (GameState.inbounds(knockedCoord)) {
+                var terrain = game.board().get(knockedCoord);
+                if (defPiece.machine().type().walksOn(terrain)) {
+                    game.movePiece(defCoord, knockedCoord);
+                    defFinalCoord = knockedCoord;
+                }
+            }
         }
         return new MovResult(atkCoord, List.of(defFinalCoord), List.of(defPiece));
     }
 
     protected boolean knockbackOnEqualCombatPower()
     { return true; }
+
+    public boolean walksOn(Terrain terrain)
+    { return terrain != Terrain.CHASM; }
 
     // Common implementation for getAttackedCoords
 
@@ -133,5 +137,4 @@ public abstract class MachineType
         }
         return defCoord == null ? List.of() : List.of(defCoord);
     }
-
 }

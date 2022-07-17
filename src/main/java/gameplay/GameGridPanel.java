@@ -80,7 +80,7 @@ public class GameGridPanel extends BoardGridPanel
                 var y = SIDE_PX * row;
                 g.setColor(Palette.transparentColor(piece.player()));
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
-                super.drawMachine(piece.machine(), piece.direction(), g, x, y);
+                Utils.drawMachine(piece.machine(), piece.direction(), g, x, y);
                 drawHealth(g, row, col, piece.health());
             }
         }
@@ -88,20 +88,17 @@ public class GameGridPanel extends BoardGridPanel
 
     private void paintMachinesCombatPower(Graphics2D g)
     {
-        // TODO this is not working, I'm not seeing the machines' combat powers on screen
         var grid = (GameGridModel) this.grid;
         var game = grid.game();
         var board = game.board();
 
         for (var row = 0; row < ROWS; row++) {
             for (var col = 0; col < COLS; col++) {
-                var x = col * SIDE_PX;
-                var y = row * SIDE_PX;
                 var piece = grid.pieceAt(row, col);
                 if (piece == null) continue;
                 var machine = piece.machine();
                 var combatPower = game.getCombatPower(machine, board.get(row, col));
-                drawCombatPower(g, x, y, combatPower);
+                drawCombatPower(g, row, col, combatPower);
             }
         }
     }
@@ -120,6 +117,8 @@ public class GameGridPanel extends BoardGridPanel
         var grid = (GameGridModel) this.grid;
         var game = grid.game();
 
+        paintMachinesCombatPower(g);
+
         if (grid.isCarryingPiece()) {
 
             var piece = grid.getCarriedPiece();
@@ -132,7 +131,7 @@ public class GameGridPanel extends BoardGridPanel
 
             var cy = SIDE_PX * row;
             var cx = SIDE_PX * col;
-            super.drawMachine(machine, direction, g, cx, cy);
+            Utils.drawMachine(machine, direction, g, cx, cy);
 
             var combatPower = game.getCombatPower(machine, game.board().get(row, col));
             drawCombatPower(g, row, col, combatPower);
@@ -195,7 +194,6 @@ public class GameGridPanel extends BoardGridPanel
 
             drawHealth(g, row, col, piece.health());
         }
-        paintMachinesCombatPower(g);
     }
 
 }

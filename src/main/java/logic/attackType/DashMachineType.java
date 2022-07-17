@@ -16,6 +16,13 @@ public class DashMachineType extends MachineType
         // All positions in attack range (having a piece)
         // attackRange - 1 because that's the position where the piece lands
 
+        var landingCoord = from.moved(dir, attackRange);
+        var lands = GameState.inbounds(landingCoord)
+                 && pieceAt.apply(landingCoord) == null;
+        // TODO still have to check if can walk on the landing terrain... but I don't have access to the Board here
+
+        if (!lands) return List.of();
+
         var list = new ArrayList<Coord>(attackRange - 1);
         var coord = from.moved(dir);
         for (var i = 0; i < attackRange-1; i++) {
@@ -53,7 +60,7 @@ public class DashMachineType extends MachineType
         var atkPiece = game.pieceAt(atkCoord);
 
         var landingCoord = atkCoord.moved(atkDirection, attackRange);
-        if (!GameState.inbounds(landingCoord)) {
+        if (!GameState.inbounds(landingCoord) || !atkPiece.machine().type().walksOn(game.board().get(landingCoord))) {
             return new MovResult(MovResponse.ATK_OUT_OF_BOUNDS);
         }
         if (game.pieceAt(landingCoord) != null) {

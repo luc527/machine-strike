@@ -77,7 +77,7 @@ public class MachineGridPanel extends JPanel
             var y = row * SIDE_PX;
             var x = col * SIDE_PX;
             var machine = grid.machineAt(Coord.create(row, col));
-            for (var dir : Direction.iter()) {
+            for (var dir : Direction.all()) {
                 var pt = machine.point(dir);
                 if (pt == Machine.Point.EMPTY) continue;
                 var tmp = g.getTransform();

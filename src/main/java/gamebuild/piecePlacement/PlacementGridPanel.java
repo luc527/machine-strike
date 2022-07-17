@@ -3,6 +3,7 @@ package gamebuild.piecePlacement;
 
 import components.Palette;
 import components.boardgrid.BoardGridPanel;
+import logic.Utils;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -54,7 +55,7 @@ public class PlacementGridPanel extends BoardGridPanel
                 if (piece == null) continue;
                 var x = col * SIDE_PX;
                 var y = row * SIDE_PX;
-                super.drawMachine(piece.machine(), piece.direction(), g, x, y);
+                Utils.drawMachine(piece.machine(), piece.direction(), g, x, y);
                 g.setColor(Palette.transparentColor(piece.player()));
                 g.fillRect(x, y, SIDE_PX, SIDE_PX);
             }
@@ -66,7 +67,7 @@ public class PlacementGridPanel extends BoardGridPanel
         var x = SIDE_PX * cursor.col();
         var y = SIDE_PX * cursor.row();
         if (super.showCursor && grid.isCarryingMachine()) {
-            super.drawMachine(
+            Utils.drawMachine(
                 grid.getCarriedMachine(),
                 grid.getCarriedMachineDirection(),
                 g, x, y

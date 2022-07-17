@@ -19,25 +19,25 @@ public class GameBuilder
         this.piecesByPosition = new Piece[Constants.BOARD_ROWS][Constants.BOARD_COLS];
     }
 
-    public void setStartingPlayer(Player p)
+    public GameBuilder setStartingPlayer(Player p)
     {
         this.startingPlayer = p;
+        return this;
     }
 
-    public void setBoard(Board b)
+    public GameBuilder setBoard(Board b)
     {
         this.board = b;
+        return this;
     }
 
 
-    public boolean addPiece(Piece piece, int row, int col)
+    public GameBuilder addPiece(Piece piece, int row, int col)
     {
         if (piecesByPosition[row][col] == null) {
             piecesByPosition[row][col] = piece;
-            return true;
-        } else {
-            return false;
         }
+        return this;
     }
 
     public GameState build()

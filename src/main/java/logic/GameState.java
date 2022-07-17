@@ -138,14 +138,20 @@ public class GameState implements IGameState
         return diff > 0 ? diff : 0;
     }
 
-    public Reachability reachabilityConsideringStamina(Coord from, Coord to)
+    public Reachability actualReachability(Coord from, Coord to)
     {
         var piece = pieceAt(from);
         if (piece == null) throw new RuntimeException("Testing reachability w/ stamina from a coordinate without piece!");
+
         var stamina = piece.stamina();
         if (!stamina.canWalk()) return Reachability.OUT;
+
+        var terrain = board.get(to);
+        if (!piece.machine().type().walksOn(terrain)) return Reachability.OUT;
+
         var reach = reachability(from, to, piece.machine().movementRange());
         if (reach.inRunning() && !stamina.canRun()) return Reachability.OUT;
+
         return reach;
     }
 
@@ -225,7 +231,7 @@ public class GameState implements IGameState
             }
         }
 
-        // TODO problem with this implementation: if the move can be performed fine, but the attack not,
+        // eODO problem with this implementation: if the move can be performed fine, but the attack not,
         //  then the move will be performed but the attack wont
         //  when it should be like a transaction (atomic, either the whole thing works or nothing happens)
 

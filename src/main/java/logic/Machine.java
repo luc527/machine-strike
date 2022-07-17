@@ -1,5 +1,4 @@
 package logic;
-// TODO somehow encode types (melee, gunner etc.), by subclassing or enum depending on what makes sense
 
 import com.google.gson.JsonElement;
 import logic.attackType.MachineType;

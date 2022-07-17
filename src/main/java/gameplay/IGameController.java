@@ -16,7 +16,7 @@ public interface IGameController
 
     void performMovement(int row, int col, Direction dir);
 
-    boolean performAttack(int row, int col, Direction dir);
+    void performAttack(int row, int col, Direction dir);
 
     void finishTurn();
 

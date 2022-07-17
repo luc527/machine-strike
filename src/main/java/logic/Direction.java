@@ -69,7 +69,7 @@ public enum Direction
         throw new RuntimeException("Reached unreachable code!");
     }
 
-    public static Iterable<Direction> iter()
+    public static Iterable<Direction> all()
     {
         return List.of(Direction.values());
     }

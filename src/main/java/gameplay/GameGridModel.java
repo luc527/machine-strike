@@ -105,14 +105,14 @@ public class GameGridModel extends BoardGridModel
     {
         var from = carriedPieceOriginalPosition;
         var to   = Coord.create(row, col);
-        return !isCarryingPiece() || !game.reachabilityConsideringStamina(from, to).out();
+        return !isCarryingPiece() || !game.actualReachability(from, to).out();
     }
 
     public Reachability isReachable(int row, int col)
     {
         var from = carriedPieceOriginalPosition;
         var to   = Coord.create(row, col);
-        return game.reachabilityConsideringStamina(from, to);
+        return game.actualReachability(from, to);
     }
 
 }

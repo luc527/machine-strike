@@ -33,16 +33,19 @@ public class RamMachineType extends MachineType
         var defKnocked = false;
         var defFinalCoord = defCoord;
         if (!defPiece.dead()) {
-            defFinalCoord = defCoord.moved(atkDirection);
-            if (GameState.inbounds(defFinalCoord)) {
-                game.movePiece(defCoord, defFinalCoord);
-                defKnocked = true;
+            var knockedCoord = defCoord.moved(atkDirection);
+            defKnocked = GameState.inbounds(knockedCoord)
+                      && game.pieceAt(knockedCoord) == null
+                      && defPiece.machine().type().walksOn(game.board().get(knockedCoord));
+            if (defKnocked) {
+                game.movePiece(defCoord, knockedCoord);
+                defFinalCoord = knockedCoord;
             }
         }
 
         var atkPiece = game.pieceAt(atkCoord);
         var atkFinalCoord = atkCoord;
-        if (!atkPiece.dead() && defKnocked) {
+        if (!atkPiece.dead() && defKnocked && walksOn(game.board().get(defCoord))) {
             game.movePiece(atkCoord, defCoord);
             atkFinalCoord = defCoord;
         }

@@ -10,7 +10,7 @@ public interface GameObserver
 
     void pieceSelected(int row, int col, IPiece piece);
 
-    void movementPerformed(int row, int col, IPiece piece);
+    void gameStateChanged();
 
     void pieceUnselected();
 

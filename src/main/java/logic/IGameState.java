@@ -2,9 +2,6 @@ package logic;
 
 // Read-only interface
 
-import gameplay.playState.MovingPlayState;
-import gameplay.playState.PlayState;
-
 public interface IGameState
 {
     Board board();
@@ -33,6 +30,6 @@ public interface IGameState
 
     int getDefendingPieceDamage(int combatPowerDiff);
 
-    Reachability reachabilityConsideringStamina(Coord from, Coord to);
+    Reachability actualReachability(Coord from, Coord to);
 }
 

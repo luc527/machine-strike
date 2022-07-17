@@ -32,8 +32,12 @@ public class PullMachineType extends MachineType
         var defPiece = result.defendingPieces().get(0);
         if (!defPiece.dead()) {
             // Pull attacked piece
-            defFinalCoord = atkCoord.moved(atkDirection);
-            game.movePiece(defCoord, defFinalCoord);
+            var pulledCoord = atkCoord.moved(atkDirection);
+            var terrain = game.board().get(pulledCoord);
+            if (defPiece.machine().type().walksOn(terrain)) {
+                game.movePiece(defCoord, pulledCoord);
+                defFinalCoord = pulledCoord;
+            }
         }
         return new MovResult(atkCoord, List.of(defFinalCoord), result.defendingPieces());
     }
