@@ -12,6 +12,8 @@ public class PieceStamina implements IPIeceStamina
 
     public boolean canAttack() { return k+1 <= MAXK; }
 
+    public boolean canWalkAndAttack() { return k+2 <= MAXK; }
+
     public boolean walkWouldOvercharge() { return k+1 == MAXK; }
 
     public boolean runWouldOvercharge() { return k+2 == MAXK; }

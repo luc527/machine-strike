@@ -8,6 +8,8 @@ public interface IPIeceStamina
 
     boolean canAttack();
 
+    boolean canWalkAndAttack();
+
     boolean walkWouldOvercharge();
 
     boolean runWouldOvercharge();

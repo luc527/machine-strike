@@ -61,8 +61,13 @@ public class MovingPlayState extends PlayState
 
         var canAttackFromHere = piece.machine().type().canAttackFrom(game::pieceAt, coord, piece, dir);
         var isRunning         = grid.isReachable(coord.row(), coord.col()).inRunning();
+        var isMoving          = !coord.equals(grid.getCarriedPieceSource());
 
-        if (canAttackFromHere && !isRunning) {
+        var canAttack = canAttackFromHere
+                     && !isRunning
+                     && (!isMoving || piece.stamina().canWalkAndAttack());
+
+        if (canAttack) {
             flags |= InfoPanel.K_TO_ATTACK;
         }
         return flags;

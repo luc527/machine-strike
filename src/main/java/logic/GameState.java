@@ -141,7 +141,8 @@ public class GameState implements IGameState
     public Reachability actualReachability(Coord from, Coord to)
     {
         var piece = pieceAt(from);
-        if (piece == null) throw new RuntimeException("Testing reachability w/ stamina from a coordinate without piece!");
+        // if (piece == null) throw new RuntimeException("Testing reachability w/ stamina from a coordinate without piece!");
+        if (piece == null) return Reachability.OUT;
 
         var stamina = piece.stamina();
         if (!stamina.canWalk()) return Reachability.OUT;
@@ -178,15 +179,17 @@ public class GameState implements IGameState
         if (!piece.player().equals(currentPlayer)) return MovResponse.PLAYER_MISMATCH;
 
         var dirChanged = dir != piece.direction();
-        if (to.equals(from) && !dirChanged) return MovResponse.DIDNT_MOVE;
+        if (to.equals(from) && !dirChanged && !precedingAttack) return MovResponse.DIDNT_MOVE;
 
         if (!to.equals(from) && getPiece(to) != null) return MovResponse.TO_NOT_EMPTY;
 
         var turn = piece.getStamina();
         var canWalk = turn.canWalk();
         var canRun = turn.canRun() && !precedingAttack;
+        var canAttack = to.equals(from) ? turn.canAttack() : turn.canWalkAndAttack();
 
         if (!canWalk) return MovResponse.NO_MOVES_LEFT;
+        if (precedingAttack && !canAttack) return MovResponse.NO_MOVES_LEFT;
 
         var range = piece.machine().movementRange();
         var reach = reachability(from, to, range);

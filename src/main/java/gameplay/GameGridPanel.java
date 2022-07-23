@@ -148,6 +148,9 @@ public class GameGridPanel extends BoardGridPanel
                 isAttacking = !attackedCoords.isEmpty();
             }
 
+            var isMoving = !grid.getCarriedPieceSource().equals(cursor);
+            isAttacking = isAttacking && (!isMoving || stamina.canWalkAndAttack());
+
             var paintedCoords = isAttacking ? attackedCoords : machtype.coordsInAttackRange(cursor, direction);
             g.setColor(Palette.transparentRed);
             for (var coord : paintedCoords) {
