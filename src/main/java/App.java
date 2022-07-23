@@ -50,11 +50,11 @@ public class App
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-        //var builder = new GameBuilder();
-        //var con = new PlayerAndBoardSelectionController(builder);
-        //var view = new PlayerAndBoardSelectionView(con);
-        //view.show();
+        var builder = new GameBuilder();
+        var con = new PlayerAndBoardSelectionController(builder);
+        var view = new PlayerAndBoardSelectionView(con);
+        view.show();
 
-        testGame();
+        // testGame();
     }
 }
