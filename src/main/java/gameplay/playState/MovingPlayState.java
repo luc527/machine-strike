@@ -50,8 +50,10 @@ public class MovingPlayState extends PlayState
     public long getInfoPanelFlags()
     {
         var flags = InfoPanel.EMPTY_FLAGS;
+        flags |= InfoPanel.ARROWS_TO_MOVE;
         flags |= InfoPanel.ESC_TO_DESELECT;
         flags |= InfoPanel.ENTER_TO_PLACE;
+        flags |= InfoPanel.QE_TO_ROTATE;
 
         var coord = grid.getCursor();
         var piece = grid.getCarriedPiece();

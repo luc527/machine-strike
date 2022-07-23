@@ -44,6 +44,7 @@ public class SelectionPlayState extends PlayState
     public long getInfoPanelFlags()
     {
         var flags = InfoPanel.EMPTY_FLAGS;
+        flags |= InfoPanel.ARROWS_TO_MOVE;
         flags |= InfoPanel.ENTER_TO_SELECT;
         if (game.currentPlayerMoves() > 0) flags |= InfoPanel.F_TO_FINISH_TURN;
         return flags;

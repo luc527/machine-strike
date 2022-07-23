@@ -103,9 +103,17 @@ public class PiecePlacementView implements IPiecePlacementObserver
         startGameButton.addActionListener(e -> con.startGame());
         startGameButton.setEnabled(false);
 
-        var bottomRow = new JPanel(new BorderLayout());
-        bottomRow.add(warnLabel, BorderLayout.NORTH);
-        bottomRow.add(startGameButton, BorderLayout.SOUTH);
+        var bottomRow = new JPanel();
+        bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.PAGE_AXIS));
+
+        var instructions = new JLabel("ENTER to select piece | ARROWS to move, ENTER to place, BACKSPACE or ESC to cancel, Q and E to rotate");
+        var instructionsPanel = new JPanel();
+        instructionsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        instructionsPanel.add(instructions);
+
+        bottomRow.add(instructionsPanel);
+        bottomRow.add(warnLabel);
+        bottomRow.add(startGameButton);
 
         panel.add(p1gridPanel, BorderLayout.LINE_START);
         panel.add(p2gridPanel, BorderLayout.LINE_END);

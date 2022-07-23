@@ -11,6 +11,8 @@ public class InfoPanel extends JPanel
     public static final long K_TO_ATTACK      = 1 << 2;
     public static final long F_TO_FINISH_TURN = 1 << 3;
     public static final long ESC_TO_DESELECT  = 1 << 4;
+    public static final long QE_TO_ROTATE     = 1 << 5;
+    public static final long ARROWS_TO_MOVE   = 1 << 6;
 
     private final JLabel[] labels = {
         new JLabel("ENTER to select the piece"),
@@ -18,6 +20,8 @@ public class InfoPanel extends JPanel
         new JLabel("K to attack"),
         new JLabel("F to finish turn"),
         new JLabel("ESC to de-select the piece"),
+        new JLabel("Q and E to rotate the piece"),
+        new JLabel("ARROW KEYS to move the cursor"),
     };
 
     public InfoPanel() {
