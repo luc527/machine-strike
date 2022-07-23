@@ -39,12 +39,14 @@ public class SwoopMachineType extends MachineType
         var atkFinalCoord = atkCoord;
         if (!atkPiece.dead()) {
             var nextSpace = atkCoord.moved(atkDirection);
+            var currSpace = Coord.create(atkCoord);
             while (GameState.inbounds(nextSpace) && !nextSpace.equals(defCoord)) {
+                currSpace = nextSpace;
                 nextSpace = nextSpace.moved(atkDirection);
             }
-            if (walksOn(game.board().get(nextSpace))) {
-                game.movePiece(atkCoord, nextSpace);
-                atkFinalCoord = nextSpace;
+            if (walksOn(game.board().get(currSpace))) {
+                game.movePiece(atkCoord, currSpace);
+                atkFinalCoord = currSpace;
             }
         }
 
